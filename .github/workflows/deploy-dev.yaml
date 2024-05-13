@@ -25,7 +25,7 @@ jobs:
         run: |
           cd src/scripts/config
           CURRENT_DATE=$(date "+%Y-%m-%d %H:%M:%S")
-          echo "export const version {" > version.ts
+          echo "export const version = {" > version.ts
           echo "  major: '${{vars.VERSION_MAJOR}}'," >> version.ts
           echo "  minor: '${{vars.VERSION_MINOR}}'," >> version.ts
           echo "  patch: '${{vars.VERSION_PATCH}}'," >> version.ts
@@ -37,7 +37,7 @@ jobs:
       - name: Generate Firebase Client Configuration
         run: |
           cd src/scripts/config
-          echo "export const firebaseConfig {" > firebase.ts
+          echo "export const firebaseConfig = {" > firebase.ts
           echo "  apiKey: '${{secrets.FIREBASE_API_KEY}}'," >> firebase.ts
           echo "  authDomain: '${{vars.FIREBASE_PROJECT_ID}}.firebaseapp.com'," >> firebase.ts
           echo "  projectId: '${{vars.FIREBASE_PROJECT_ID}}'," >> firebase.ts

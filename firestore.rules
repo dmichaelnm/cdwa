@@ -1,0 +1,21 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isUserAuthorized() {
+      return request.auth != null &&
+             get(/databases/$(database)/documents/account/$(request.auth.uid)).data.state.locked == false;
+    }
+
+    match /account/{account} {
+      allow read, write: if request.auth != null;
+      allow create: if request.auth != null;
+    }
+
+    match /project/{project} {
+      allow read, write: if isUserAuthorized() && request.auth.uid in resource.data.access;
+      allow create: if isUserAuthorized();
+    }
+  }
+}

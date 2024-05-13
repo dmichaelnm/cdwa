@@ -43,7 +43,8 @@ jobs:
           echo "  projectId: '${{vars.FIREBASE_PROJECT_ID}}'," >> firebase.ts
           echo "  storageBucket: '${{vars.FIREBASE_PROJECT_ID}}.appspot.com'," >> firebase.ts
           echo "  messagingSenderId: '${{secrets.FIREBASE_MESSAGING_SENDER_ID}}'," >> firebase.ts
-          echo "  appId: '${{secrets.FIREBASE_APP_ID}}'" >> firebase.ts
+          echo "  appId: '${{secrets.FIREBASE_APP_ID}}'," >> firebase.ts
+          echo "  measurementId: '${{secrets.FIREBASE_MEASUREMENT_ID}}'" >> firebase.ts
           echo "};" >> firebase.ts
           cd ../../..
 

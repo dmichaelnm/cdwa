@@ -1,0 +1,77 @@
+name: CDWA Deployment Production
+run-name: Deployment CDWA-Prod by @${{ github.actor }}
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  deploy-test:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      GOOGLE_APPLICATION_CREDENTIALS: google-application-credentials.json
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate Version Information
+        run: |
+          cd src/scripts/config
+          CURRENT_DATE=$(date "+%Y-%m-%d %H:%M:%S")
+          echo "export const version = {" > version.ts
+          echo "  major: '${{vars.VERSION_MAJOR}}'," >> version.ts
+          echo "  minor: '${{vars.VERSION_MINOR}}'," >> version.ts
+          echo "  patch: '${{vars.VERSION_PATCH}}'," >> version.ts
+          echo "  environment: 'production'," >> version.ts
+          echo "  build: '$CURRENT_DATE'" >> version.ts
+          echo "};" >> version.ts
+          cd ../../..
+
+      - name: Generate Firebase Client Configuration
+        run: |
+          cd src/scripts/config
+          echo "export const firebaseConfig = {" > firebase.ts
+          echo "  apiKey: '${{secrets.FIREBASE_API_KEY}}'," >> firebase.ts
+          echo "  authDomain: '${{vars.FIREBASE_PROJECT_ID}}.firebaseapp.com'," >> firebase.ts
+          echo "  projectId: '${{vars.FIREBASE_PROJECT_ID}}'," >> firebase.ts
+          echo "  storageBucket: '${{vars.FIREBASE_PROJECT_ID}}.appspot.com'," >> firebase.ts
+          echo "  messagingSenderId: '${{secrets.FIREBASE_MESSAGING_SENDER_ID}}'," >> firebase.ts
+          echo "  appId: '${{secrets.FIREBASE_APP_ID}}'," >> firebase.ts
+          echo "  measurementId: '${{secrets.FIREBASE_MEASUREMENT_ID}}'" >> firebase.ts
+          echo "};" >> firebase.ts
+          cd ../../..
+
+      - name: Build Quasar Application
+        run: npx quasar build
+
+      - name: Prepare Google Deployment Credentials
+        run: |
+          echo "${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}" | base64 --decode > "google-application-credentials.json"
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools@latest
+
+      - name: Install Functions Dependencies
+        run: |
+          cd functions
+          npm install
+          cd ..
+
+      - name: Deploy Firebase Artifacts
+        run: |
+          firebase deploy --only hosting,functions,firestore --non-interactive --debug --project ${{vars.FIREBASE_PROJECT_ID}}
+
+      - name: Remove Generated Files
+        run: |
+          rm google-application-credentials.json
+          rm src/scripts/config/firebase.ts
+          rm src/scripts/config/version.ts

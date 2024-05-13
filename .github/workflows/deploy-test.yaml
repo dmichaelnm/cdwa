@@ -23,6 +23,14 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Generate .firebaserc
+        run: |
+          echo "{" > .firebaserc
+          echo "  \"projects\": {" >> .firebaserc
+          echo "    \"default\": \"${{vars.FIREBASE_PROJECT_ID}}\" >> .firebaserc
+          echo "  }" >> .firebaserc
+          echo "}" >> .firebaserc
+
       - name: Generate Version Information
         run: |
           cd src/scripts/config

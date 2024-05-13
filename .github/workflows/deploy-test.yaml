@@ -26,8 +26,8 @@ jobs:
       - name: Generate .firebaserc
         run: |
           echo "{" > .firebaserc
-          echo "  \"projects\": {" >> .firebaserc
-          echo "    \"default\": \"${{vars.FIREBASE_PROJECT_ID}}\" >> .firebaserc
+          echo "  'projects': {" >> .firebaserc
+          echo "    'default': '${{vars.FIREBASE_PROJECT_ID}}'" >> .firebaserc
           echo "  }" >> .firebaserc
           echo "}" >> .firebaserc
 

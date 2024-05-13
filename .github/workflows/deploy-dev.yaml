@@ -29,7 +29,7 @@ jobs:
           echo "  major: '${{vars.VERSION_MAJOR}}'," >> version.ts
           echo "  minor: '${{vars.VERSION_MINOR}}'," >> version.ts
           echo "  patch: '${{vars.VERSION_PATCH}}'," >> version.ts
-          echo "  environment: '${{runner.environment}}'," >> version.ts
+          echo "  environment: 'development'," >> version.ts
           echo "  build: '$CURRENT_DATE'" >> version.ts
           echo "};" >> version.ts
           cd ../../..
@@ -51,7 +51,8 @@ jobs:
         run: npx quasar build
 
       - name: Prepare Google Deployment Credentials
-        run: echo "${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}" | base64 --decode > "google-application-credentials.json"
+        run: |
+          echo "${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}" | base64 --decode > "google-application-credentials.json"
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools@latest

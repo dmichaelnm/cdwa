@@ -1,13 +1,15 @@
-name: CDWA Deployment Development
-run-name: Deployment CDWA-Dev by @${{ github.actor }}
+name: CDWA Deployment Production
+run-name: Deployment CDWA-Prod by @${{ github.actor }}
 
 on:
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
 
 jobs:
-  deploy-dev:
+  deploy-test:
     runs-on: ubuntu-latest
-    environment: development
+    environment: production
     env:
       GOOGLE_APPLICATION_CREDENTIALS: google-application-credentials.json
 
@@ -29,7 +31,7 @@ jobs:
           echo "  major: '${{vars.VERSION_MAJOR}}'," >> version.ts
           echo "  minor: '${{vars.VERSION_MINOR}}'," >> version.ts
           echo "  patch: '${{vars.VERSION_PATCH}}'," >> version.ts
-          echo "  environment: 'development'," >> version.ts
+          echo "  environment: 'production'," >> version.ts
           echo "  build: '$CURRENT_DATE'" >> version.ts
           echo "};" >> version.ts
           cd ../../..

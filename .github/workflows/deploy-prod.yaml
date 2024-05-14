@@ -50,6 +50,13 @@ jobs:
           echo "};" >> firebase.ts
           cd ../../..
 
+      - name: Generate Global Configuration
+        run: |
+          cd src/scripts/config
+          echo "export const globalConfig = {" > global-config.ts
+          echo "  logLevel: ELogLevel.${{vars.LOG_LEVEL}}" >> global-config.ts
+          echo "};" >> global-config.ts
+
       - name: Build Quasar Application
         run: npx quasar build
 

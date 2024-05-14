@@ -1,22 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { globalConfig } from 'src/scripts/config/global-config';
-
-/**
- * Enumeration representing the different levels of log messages.
- */
-export enum ELogLevel {
-  // Trace message
-  trace = 0,
-  // Debug message
-  debug = 1,
-  // Information message
-  info = 2,
-  // Warning message
-  warn = 3,
-  // Error message
-  error = 4
-}
+import { globalConfig, ELogLevel } from 'src/scripts/config/global-config';
 
 /**
  * The Logging class provides methods for logging data at different log levels.
@@ -32,7 +16,7 @@ export class Logging {
    * @return {void}
    */
   static trace(...data: any[]): void {
-    Logging.log(ELogLevel.trace, data);
+    Logging.log(ELogLevel.trace, ...data);
   }
 
   /**
@@ -44,7 +28,7 @@ export class Logging {
    * @return {void}
    */
   static debug(...data: any[]): void {
-    Logging.log(ELogLevel.debug, data);
+    Logging.log(ELogLevel.debug, ...data);
   }
 
   /**
@@ -56,7 +40,7 @@ export class Logging {
    * @return {void}
    */
   static info(...data: any[]): void {
-    Logging.log(ELogLevel.info, data);
+    Logging.log(ELogLevel.info, ...data);
   }
 
   /**
@@ -68,7 +52,7 @@ export class Logging {
    * @return {void}
    */
   static warn(...data: any[]): void {
-    Logging.log(ELogLevel.warn, data);
+    Logging.log(ELogLevel.warn, ...data);
   }
 
   /**
@@ -80,7 +64,7 @@ export class Logging {
    * @return {void}
    */
   static error(...data: any[]): void {
-    Logging.log(ELogLevel.error, data);
+    Logging.log(ELogLevel.error, ...data);
   }
 
   /**

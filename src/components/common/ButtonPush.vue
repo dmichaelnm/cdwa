@@ -31,10 +31,6 @@
 </style>
 
 <script setup lang="ts">
-import { useComposables } from 'src/scripts/util/composables';
-
-// Composable
-const cmp = useComposables();
 
 // Defines the properties of this component.
 defineProps<{

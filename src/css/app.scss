@@ -1,0 +1,31 @@
+@import "quasar.variables";
+
+// ============================================================================
+// Body
+// ============================================================================
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 10pt;
+  color: $light-text;
+  background-color: $light-background-1;
+}
+
+body.body--dark {
+  color: $dark-text;
+  background-color: $dark-background-1;
+}
+
+// ============================================================================
+// Frame
+// ============================================================================
+
+.frame {
+  background-color: $light-background-0;
+  box-shadow: 5px 5px 10px 0 $light-shadow;
+}
+
+.body--dark .frame {
+  background-color: $dark-background-0;
+  box-shadow: 5px 5px 10px 0 $dark-shadow;
+}

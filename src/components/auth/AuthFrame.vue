@@ -77,7 +77,7 @@
 
 .auth-frame {
   width: 550px;
-  padding: 16px;
+  padding: 32px;
 }
 
 .auth-title {

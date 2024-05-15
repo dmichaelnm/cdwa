@@ -20,6 +20,22 @@ export default {
 
   // Authentication Messages
   auth: {
+    // Authentication Labels
+    label: {
+      // Email Address
+      email: 'Email Address',
+      // Password
+      password: 'Password'
+    },
+    // Authentication Buttons
+    button: {
+      // Login Button
+      login: 'Log In',
+      // Register Account Button
+      register: 'Register Account',
+      // Reset Password Button
+      reset: 'Reset Password'
+    },
     // Login Page
     login: {
       // Login Page Message

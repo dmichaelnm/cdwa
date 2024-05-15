@@ -13,9 +13,9 @@ export default {
   // Language Option Labels
   language: {
     // English
-    enUS: 'English',
+    enUS: 'Englisch',
     // German
-    deDE: 'German'
+    deDE: 'Deutsch'
   },
 
   // Authentication Messages
@@ -23,9 +23,9 @@ export default {
     // Login Page
     login: {
       // Login Page Message
-      message: 'To log in you need a registered account. You can easily create this yourself by clicking on the ' +
-        '“Register Account” link. Please note that after successful registration, the account still needs to be ' +
-        'activated by an administrator.'
+      message: 'Für die Anmeldung benötigen Sie ein registriertes Konto. Dieses können Sie sich einfach selbst ' +
+        'erstellen, indem Sie auf den Link "Konto registrieren" klicken. Beachten Sie, dass nach erfolgreicher ' +
+        'Registrierung das Konto noch von einem Administrator freigeschaltet werden muss.'
     }
   }
 };

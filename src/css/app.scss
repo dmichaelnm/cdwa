@@ -29,3 +29,26 @@ body.body--dark {
   background-color: $dark-background-0;
   box-shadow: 5px 5px 10px 0 $dark-shadow;
 }
+
+// ============================================================================
+// QMenu
+// ============================================================================
+
+.q-menu {
+  font-size: 9pt;
+  background-color: $light-background-0;
+  box-shadow: 5px 5px 10px 0 $light-shadow;
+}
+
+.body--dark .q-menu {
+  background-color: $dark-background-0;
+  box-shadow: 5px 5px 10px 0 $dark-shadow;
+}
+
+// ============================================================================
+// QField
+// ============================================================================
+
+.q-field {
+  font-size: 9pt;
+}

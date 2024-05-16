@@ -60,15 +60,11 @@ export function processFirebaseError(
   t: (key: string) => string,
   error: unknown,
   emailError: Ref<string>,
-  passwordError: Ref<string>
+  passwordError?: Ref<string>
 ): boolean {
   // Cast to firebase error
   const firebaseError = error as TFirebaseError;
-  // Password is too weak
-  if (firebaseError.code === EFirebaseErrorCode.authWeekPassword) {
-    passwordError.value = t('auth.error.passwordTooWeak');
-    return true;
-  }
+
   // Email is invalid
   if (firebaseError.code === EFirebaseErrorCode.authInvalidEmail) {
     emailError.value = t('auth.error.invalidEmail');
@@ -79,6 +75,16 @@ export function processFirebaseError(
     emailError.value = t('auth.error.emailAlreadyInUse');
     return true;
   }
+
+  // Check password errors if necessary
+  if (passwordError) {
+    // Password is too weak
+    if (firebaseError.code === EFirebaseErrorCode.authWeekPassword) {
+      passwordError.value = t('auth.error.passwordTooWeak');
+      return true;
+    }
+  }
+
   // Unknown error
   return false;
 }

@@ -101,6 +101,20 @@ export default {
         message: 'Congratulations. Your account has been successfully registered. Please inform an administrator ' +
           'so that they can activate your account. Unfortunately, it is not possible to login beforehand.'
       }
+    },
+    // Reset Password Page
+    reset: {
+      // Reset password general message
+      message: 'If you have forgotten your password or would like to change it for other reasons, you can have an ' +
+        'email sent to you here that contains a link that you can use to assign a new password. To do this, simply ' +
+        'enter your account email address in the field below.',
+      // Reset Password Page Dialog Messages
+      dialog: {
+        // Success dialog title
+        title: 'Email successfully sent',
+        // Success dialog message
+        message: 'The password reset email was sent successfully. If necessary, also check your spam folder.'
+      }
     }
   }
 };

@@ -204,8 +204,7 @@ async function registerAccount(): Promise<void> {
         () => {
           // Redirect to login page
           cmp.router.push({ path: '/auth/login' });
-        }
-      );
+        });
     },
     (error) => {
       // Process error

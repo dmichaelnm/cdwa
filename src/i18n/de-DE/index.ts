@@ -101,6 +101,21 @@ export default {
         message: 'Herzlichen Glückwunsch. Ihr Konto wurde erfolgreich registriert. Bitte informieren Sie einen ' +
           'Administrator, so dass dieser Ihr Konto freischalten kann. Vorher ist eine Anmeldung leider nicht möglich.'
       }
+    },
+    // Reset Password Page
+    reset: {
+      // Reset password general message
+      message: 'Wenn Sie Ihr Kennwort vergessen haben oder es aus anderen Gründen ändern möchten, können Sie sich hier ' +
+        'eine Email zusenden lassen, die einen Link enthält, über den Sie ein neues Kennwort vergeben können. Tragen ' +
+        'Sie dazu einfach die Email-Adresse Ihres Kontos in das untenstehende Feld.',
+      // Reset Password Page Dialog Messages
+      dialog: {
+        // Success dialog title
+        title: 'Email erfolgreich versendet',
+        // Success dialog message
+        message: 'Die Email für das Zurücksetzen den Kennworts wurde erfolgreich versendet. Prüfen Sie ' +
+          'gegebenenfalls auch Ihren Spam-Ordner.'
+      }
     }
   }
 };

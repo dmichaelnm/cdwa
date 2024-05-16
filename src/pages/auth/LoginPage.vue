@@ -51,7 +51,8 @@
             <!-- Password Reset Button -->
             <button-push :label="$t('auth.button.reset')"
                          size="sm"
-                         flat />
+                         flat
+                         to="/auth/reset" />
           </div>
         </div>
 

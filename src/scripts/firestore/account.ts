@@ -72,6 +72,18 @@ export class Account extends FirestoreDocument<IAccountData> implements tp.IName
   }
 
   /**
+   * Reset the password for the given email.
+   *
+   * @param {string} email - The email address of the user.
+   *
+   * @returns {Promise<void>} - A Promise that resolves if the password reset email is successfully sent.
+   */
+  static async resetPassword(email: string): Promise<void> {
+    // Request password reset email
+    await au.sendPasswordResetEmail(firebaseAuth, email);
+  }
+
+  /**
    * Create an account with the given details.
    *
    * @param {string} firstName - The first name of the user.

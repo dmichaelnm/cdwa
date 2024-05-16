@@ -1,7 +1,6 @@
 import * as tp from '../util/types';
 import * as fs from 'firebase/firestore';
 import * as au from 'firebase/auth';
-import { EDocumentType, INamed } from '../util/types';
 import { firebaseAuth } from 'src/scripts/util/firebase';
 import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
 
@@ -23,7 +22,7 @@ interface IAccountData {
     // The preferred UI mode
     uiMode: tp.EUIMode;
     // The preferred UI Language
-    language: tp.EUILanguage;
+    uiLanguage: tp.EUILanguage;
   };
   // State of the account
   state: {
@@ -42,7 +41,7 @@ interface IAccountData {
  * @extends FirestoreDocument<IAccountData>
  * @implements INamed
  */
-export class Account extends FirestoreDocument<IAccountData> implements INamed {
+export class Account extends FirestoreDocument<IAccountData> implements tp.INamed {
 
   /**
    * Registers a callback function to be called whenever the account state changes.
@@ -73,20 +72,42 @@ export class Account extends FirestoreDocument<IAccountData> implements INamed {
   }
 
   /**
-   * Creates a new account for the given user ID.
+   * Create an account with the given details.
    *
-   * @param {string} userId - The ID of the user.
-   * @param {IAccountData} data - The data for the account.
+   * @param {string} firstName - The first name of the user.
+   * @param {string} lastName - The last name of the user.
+   * @param {string} email - The email of the user.
+   * @param {string} password - The password of the user.
+   * @param {tp.EUIMode} uiMode - The UI mode preference of the user.
+   * @param {tp.EUILanguage} uiLanguage - The UI language preference of the user.
    *
-   * @returns {Promise<Account>} - A promise that resolves with the newly created Account object.
+   * @return {Promise<Account>} The created account object.
    */
-  static async createAccount(userId: string, data: IAccountData): Promise<Account> {
+  static async createAccount(
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    uiMode: tp.EUIMode,
+    uiLanguage: tp.EUILanguage
+  ): Promise<Account> {
+    // Register the account on Firebase
+    const credentials = await au.createUserWithEmailAndPassword(firebaseAuth, email, password);
+    // Update the display name
+    await au.updateProfile(credentials.user, { displayName: firstName + ' ' + lastName });
+    // Create account data
+    const data: IAccountData = {
+      profile: { firstName: firstName, lastName: lastName, email: email },
+      preferences: { uiMode: uiMode, uiLanguage: uiLanguage },
+      state: { locked: true, activeProject: null, lastLogin: null }
+    };
+    // Create and return the firestore document
     return FirestoreDocument.create<IAccountData, Account>(
-      EDocumentType.account,
+      tp.EDocumentType.account,
       data,
       (config) => new Account(config),
       undefined,
-      userId
+      credentials.user.uid
     );
   }
 
@@ -99,7 +120,7 @@ export class Account extends FirestoreDocument<IAccountData> implements INamed {
    */
   static async loadAccount(id: string): Promise<Account> {
     return FirestoreDocument.load<IAccountData, Account>(
-      EDocumentType.account,
+      tp.EDocumentType.account,
       id,
       (config) => new Account(config)
     );

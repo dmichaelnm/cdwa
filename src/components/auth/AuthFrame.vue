@@ -112,7 +112,7 @@
 import { computed, onBeforeMount, ref } from 'vue';
 import { version } from 'src/scripts/config/version';
 import { useComposables } from 'src/scripts/util/composables';
-import { EUILanguage, EUIMode } from 'src/scripts/util/types';
+import { EGlobalEvent, EUILanguage, EUIMode } from 'src/scripts/util/types';
 import { getLanguageOptions } from 'src/scripts/config/options';
 import ButtonIcon from 'components/common/ButtonIcon.vue';
 import FieldSelect from 'components/common/FieldSelect.vue';
@@ -181,6 +181,8 @@ function switchUILanguage(): void {
     languageCode.value,
     { expires: 365 }
   );
+  // Send global event
+  cmp.bus.emit(EGlobalEvent.languageChanged, languageCode.value);
 }
 
 /**

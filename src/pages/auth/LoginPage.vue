@@ -43,7 +43,8 @@
             <!-- Register Button -->
             <button-push :label="$t('auth.button.register')"
                          size="sm"
-                         flat />
+                         flat
+                         to="/auth/register" />
           </div>
           <!-- Password Reset Button Column -->
           <div class="col text-center">

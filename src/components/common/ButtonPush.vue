@@ -4,6 +4,7 @@
          :flat="flat"
          :size="size"
          :to="to"
+         :type="type"
          no-caps
          dense
          @click="emit('click')">
@@ -42,6 +43,8 @@ defineProps<{
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   // Path route to when clicking the button
   to?: string;
+  // The type of the button
+  type?: 'button' | 'submit';
 }>();
 
 // Define the events emitted by this component.

@@ -8,7 +8,7 @@ import { Ref } from 'vue';
 /**
  * A type representing a Firebase error.
  */
-type TFirebaseError = {
+export type TFirebaseError = {
   // The code of the error
   code: string;
   // The message of the error
@@ -18,7 +18,7 @@ type TFirebaseError = {
 /**
  * Enum representing common error codes for Firebase operations.
  */
-enum EFirebaseErrorCode {
+export enum EFirebaseErrorCode {
   // The account is locked
   authAccountLocked = 'auth/account-locked',
   // Password is too weak
@@ -26,7 +26,11 @@ enum EFirebaseErrorCode {
   // Email is invalid
   authInvalidEmail = 'auth/invalid-email',
   // Email already in use
-  authEmailAlreadyInUse = 'auth/email-already-in-use'
+  authEmailAlreadyInUse = 'auth/email-already-in-use',
+  // Invalid credentials
+  authInvalidCredentials = 'auth/invalid-credential',
+  // Too many failed requests
+  authTooManyRequests = 'auth/too-many-requests'
 }
 
 /**
@@ -75,12 +79,27 @@ export function processFirebaseError(
     emailError.value = t('auth.error.emailAlreadyInUse');
     return true;
   }
+  // Account is locked
+  if (firebaseError.code === EFirebaseErrorCode.authAccountLocked) {
+    emailError.value = t('auth.error.accountLocked');
+    return true;
+  }
 
   // Check password errors if necessary
   if (passwordError) {
     // Password is too weak
     if (firebaseError.code === EFirebaseErrorCode.authWeekPassword) {
       passwordError.value = t('auth.error.passwordTooWeak');
+      return true;
+    }
+    // Invalid credentials
+    if (firebaseError.code === EFirebaseErrorCode.authInvalidCredentials) {
+      passwordError.value = t('auth.error.invalidCredentials');
+      return true;
+    }
+    // Too many failed requests
+    if (firebaseError.code === EFirebaseErrorCode.authTooManyRequests) {
+      passwordError.value = t('auth.error.tooManyRequests');
       return true;
     }
   }

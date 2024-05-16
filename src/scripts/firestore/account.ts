@@ -1,7 +1,7 @@
 import * as tp from '../util/types';
 import * as fs from 'firebase/firestore';
 import * as au from 'firebase/auth';
-import { firebaseAuth } from 'src/scripts/util/firebase';
+import { EFirebaseErrorCode, firebaseAuth } from 'src/scripts/util/firebase';
 import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
 
 /**
@@ -69,6 +69,46 @@ export class Account extends FirestoreDocument<IAccountData> implements tp.IName
         callback(!account.data.state.locked ? account : null);
       }
     });
+  }
+
+  /**
+   * This method is used to log in a user with the provided email and password.
+   *
+   * @param {string} email - The email of the user.
+   * @param {string} password - The password of the user.
+   *
+   * @returns {Promise<Account>} - A promise that resolves to the user's account information.
+   *
+   * @throws {Object} - A Firebase error object if the account is locked.
+   */
+  static async login(email: string, password: string): Promise<Account> {
+    // Sign in to Firebase
+    const credentials = await au.signInWithEmailAndPassword(firebaseAuth, email, password);
+    // Load the account document
+    const account = await Account.loadAccount(credentials.user.uid);
+    // Check the lock state of the account
+    if (account.data.state.locked) {
+      // Sign out account
+      await au.signOut(firebaseAuth);
+      // Account is lock, throw a Firebase error
+      throw {
+        code: EFirebaseErrorCode.authAccountLocked,
+        message: 'The account is locked.'
+      };
+    } else {
+      // Return the account
+      return account;
+    }
+  }
+
+  /**
+   * Logs out the current user.
+   *
+   * @returns {Promise<void>} A promise that resolves when the user is successfully logged out.
+   */
+  static async logout(): Promise<void> {
+    // Signs out the current Firebase user
+    await au.signOut(firebaseAuth);
   }
 
   /**

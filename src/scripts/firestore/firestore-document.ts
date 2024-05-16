@@ -2,6 +2,7 @@ import * as tp from '../util/types';
 import * as fs from 'firebase/firestore';
 import { Assert } from 'src/scripts/util/assert';
 import { firestore, getAuthorizedUserName } from 'src/scripts/util/firebase';
+import { Logging } from 'src/scripts/util/logging';
 
 /**
  * The type of configuration for a Firestore document.
@@ -151,6 +152,8 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
     if (processor) {
       await processor(document);
     }
+    // Logging
+    Logging.debug('FirestoreDocument#create', document);
     // Return the new document instance
     return document;
   }
@@ -171,6 +174,8 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
     document: R,
     processor?: (data: D) => D
   ): Promise<void> {
+    // Logging
+    Logging.debug('FirestoreDocument#update', document);
     // Apply metadata for altering the document
     const metaData = document.data as IDocumentMetaData;
     if (metaData.meta) {
@@ -201,6 +206,8 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
   static async delete<D extends object, R extends FirestoreDocument<D>>(
     document: R
   ): Promise<void> {
+    // Logging
+    Logging.debug('FirestoreDocument#delete', document);
     // Delete the document
     await fs.deleteDoc(fs.doc(firestore, document.path + '/' + document.id));
   }
@@ -238,6 +245,8 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
       if (processor) {
         processor(document);
       }
+      // Logging
+      Logging.debug('FirestoreDocument#load', document);
       // Return the document
       return document;
     }

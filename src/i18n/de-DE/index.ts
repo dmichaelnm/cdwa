@@ -78,7 +78,13 @@ export default {
       // Invalid Email Address
       invalidEmail: 'Die Email-Adresse ist ungültig.',
       // Email already in use
-      emailAlreadyInUse: 'Die Email-Adresse wird bereits verwendet.'
+      emailAlreadyInUse: 'Die Email-Adresse wird bereits verwendet.',
+      // Account is locked
+      accountLocked: 'Das Konto ist gesperrt.',
+      // Invalid credentials
+      invalidCredentials: 'Die Anmeldedaten sind ungültig.',
+      // Too many failed requests
+      tooManyRequests: 'Zu viele fehlgeschlagene Anmeldeversuche.'
     },
     // Login Page
     login: {

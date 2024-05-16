@@ -78,7 +78,13 @@ export default {
       // Invalid Email Address
       invalidEmail: 'The email address is invalid.',
       // Email already in use
-      emailAlreadyInUse: 'The email address is already in use.'
+      emailAlreadyInUse: 'The email address is already in use.',
+      // Account is locked
+      accountLocked: 'The account is locked.',
+      // Invalid credentials
+      invalidCredentials: 'The credentials are invalid.',
+      // Too many failed requests
+      tooManyRequests: 'Too many failed login attempts.'
     },
     // Login Page
     login: {

@@ -9,6 +9,9 @@ import { onBeforeMount } from 'vue';
 import { Logging } from 'src/scripts/util/logging';
 import { Account } from 'src/scripts/firestore/account';
 import { useComposables } from 'src/scripts/util/composables';
+import * as fs from 'firebase/firestore';
+import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
+import { EUIMode } from 'src/scripts/util/types';
 
 // Get main composable instances
 const cmp = useComposables();
@@ -23,11 +26,20 @@ onBeforeMount(() => {
   cmp.quasar.loading.show({ delay: 0 });
 
   // Register event listener called when the account has changed
-  Account.onAccountStateChange(account => {
+  Account.onAccountStateChange(async (account) => {
     Logging.debug('MainLayout#onAccountStateChange', account);
-    // If the account is null, redirect to login page
+
     if (account === null) {
-      cmp.router.push({ path: 'auth/login' });
+      // If the account is null, redirect to login page
+      await cmp.router.push({ path: 'auth/login' });
+    } else {
+      // Update last login timestamp
+      account.data.state.lastLogin = fs.Timestamp.now();
+      await FirestoreDocument.update(account);
+      // Set UI mode
+      cmp.quasar.dark.set(account.data.preferences.uiMode === EUIMode.dark);
+      // Set UI Language
+      cmp.i18n.locale.value = account.data.preferences.uiLanguage;
     }
 
     // Unlock the screen

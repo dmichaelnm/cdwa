@@ -19,6 +19,7 @@ export function useComposables() {
     quasar: useQuasar(),
     route: useRoute(),
     router: useRouter(),
-    sessionStore: useSessionStore()
+    sessionStore: useSessionStore(),
+    bus: inject('bus') as EventBus
   };
 }

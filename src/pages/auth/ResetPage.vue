@@ -81,7 +81,7 @@ const emailError = ref('');
 onBeforeMount(() => {
   Logging.debug('ResetPage#onBeforeMount');
   // Initialize email address with the content from the cookie
-  email.value = cmp.quasar.cookies.get('email');
+  email.value = cmp.quasar.cookies.get(tp.ECookie.email);
 
   // Register event of changing the UI language
   cmp.bus.on(tp.EGlobalEvent.languageChanged, () => {
@@ -123,7 +123,7 @@ async function resetPassword(): Promise<void> {
       // Request password reset email
       await Account.resetPassword(email.value);
       // Set email cookie
-      cmp.quasar.cookies.set('email', email.value, { expires: 365 });
+      cmp.quasar.cookies.set(tp.ECookie.email, email.value, { expires: 365 });
       // Show success dialog
       showSuccessDialog(
         cmp.i18n.t('auth.reset.dialog.title'),

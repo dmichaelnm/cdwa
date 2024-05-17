@@ -138,7 +138,7 @@ const repeatPasswordError = ref('');
 onBeforeMount(() => {
   Logging.debug('RegisterPage#onBeforeMount');
   // Initialize email address with the content from the cookie
-  email.value = cmp.quasar.cookies.get('email');
+  email.value = cmp.quasar.cookies.get(tp.ECookie.email);
 
   // Register event of changing the UI language
   cmp.bus.on(tp.EGlobalEvent.languageChanged, () => {
@@ -195,7 +195,7 @@ async function registerAccount(): Promise<void> {
         cmp.i18n.locale.value as tp.EUILanguage
       );
       // Set email cookie
-      cmp.quasar.cookies.set('email', email.value, { expires: 365 });
+      cmp.quasar.cookies.set(tp.ECookie.email, email.value, { expires: 365 });
       // Show success dialog
       showSuccessDialog(
         cmp.i18n.t('auth.register.dialog.title'),

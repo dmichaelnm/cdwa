@@ -112,7 +112,7 @@
 import { computed, onBeforeMount, ref } from 'vue';
 import { version } from 'src/scripts/config/version';
 import { useComposables } from 'src/scripts/util/composables';
-import { EGlobalEvent, EUILanguage, EUIMode } from 'src/scripts/util/types';
+import * as tp from 'src/scripts/util/types';
 import { getLanguageOptions } from 'src/scripts/config/options';
 import ButtonIcon from 'components/common/ButtonIcon.vue';
 import FieldSelect from 'components/common/FieldSelect.vue';
@@ -128,7 +128,7 @@ defineProps<{
 }>();
 
 // Selected Language Code
-const languageCode = ref(EUILanguage.enUS);
+const languageCode = ref(tp.EUILanguage.enUS);
 
 // Computed UI mode icon
 const uiModeIcon = computed(() => {
@@ -141,8 +141,8 @@ const uiModeIcon = computed(() => {
 onBeforeMount(() => {
   Logging.debug('AuthFrame#onBeforeMount');
   // Set UI mode
-  const mode = cmp.quasar.cookies.get('ui-mode');
-  cmp.quasar.dark.set(mode === EUIMode.dark);
+  const mode = cmp.quasar.cookies.get(tp.ECookie.uiMode);
+  cmp.quasar.dark.set(mode === tp.EUIMode.dark);
   // Set UI Language
   languageCode.value = getDefaultLanguageCode();
   cmp.i18n.locale.value = languageCode.value;
@@ -161,8 +161,8 @@ function switchUIMode(): void {
   cmp.quasar.dark.set(!cmp.quasar.dark.isActive);
   // Set the UI mode cookie
   cmp.quasar.cookies.set(
-    'ui-mode',
-    cmp.quasar.dark.isActive ? EUIMode.dark : EUIMode.light,
+    tp.ECookie.uiMode,
+    cmp.quasar.dark.isActive ? tp.EUIMode.dark : tp.EUIMode.light,
     { expires: 365 }
   );
 }
@@ -177,12 +177,12 @@ function switchUILanguage(): void {
   cmp.i18n.locale.value = languageCode.value;
   // Set the UI language cookie
   cmp.quasar.cookies.set(
-    'language',
+    tp.ECookie.uiLanguage,
     languageCode.value,
     { expires: 365 }
   );
   // Send global event
-  cmp.bus.emit(EGlobalEvent.languageChanged, languageCode.value);
+  cmp.bus.emit(tp.EGlobalEvent.languageChanged, languageCode.value);
 }
 
 /**
@@ -190,23 +190,23 @@ function switchUILanguage(): void {
  *
  * @return {EUILanguage} The default language code.
  */
-function getDefaultLanguageCode(): EUILanguage {
+function getDefaultLanguageCode(): tp.EUILanguage {
   // Valid language options
   const options = getLanguageOptions();
   // Language from cookie
-  let language = cmp.quasar.cookies.get('language');
+  let language = cmp.quasar.cookies.get(tp.ECookie.uiLanguage);
   if (options.some(opt => opt.value === language)) {
     // Found valid option
-    return language as EUILanguage;
+    return language as tp.EUILanguage;
   }
   // Language from browser
   language = navigator.language;
   if (options.some(opt => opt.value === language)) {
     // Found valid option
-    return language as EUILanguage;
+    return language as tp.EUILanguage;
   }
   // Return english as default
-  return EUILanguage.enUS;
+  return tp.EUILanguage.enUS;
 }
 
 </script>

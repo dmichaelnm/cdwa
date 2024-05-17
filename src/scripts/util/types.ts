@@ -48,6 +48,18 @@ export enum EGlobalEvent {
 }
 
 /**
+ * Represents an enum of cookie names.
+ */
+export enum ECookie {
+  // The cookie name for the UI mode
+  uiMode = 'ui-mode',
+  // The cookie name for the UI Language
+  uiLanguage = 'language',
+  // The cookie name for the email address of the last logged in account
+  email = 'email'
+}
+
+/**
  * Enumeration containing the possible UI modes.
  */
 export enum EUIMode {

@@ -106,7 +106,7 @@ const passwordError = ref('');
 onBeforeMount(() => {
   Logging.debug('LoginPage#onBeforeMount');
   // Initialize email address with the content from the cookie
-  email.value = cmp.quasar.cookies.get('email');
+  email.value = cmp.quasar.cookies.get(tp.ECookie.email);
 
   // Register event of changing the UI language
   cmp.bus.on(tp.EGlobalEvent.languageChanged, () => {
@@ -149,7 +149,7 @@ async function login(): Promise<void> {
       // Login to firebase
       await Account.login(email.value, password.value);
       // Set email cookie
-      cmp.quasar.cookies.set('email', email.value, { expires: 365 });
+      cmp.quasar.cookies.set(tp.ECookie.email, email.value, { expires: 365 });
       // Route to main page
       await cmp.router.push({ path: '/' });
     },

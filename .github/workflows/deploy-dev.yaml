@@ -51,8 +51,9 @@ jobs:
       - name: Generate Global Configuration
         run: |
           cd src/scripts/config
-          echo "export const globalConfig = {" > global-config.ts
-          echo "  logLevel: ELogLevel.${{vars.LOG_LEVEL}}" >> global-config.ts
+          echo "import * as tp from 'src/scripts/util/types';" > global-config.ts
+          echo "export const globalConfig: tp.TGlobalConfig = {" >> global-config.ts
+          echo "  logLevel: tp.ELogLevel.${{vars.LOG_LEVEL}}" >> global-config.ts
           echo "};" >> global-config.ts
 
       - name: Build Quasar Application

@@ -1,6 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { globalConfig, ELogLevel } from 'src/scripts/config/global-config';
+import { globalConfig } from 'src/scripts/config/global-config';
+import { ELogLevel } from 'src/scripts/util/types';
 
 /**
  * The Logging class provides methods for logging data at different log levels.

@@ -52,3 +52,15 @@ body.body--dark {
 .q-field {
   font-size: 9pt;
 }
+
+// ============================================================================
+// QSeparator
+// ============================================================================
+
+.q-separator {
+  background-color: $light-frame;
+}
+
+.body--dark .q-separator {
+  background-color: $dark-frame;
+}

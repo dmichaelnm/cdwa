@@ -18,6 +18,18 @@ export default {
     deDE: 'Deutsch'
   },
 
+  // General Menu Labels
+  menu: {
+    // Dark Mode
+    darkMode: 'Dunkler Modus',
+    // Language
+    language: 'Sprache',
+    // Light Mode
+    lightMode: 'Heller Modus',
+    // Logout
+    logout: 'Abmelden'
+  },
+
   // General Button Labels
   button: {
     // Back

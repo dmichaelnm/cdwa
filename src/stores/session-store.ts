@@ -1,10 +1,13 @@
 import { defineStore } from 'pinia';
 import { Account } from 'src/scripts/firestore/account';
+import { Project } from 'src/scripts/firestore/project';
 
 export const useSessionStore = defineStore('session', {
   state: () => ({
     // The authorized account
-    account: null as Account | null
+    account: null as Account | null,
+    // Array of accessible projects
+    projects: [] as Project[],
   }),
   getters: {
     /**

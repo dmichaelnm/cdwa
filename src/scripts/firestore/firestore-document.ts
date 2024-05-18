@@ -9,7 +9,7 @@ import { Logging } from 'src/scripts/util/logging';
  *
  * @template D - The type of the data in the Firestore document.
  */
-type TFirestoreDocumentConfig<D extends object> = {
+export type TFirestoreDocumentConfig<D extends object> = {
   // The identifier of the firestore document
   id?: string;
   // The path to the firestore document without the identifier
@@ -42,6 +42,27 @@ export interface IDocumentMetaData {
       at: fs.Timestamp;
     }
   };
+}
+
+/**
+ * Represents the common data structure for a document.
+ */
+export interface IDocumentCommonData {
+  // Common data structure
+  common: {
+    // Name of the document
+    name: string;
+    // Optional description of the document
+    description: string | null;
+  }
+}
+
+/**
+ * Describes the data structure for document attribute data.
+ */
+export interface IDocumentAttributeData {
+  // Custom attributes of the document
+  attributes: tp.TDocumentAttribute[];
 }
 
 /**
@@ -103,6 +124,15 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
       this.data = config.document?.data() as D;
       this.type = FirestoreDocument.extractDocumentType(this.path);
     }
+  }
+
+  /**
+   * Retrieves the full path of the document.
+   *
+   * @return {string} The full path of the document.
+   */
+  getFullPath(): string {
+    return `${this.path}/${this.id}/`;
   }
 
   /**
@@ -252,6 +282,53 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
     }
     // Throw an exception
     throw new Error(`No document found in firestore in path "${path}/${id}" found.`);
+  }
+
+  /**
+   * Queries Firestore for documents based on the given path and constraints.
+   *
+   * @param {string} path - The path to the Firestore collection.
+   * @param {function} creator - A function that creates a FirestoreDocument object.
+   * @param {function} [processor] - An optional function to process the FirestoreDocument objects.
+   * @param {...fs.QueryConstraint} constraints - Optional constraints to filter the query.
+   *
+   * @returns {Promise<Map<string, R>>} - A Promise that resolves to a Map containing the queried FirestoreDocument objects.
+   *
+   * @template D The type of the document data.
+   * @template R The type of the document instance.
+   */
+  static async query<D extends object, R extends FirestoreDocument<D>>(
+    path: string,
+    creator: (config: TFirestoreDocumentConfig<D>) => R,
+    processor?: (document: R) => Promise<void> | void,
+    ...constraints: fs.QueryConstraint[]
+  ): Promise<Map<string, R>> {
+    // Create the Firestore query object
+    const query = fs.query(
+      fs.collection(firestore, path),
+      ...constraints
+    );
+    // Retrieve query snapshot
+    const snapshot = await fs.getDocs(query);
+    // Create result map
+    const result = new Map<string, R>();
+    // Iterate over all documents of the query
+    for (let i = 0; i < snapshot.size; i++) {
+      // Get document
+      const firestoreDocument = snapshot.docs[i];
+      // Create document object
+      const document = creator({ document: firestoreDocument });
+      // Post process document
+      if (processor) {
+        processor(document);
+      }
+      // Add document to map
+      result.set(document.id, document);
+    }
+    // Log result
+    Logging.debug('FirestoreDocument#query', `${result.size} documents loaded from path "${path}"`);
+    // Return the result map
+    return result;
   }
 
   /**

@@ -30,12 +30,24 @@ export default {
     logout: 'Abmelden'
   },
 
+  // General Labels
+  label: {
+    // Description
+    description: 'Beschreibung (optional)'
+  },
+
   // General Button Labels
   button: {
     // Back
     back: 'Zurück',
+    // Cancel
+    cancel: 'Abbrechen',
     // Close
-    close: 'Schließen'
+    close: 'Schließen',
+    // Okay
+    okay: 'Okay',
+    // Save
+    save: 'Speichern'
   },
 
   // General Error Messages
@@ -54,6 +66,19 @@ export default {
       message: 'Es ist ein unerwarteter Fehler aufgetreten. Dies hätte nicht passieren dürfen und beruht vermutlich ' +
         'auf einen Fehler in der Anwendung. Sie können Ihren Administrator über diesen Fehler informieren. Im ' +
         'Folgenden finden Sie mehr Details zu diesem Fehler.'
+    },
+    // Account Selector Dialog
+    accountSelect: {
+      // Title
+      title: 'Konto auswählen',
+      // Message
+      message: 'Geben Sie hier die Email-Adresse des Kontos an, welches Sie auswählen möchten. Beachten Sie, dass das ' +
+        'Konto dazu bereits registriert sein muss.',
+      // Error Messages
+      error: {
+        // Unknown email address
+        emailUnknown: 'Die Email-Adresse ist unbekannt.'
+      }
     }
   },
 

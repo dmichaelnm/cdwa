@@ -4,7 +4,19 @@ const routes: RouteRecordRaw[] = [
   // Main
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue')
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      // Project Overview Page
+      {
+        path: 'project',
+        component: () => import('pages/app/overview/ProjectOverviewPage.vue')
+      },
+      // Project Editor Page
+      {
+        path: 'project/editor',
+        component: () => import('pages/app/editor/ProjectEditorPage.vue')
+      }
+    ]
   },
 
   // Authentication

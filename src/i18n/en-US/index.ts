@@ -30,12 +30,24 @@ export default {
     logout: 'Log Out'
   },
 
+  // General Labels
+  label: {
+    // Description
+    description: 'Description (optional)'
+  },
+
   // General Button Labels
   button: {
     // Back
     back: 'Back',
+    // Cancel
+    cancel: 'Cancel',
     // Close
-    close: 'Close'
+    close: 'Close',
+    // Okay
+    okay: 'Okay',
+    // Save
+    save: 'Save'
   },
 
   // General Error Messages
@@ -54,6 +66,19 @@ export default {
       message: 'An unexpected error has occurred. This should not have happened and is probably due to an error in ' +
         'the application. You can inform your administrator about this error. Below you will find more details about ' +
         'this error.'
+    },
+    // Account Selector Dialog
+    accountSelect: {
+      // Title
+      title: 'Choose Account',
+      // Message
+      message: 'Enter the email address of the account you would like to select here. Please note that the account ' +
+        'must already be registered to do this.',
+      // Error Messages
+      error: {
+        // Unknown email address
+        emailUnknown: 'The email address is unknown.'
+      }
     }
   },
 

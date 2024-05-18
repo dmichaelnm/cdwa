@@ -64,3 +64,25 @@ body.body--dark {
 .body--dark .q-separator {
   background-color: $dark-frame;
 }
+// ============================================================================
+// Dialog
+// ============================================================================
+
+.dialog-frame {
+  width: 700px;
+  max-width: 700px;
+  padding: 16px;
+  background-color: $light-background-0;
+  box-shadow: 5px 5px 10px 0 $light-shadow-1;
+}
+
+.body--dark .dialog-frame {
+  background-color: $dark-background-0;
+  box-shadow: 5px 5px 10px 0 $dark-shadow;
+}
+
+.dialog-title {
+  font-size: 12pt;
+  font-weight: bold;
+  font-variant: petite-caps;
+}

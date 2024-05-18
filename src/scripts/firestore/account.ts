@@ -3,6 +3,7 @@ import * as fs from 'firebase/firestore';
 import * as au from 'firebase/auth';
 import { EFirebaseErrorCode, firebaseAuth } from 'src/scripts/util/firebase';
 import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
+import { toArray } from 'src/scripts/util/utilities';
 
 /**
  * This interface represents the account data.
@@ -42,6 +43,15 @@ interface IAccountData {
  * @implements INamed
  */
 export class Account extends FirestoreDocument<IAccountData> implements tp.INamed {
+
+  /**
+   * Returns the full name of the account owner.
+   *
+   * @returns {string} The full name of the profile.
+   */
+  getName(): string {
+    return this.data.profile.firstName + ' ' + this.data.profile.lastName;
+  }
 
   /**
    * Registers a callback function to be called whenever the account state changes.
@@ -179,11 +189,23 @@ export class Account extends FirestoreDocument<IAccountData> implements tp.IName
   }
 
   /**
-   * Returns the full name of the account owner.
+   * Finds an account based on the provided email.
    *
-   * @returns {string} The full name of the profile.
+   * @param {string} email - The email address of the account to search for.
+   *
+   * @return {Promise<Account | null>} - A Promise that resolves with the Account object if found, or null if not found.
    */
-  getName(): string {
-    return this.data.profile.firstName + ' ' + this.data.profile.lastName;
+  static async findAccount(email: string): Promise<Account | null> {
+    // Get the result map with accounts
+    const result = await FirestoreDocument.query<IAccountData, Account>(
+      tp.EDocumentType.account,
+      (config) => new Account(config),
+      undefined,
+      fs.where('profile.email', '==', email)
+    );
+    // Convert to array
+    const array = toArray(result);
+    // Return email if found or null
+    return array.length > 0 ? array[0] : null;
   }
 }

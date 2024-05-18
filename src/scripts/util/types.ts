@@ -27,6 +27,18 @@ export type TMessageDialogOptions = {
 };
 
 /**
+ * Represents a custom attribute with key, type, and value.
+ */
+export type TDocumentAttribute = {
+  // The key of the attribute
+  key: string;
+  // The datatype of the attribute
+  type: EDocumentAttributeType;
+  // The value of the attribute type
+  value: string | number | boolean;
+}
+
+/**
  * This interface represents an object that has an identifier.
  */
 export interface IIdentifiable {
@@ -71,6 +83,18 @@ export enum ECookie {
 }
 
 /**
+ * Represents the available modes for working with a document.
+ */
+export enum EEditorMode {
+  // Create new document
+  create = 'create',
+  // Edit a document
+  edit = 'edit',
+  // Delete a document
+  delete = 'delete'
+}
+
+/**
  * Enumeration containing the possible UI modes.
  */
 export enum EUIMode {
@@ -95,7 +119,11 @@ export enum EUILanguage {
  */
 export enum EDocumentType {
   // Account
-  account = 'account'
+  account = 'account',
+  // Project
+  project = 'project',
+  // Project Role
+  role = 'role'
 }
 
 /**
@@ -112,4 +140,20 @@ export enum ELogLevel {
   warn = 3,
   // Error message
   error = 4
+}
+
+/**
+ * Enumeration of custom attribute types.
+ */
+export enum EDocumentAttributeType {
+  // String
+  string = 'string',
+  // Number
+  number = 'number',
+  // Boolean
+  boolean = 'boolean'
+}
+
+export enum EPermission {
+
 }

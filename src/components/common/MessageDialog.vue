@@ -52,30 +52,6 @@
 <style scoped lang="scss">
 @import "src/css/quasar.variables";
 
-.dialog-frame {
-  width: 700px;
-  max-width: 700px;
-  padding: 16px;
-  background-color: $light-background-0;
-  box-shadow: 5px 5px 10px 0 $light-shadow-1;
-}
-
-.body--dark .dialog-frame {
-  background-color: $dark-background-0;
-  box-shadow: 5px 5px 10px 0 $dark-shadow;
-}
-
-.dialog-title {
-  font-size: 12pt;
-  font-weight: bold;
-  font-variant: petite-caps;
-  color: $light-text-strong;
-}
-
-.body--dark .dialog-title {
-  color: $dark-text-strong;
-}
-
 .dialog-marker {
   height: 4px;
 }

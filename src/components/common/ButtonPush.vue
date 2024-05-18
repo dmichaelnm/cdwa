@@ -5,6 +5,7 @@
          :size="size"
          :to="to"
          :type="type"
+         :style="styleAttr"
          no-caps
          dense
          @click="emit('click')">
@@ -34,7 +35,9 @@
 <script setup lang="ts">
 
 // Defines the properties of this component.
-defineProps<{
+import { computed } from 'vue';
+
+const props = defineProps<{
   // Label of the button
   label: string;
   // Flag controlling whether this button is flat
@@ -45,6 +48,8 @@ defineProps<{
   to?: string;
   // The type of the button
   type?: 'button' | 'submit';
+  // A custom color for the button
+  color?: string;
 }>();
 
 // Define the events emitted by this component.
@@ -53,4 +58,11 @@ const emit = defineEmits<{
   (event: 'click'): void;
 }>();
 
+// Computed style attribute
+const styleAttr = computed(() => {
+  if (props.color) {
+    return props.flat ? `color: ${props.color}` : `background-color: ${props.color};`;
+  }
+  return '';
+});
 </script>

@@ -8,9 +8,13 @@
            :error="error !== undefined && error !== ''"
            :error-message="error"
            :rules="[value => (!mandatory || value?.toString().length > 0) || $t('error.emptyInputField') ]"
+           :rows="type === 'textarea' ? 2 : 1"
            lazy-rules="ondemand"
+           spellcheck="false"
            stack-label
-           filled
+           :filled="!readonly"
+           :readonly="readonly"
+           :borderless="readonly"
            dense
            @update:modelValue="value => modelValue = value" />
 </template>
@@ -34,6 +38,8 @@ const props = defineProps<{
   mandatory?: boolean;
   // An optional error message to be displayed as hint
   error?: string;
+  // Flag controlling whether this input field is readonly
+  readonly?: boolean;
 }>();
 
 // Define the events emitted by this component.

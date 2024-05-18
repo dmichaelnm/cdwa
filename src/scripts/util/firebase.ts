@@ -60,6 +60,28 @@ export function getAuthorizedUserName(): string {
   return firebaseAuth.currentUser?.displayName as string;
 }
 
+/**
+ * Retrieves the ID of the authenticated user.
+ *
+ * @return {string} The ID of the authenticated user.
+ */
+export function getAuthorizedUserId(): string{
+  // Be sure to have a current user
+  Assert.assertValueIsSet(firebaseAuth.currentUser, 'currentUser');
+  // Return the ID of the current user
+  return firebaseAuth.currentUser?.uid as string;
+}
+
+/**
+ * Processes a Firebase error and updates error messages accordingly.
+ *
+ * @param {Function} t - Translation function to translate error messages.
+ * @param {unknown} error - The Firebase error object.
+ * @param {Ref<string>} emailError - The reference to the email error message.
+ * @param {Ref<string>} [passwordError] - Optional reference to the password error message.
+ *
+ * @returns {boolean} - Whether an error was handled or not.
+ */
 export function processFirebaseError(
   t: (key: string) => string,
   error: unknown,

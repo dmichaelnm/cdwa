@@ -87,6 +87,12 @@
       </template>
     </application-footer>
 
+    <!-- Page Container -->
+    <q-page-container>
+      <!-- Router View -->
+      <router-view />
+    </q-page-container>
+
   </q-layout>
 </template>
 
@@ -145,6 +151,7 @@ import ApplicationFooter from 'components/app/ApplicationFooter.vue';
 import SocialMedia from 'components/app/SocialMedia.vue';
 import ButtonIcon from 'components/common/ButtonIcon.vue';
 import MenuItem from 'components/common/MenuItem.vue';
+import { Project } from 'src/scripts/firestore/project';
 
 // Get main composable instances
 const cmp = useComposables();
@@ -183,6 +190,13 @@ onBeforeMount(() => {
       cmp.quasar.dark.set(account.data.preferences.uiMode === tp.EUIMode.dark);
       // Set UI Language
       cmp.i18n.locale.value = account.data.preferences.uiLanguage;
+      // Load all projects of the user
+      cmp.sessionStore.projects = await Project.loadProjects();
+
+      // If there are no projects, route to project overview page
+      if (cmp.sessionStore.projects.length === 0) {
+        await cmp.router.push({ path: '/project' });
+      }
     }
 
     // Unlock the screen

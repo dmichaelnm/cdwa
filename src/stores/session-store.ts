@@ -34,6 +34,22 @@ export const useSessionStore = defineStore('session', {
   },
   actions: {
     /**
+     * Retrieves a project based on the given project ID.
+     *
+     * @param {string} projectId - The ID of the project to retrieve.
+     *
+     * @returns {Project} The project object matching the given project ID.
+     *
+     * @throws {Error} If no project is found for the given project ID.
+     */
+    getProject(projectId: string): Project {
+      const project = this.projects.find(prj => prj.id === projectId);
+      if (project) {
+        return project as Project;
+      }
+      throw new Error(`No project found for ID "${projectId}.`);
+    },
+    /**
      * Resets the session.
      *
      * @returns {void}

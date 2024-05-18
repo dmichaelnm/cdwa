@@ -113,7 +113,10 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
   ): Promise<Project> {
     // Create the data structure for the project
     const data: IProjectData = {
-      access: Project.createAccessList(owner.id, manager.id),
+      access: Project.createAccessList(
+        owner.id,
+        manager.id
+      ),
       common: { name: name, description: description },
       owner: { accountId: owner.id, displayName: owner.getName() },
       manager: { accountId: manager.id, displayName: manager.getName() },
@@ -137,6 +140,27 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
     project.addDocument(role);
     // Return the project
     return project;
+  }
+
+  /**
+   * Updates the given project with new data.
+   *
+   * @param {Project} project - The project to be updated.
+   *
+   * @return {Promise<void>} - A Promise that resolves when the project is successfully updated.
+   */
+  static async updateProject(project: Project): Promise<void> {
+    await fd.FirestoreDocument.update(
+      project,
+      (data: IProjectData) => {
+        // Refresh the access list
+        data.access = Project.createAccessList(
+          data.owner.accountId,
+          data.manager.accountId
+        );
+        return data;
+      }
+    );
   }
 
   /**

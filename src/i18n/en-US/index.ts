@@ -165,5 +165,68 @@ export default {
         message: 'The password reset email was sent successfully. If necessary, also check your spam folder.'
       }
     }
+  },
+
+  // Project Messages
+  project: {
+    // Project Labels
+    label: {
+      // Project Name
+      name: 'Project Name',
+      // Project Owner
+      owner: 'Owner',
+      // Project Manager
+      manager: 'Project Manager'
+    },
+    // Project Button Labels
+    button: {
+      // Create New Project
+      create: 'New Project'
+    },
+    // Project Overview Messages
+    overview: {
+      // Empty Project Overview Message
+      empty: 'It appears that you have not created your own project yet and have not been added as a member ' +
+        'to any other projects. Just start with your own project.',
+      // Title
+      title: 'Overview - Projects',
+      // Message
+      message: 'In this overview you can see all projects that you have created yourself or in which you have been ' +
+        'added as a member. Depending on your role in these projects, you can also edit or delete them here.'
+    },
+    // Project Editor Messages
+    editor: {
+      // Create Project Messages
+      create: {
+        // Title
+        title: 'Create New Project',
+        // Message
+        message: 'Create a new project here. As the owner, you have full control over the project.In addition to the ' +
+          'name and an optional description, you can also specify a project manager. This person has the same rights ' +
+          'as you, with the exception that he is not allowed to delete the project and is not allowed to appoint ' +
+          'another project manager.'
+      },
+      // Edit Project Messages
+      edit: {
+        // Title
+        title: 'Edit Project',
+        // Message
+        message: 'Here you can customize the properties of the project such as name or description and also add or ' +
+          'remove members of the project or adjust their roles. If you are the project owner, you can also change the ' +
+          'project manager.'
+      }
+    }
+  },
+
+  // Role Messages
+  role: {
+    // Default Messages
+    default: {
+      // Default Role Name
+      name: 'Visitor',
+      // Default Role Description
+      description: 'This role has no permissions. Accounts that only have this role cannot make any changes to the ' +
+        'project.'
+    }
   }
 };

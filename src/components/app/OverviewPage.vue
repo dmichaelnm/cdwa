@@ -14,6 +14,7 @@
         <div class="col text-center">
           <!-- Create Button -->
           <button-push :label="$t(`${type}.button.create`)"
+                       v-if="permission(EEditorMode.create)"
                        @click="cmp.router.push({path: `/${type}/editor`, query: {mode: EEditorMode.create}})" />
         </div>
       </div>
@@ -27,6 +28,7 @@
     <template #buttons>
       <!-- Create Button -->
       <button-push :label="$t(`${type}.button.create`)"
+                   v-if="permission(EEditorMode.create)"
                    @click="cmp.router.push({path: `/${type}/editor`, query: {mode: EEditorMode.create}})" />
     </template>
     <!-- Table -->
@@ -49,9 +51,12 @@
         <q-td :props="props" class="vertical-top">
           <div class="overview-table-actions">
             <!-- Edit Button -->
-            <button-icon size="sm" icon="edit" />
+            <button-icon size="sm" icon="edit"
+                         v-if="permission(EEditorMode.edit, props.row)"
+                         @click="cmp.router.push({ path: `${type}/editor`, query: {mode: EEditorMode.edit, id: props.row.id } })" />
             <!-- Delete Button -->
-            <button-icon size="sm" icon="delete" />
+            <button-icon size="sm" icon="delete"
+                         v-if="permission(EEditorMode.delete, props.row)" />
           </div>
         </q-td>
       </template>
@@ -60,9 +65,9 @@
         <!-- Table Cell -->
         <q-td :props="props" class="vertical-top">
           <!-- Name -->
-          <div>{{ (props.row.data as IDocumentCommonData).common.name }}</div>
+          <div>{{ (props.row.data as fd.IDocumentCommonData).common.name }}</div>
           <!-- Description -->
-          <div class="overview-table-hint">{{ (props.row.data as IDocumentCommonData).common.description }}</div>
+          <div class="overview-table-hint">{{ (props.row.data as fd.IDocumentCommonData).common.description }}</div>
         </q-td>
       </template>
       <!-- Template: Created By At -->
@@ -70,8 +75,8 @@
         <!-- Table Cell -->
         <q-td :props="props" class="vertical-top">
           <!-- Created By -->
-          <div>{{ (props.row.data as IDocumentMetaData).meta?.created.by }}</div>
-          <div>{{ formatTimestamp((props.row.data as IDocumentMetaData).meta?.created.at) }}</div>
+          <div>{{ (props.row.data as fd.IDocumentMetaData).meta?.created.by }}</div>
+          <div>{{ formatTimestamp((props.row.data as fd.IDocumentMetaData).meta?.created.at) }}</div>
         </q-td>
       </template>
       <!-- Template: Altered By At -->
@@ -79,8 +84,8 @@
         <!-- Table Cell -->
         <q-td :props="props" class="vertical-top">
           <!-- Created By -->
-          <div>{{ (props.row.data as IDocumentMetaData).meta?.altered?.by }}</div>
-          <div>{{ formatTimestamp((props.row.data as IDocumentMetaData).meta?.altered?.at) }}</div>
+          <div>{{ (props.row.data as fd.IDocumentMetaData).meta?.altered?.by }}</div>
+          <div>{{ formatTimestamp((props.row.data as fd.IDocumentMetaData).meta?.altered?.at) }}</div>
         </q-td>
       </template>
       <!-- Template: Custom Columns -->
@@ -132,13 +137,13 @@
 </style>
 
 <script setup lang="ts">
+import * as fd from 'src/scripts/firestore/firestore-document';
 import { useComposables, useFormatTimestamp } from 'src/scripts/util/composables';
 import { EDocumentType, EEditorMode } from 'src/scripts/util/types';
 import ButtonPush from 'components/common/ButtonPush.vue';
 import PageFrame from 'components/app/PageFrame.vue';
 import { computed } from 'vue';
 import { QTableColumn } from 'quasar';
-import { IDocumentCommonData, IDocumentMetaData } from 'src/scripts/firestore/firestore-document';
 import ButtonIcon from 'components/common/ButtonIcon.vue';
 
 // Composable
@@ -152,7 +157,9 @@ const props = defineProps<{
   // The items to be shown in the overview
   items: any[];
   // Custom Columns
-  customColumns: QTableColumn[]
+  customColumns: QTableColumn[];
+  // Function to determine permissions
+  permission: (mode: EEditorMode, item?: fd.FirestoreDocument<any>) => boolean;
 }>();
 
 // Column definitions for the overview table
@@ -175,7 +182,7 @@ const columns = computed(() => {
     align: 'left',
     sortable: true,
     headerStyle: 'width: 500px',
-    field: row => (row.data as IDocumentCommonData).common.name
+    field: row => (row.data as fd.IDocumentCommonData).common.name
   });
   // Add Custom Columns
   array.push(...props.customColumns);
@@ -186,7 +193,7 @@ const columns = computed(() => {
     align: 'left',
     sortable: true,
     headerStyle: 'width: 200px',
-    field: row => (row.data as IDocumentMetaData).meta?.created.at
+    field: row => (row.data as fd.IDocumentMetaData).meta?.created.at
   });
   // Add Altered By At Column
   array.push({
@@ -194,7 +201,7 @@ const columns = computed(() => {
     label: cmp.i18n.t('label.altered'),
     align: 'left',
     sortable: true,
-    field: row => (row.data as IDocumentMetaData).meta?.altered?.at
+    field: row => (row.data as fd.IDocumentMetaData).meta?.altered?.at
   });
   // Return the array
   return array;

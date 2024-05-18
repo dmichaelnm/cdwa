@@ -118,7 +118,7 @@ export function useFormatTimestamp(): (tmsp: Timestamp | null | undefined) => st
       return tmsp.toDate().toLocaleString(cmp.sessionStore.accountActive.data.preferences.uiLanguage);
     }
     return '';
-  }
+  };
 }
 
 /**
@@ -141,7 +141,7 @@ export function useRunTask(): (
     errorHandler?: (error: unknown) => boolean
   ) => new Promise((resolve) => {
     // Lock the screen
-    cmp.quasar.loading.show();
+    cmp.quasar.loading.show({ delay: 0 });
     // Run the task handler and return the result
     task()
       // Process result of the task

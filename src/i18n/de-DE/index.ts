@@ -166,5 +166,69 @@ export default {
           'gegebenenfalls auch Ihren Spam-Ordner.'
       }
     }
+  },
+
+  // Project Messages
+  project: {
+    // Project Labels
+    label: {
+      // Project Name
+      name: 'Name des Projekts',
+      // Project Owner
+      owner: 'Eigentümer',
+      // Project Manager
+      manager: 'Projektleiter'
+    },
+    // Project Button Labels
+    button: {
+      // Create New Project
+      create: 'Neues Projekt'
+    },
+    // Project Overview Messages
+    overview: {
+      // Empty Project Overview Message
+      empty: 'Wie es scheint, haben Sie bisher noch kein eigenes Projekt erstellt und wurden auch noch nicht ' +
+        'anderen Projekten als Mitglied hinzugefügt. Beginnen Sie doch einfach mit Ihrem eigenen Projekt.',
+      // Title
+      title: 'Übersicht - Projekte',
+      // Message
+      message: 'In dieser Übersicht sehen Sie alle Projekte, die Sie selbst erstellt haben oder in denen Sie als ' +
+        'Mitglied hinzugefügt wurden. Je nachdem, welche Rolle Sie in diesen Projekten haben, können Sie diese hier ' +
+        'auch editieren oder löschen.'
+    },
+    // Project Editor Messages
+    editor: {
+      // Create Project Messages
+      create: {
+        // Title
+        title: 'Neues Projekt erstellen',
+        // Message
+        message: 'Erstellen Sie hier ein neues Projekt. Sie selbst haben als Eigentümer die volle Kontrolle über das ' +
+          'Projekt. Sie können neben  dem Namen und einer optionalen Beschreibung auch einen Projektleiter festlegen. ' +
+          'Dieser hat diesselben Rechte wie Sie mit der Ausnahme, dass er das Projekt nicht löschen darf und keinen ' +
+          'anderen Projektleiter einsetzen darf.'
+      },
+      // Edit Project Messages
+      edit: {
+        // Title
+        title: 'Projekt bearbeiten',
+        // Message
+        message: 'Hier können Sie die Eigenschaften des Projekts wie Name oder Beschreibung anpassen und auch ' +
+          'Mitglieder des Projekts hinzufügen oder entfernen oder deren Rollen anpassen. Wenn Sie der Projekteigentümer ' +
+          'sind, können Sie außerdem den Projektleiter ändern.'
+      }
+    }
+  },
+
+  // Role Messages
+  role: {
+    // Default Messages
+    default: {
+      // Default Role Name
+      name: 'Besucher',
+      // Default Role Description
+      description: 'Diese Rolle besitzt keinerlei Berechtigungen. Konten, die ausschließlich diese Rolle innehaben, ' +
+        'können keinerlei Änderungen am Projekt vornehmen.'
+    }
   }
 };

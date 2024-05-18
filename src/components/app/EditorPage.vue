@@ -32,6 +32,7 @@ import PageFrame from 'components/app/PageFrame.vue';
 import ButtonPush from 'components/common/ButtonPush.vue';
 import { QForm } from 'quasar';
 import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
+import { onBeforeMount } from 'vue';
 
 // Composable
 const cmp = useComposables();
@@ -39,6 +40,8 @@ const runTask = useRunTask();
 
 // Mode parameter
 const mode = cmp.route.query.mode as EEditorMode;
+// Item ID parameter
+const itemId = cmp.route.query.id as string;
 
 // Defines the properties of this component.
 const props = defineProps<{
@@ -46,11 +49,27 @@ const props = defineProps<{
   type: EDocumentType
   // Form to be validated on Save action
   form: QForm | null;
+  // Apply handler function
+  apply: (mode: EEditorMode, id?: string) => Promise<void> | void;
   // Create handler function
   create: () => Promise<FirestoreDocument<any>>;
   // Update handler function
-  update: () => Promise<void>;
+  update: (id: string) => Promise<void>;
 }>();
+
+/**
+ * Lifecycle event method called before this component is mounted.
+ */
+onBeforeMount(() => {
+  // Ignore when project was not yet loaded
+  if (cmp.sessionStore.projects.length > 0) {
+    // Start apply task
+    runTask(async () => {
+      // If in Edit mode, call the apply function with the item ID
+      await props.apply(mode, itemId);
+    });
+  }
+});
 
 /**
  * Closes the currently open editor.
@@ -78,7 +97,7 @@ async function save(): Promise<void> {
           await props.create();
         } else if (mode === EEditorMode.edit) {
           // Update the document
-          await props.update();
+          await props.update(itemId);
         }
         // Close the editor
         closeEditor();

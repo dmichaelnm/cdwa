@@ -158,9 +158,11 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
   ): Promise<R> {
     // Apply metadata for creating the document
     const metaData = data as IDocumentMetaData;
-    if (metaData.meta) {
-      metaData.meta.created.at = fs.Timestamp.now();
-      metaData.meta.created.by = getAuthorizedUserName();
+    metaData.meta = {
+      created: {
+        by: getAuthorizedUserName(),
+        at: fs.Timestamp.now()
+      }
     }
     // The document instance to be created
     let document: R;

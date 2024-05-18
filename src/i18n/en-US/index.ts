@@ -32,8 +32,14 @@ export default {
 
   // General Labels
   label: {
+    // Altered By At
+    altered: 'Altered by / at',
+    // Created By At
+    created: 'Created by / at',
     // Description
-    description: 'Description (optional)'
+    description: 'Description (optional)',
+    // Rows per Page
+    rowsPerPage: 'Rows per page'
   },
 
   // General Button Labels

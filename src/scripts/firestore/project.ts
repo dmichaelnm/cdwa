@@ -10,7 +10,7 @@ import { toArray } from 'src/scripts/util/utilities';
 /**
  * Represents a project member.
  */
-type TProjectMember = {
+export type TProjectMember = {
   // The ID of the account of the member
   accountId: string;
   // Display name of the member
@@ -25,9 +25,9 @@ type TProjectMember = {
  * @extends {IDocumentCommonData}
  * @extends {IDocumentMetaData}
  */
-interface IProjectData extends fd.IDocumentCommonData, fd.IDocumentMetaData, fd.IDocumentAttributeData {
+export interface IProjectData extends fd.IDocumentCommonData, fd.IDocumentMetaData, fd.IDocumentAttributeData {
   // Array of account IDs with access to this project
-  access: string[];
+  access?: string[];
   // The owner of the project
   owner: TProjectMember;
   // The manager of the project
@@ -167,6 +167,6 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
    * @return {string[]} - The access list created from the provided account IDs.
    */
   private static createAccessList(...accountIDs: string[]): string[] {
-    return [...new Set<string>(...accountIDs)];
+    return [...new Set<string>(accountIDs)];
   }
 }

@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { inject, Ref, ref } from 'vue';
 import { Logging } from 'src/scripts/util/logging';
 import { TMessageDialogOptions } from 'src/scripts/util/types';
+import { Timestamp } from 'firebase/firestore';
 
 const messageDialogOptions = ref<TMessageDialogOptions>({
   title: '',
@@ -100,6 +101,24 @@ export function useMessageDialog(): {
       messageDialogOptions.value.visible = true;
     }
   };
+}
+
+/**
+ * Returns a function that formats a timestamp object into a string representation.
+ *
+ * @return {function(tmsp: Timestamp|null): string} - The function that formats the timestamp.
+ */
+export function useFormatTimestamp(): (tmsp: Timestamp | null | undefined) => string {
+  // Get composables
+  const cmp = useComposables();
+  // Return the function
+  return (tmsp: Timestamp | null | undefined) => {
+    if (tmsp) {
+      // Returns the formatted timestamp
+      return tmsp.toDate().toLocaleString(cmp.sessionStore.accountActive.data.preferences.uiLanguage);
+    }
+    return '';
+  }
 }
 
 /**

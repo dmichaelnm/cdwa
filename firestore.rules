@@ -17,5 +17,10 @@ service cloud.firestore {
       allow read, write: if isUserAuthorized() && request.auth.uid in resource.data.access;
       allow create: if isUserAuthorized();
     }
+
+    match /project/{project}/{children=**} {
+      allow read, write: if isUserAuthorized() &&
+                         request.auth.uid in get(/databases/$(database)/documents/project/$(project)).data.access;
+    }
   }
 }

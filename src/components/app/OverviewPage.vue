@@ -23,7 +23,8 @@
 
   <!-- Overview Page -->
   <page-frame :title="$t(`${type}.overview.title`)"
-              :message="$t(`${type}.overview.message`)">
+              :message="$t(`${type}.overview.message`)"
+              v-if="items.length > 0">
     <!-- Template: Buttons -->
     <template #buttons>
       <!-- Create Button -->

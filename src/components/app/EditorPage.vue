@@ -61,11 +61,8 @@ const props = defineProps<{
  * Lifecycle event method called before this component is mounted.
  */
 onBeforeMount(() => {
-  // Start apply task
-  runTask(async () => {
-    // If in Edit mode, call the apply function with the item ID
-    await props.apply(mode, itemId);
-  });
+  // Initialize the values of this editor page
+  props.apply(mode, itemId);
 });
 
 /**

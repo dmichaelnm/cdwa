@@ -175,7 +175,7 @@ export function useRunTask(): <R>(
     errorHandler?: (error: unknown) => boolean
   ) => new Promise((resolve) => {
     // Lock the screen
-    cmp.quasar.loading.show({ delay: 0 });
+    cmp.quasar.loading.show({ delay: 250 });
     // Run the task handler and return the result
     task()
       // Process result of the task

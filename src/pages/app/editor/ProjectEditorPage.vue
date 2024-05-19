@@ -34,6 +34,7 @@
           <div class="col-3">
             <!-- Project Manager Selector -->
             <field-select-account v-model="projectManager"
+                                  :readonly="!projectManagerEditable"
                                   :label="$t('project.label.manager')" />
           </div>
         </div>
@@ -55,8 +56,8 @@
 <script setup lang="ts">
 import { useComposables } from 'src/scripts/util/composables';
 import EditorPage from 'components/app/EditorPage.vue';
-import { EDocumentType, EEditorMode } from 'src/scripts/util/types';
-import { ref } from 'vue';
+import { EDocumentType, EEditorMode, EGlobalEvent } from 'src/scripts/util/types';
+import { computed, ref } from 'vue';
 import FieldInput from 'components/common/FieldInput.vue';
 import FieldSelectAccount from 'components/app/FieldSelectAccount.vue';
 import { Account } from 'src/scripts/firestore/account';
@@ -71,6 +72,11 @@ const cmp = useComposables();
 const editor = ref<typeof EditorPage | null>(null);
 // Form reference
 const form = ref<QForm | null>(null);
+
+// Project Manager Editable
+const projectManagerEditable = computed(() => {
+  return cmp.sessionStore.account && cmp.sessionStore.account.id === projectOwner.value?.id;
+});
 
 // Project Name
 const projectName = ref('');
@@ -96,7 +102,7 @@ async function applyValues(mode: EEditorMode, projectId?: string): Promise<void>
     projectManager.value = cmp.sessionStore.account;
   } else if (mode === EEditorMode.edit) {
     // Get project document
-    const project = cmp.sessionStore.getProject(projectId as string);
+    const project = cmp.sessionStore.getProject(projectId as string) as Project;
     // Apply values
     projectName.value = project.data.common.name;
     projectDescription.value = project.data.common.description;
@@ -123,6 +129,11 @@ async function createProject(): Promise<FirestoreDocument<IProjectData>> {
   );
   // Add new project to session store project list
   cmp.sessionStore.projects.push(project);
+  // Send global event
+  cmp.bus.emit(EGlobalEvent.projectsChanged, {
+    mode: EEditorMode.create,
+    project: project
+  });
   // Return the new project
   return project;
 }
@@ -136,7 +147,7 @@ async function createProject(): Promise<FirestoreDocument<IProjectData>> {
  */
 async function updateProject(projectId: string): Promise<void> {
   // Get the project
-  const project = cmp.sessionStore.getProject(projectId);
+  const project = cmp.sessionStore.getProject(projectId) as Project;
   // Apply values
   project.data.common.name = projectName.value;
   project.data.common.description = projectDescription.value;
@@ -146,6 +157,11 @@ async function updateProject(projectId: string): Promise<void> {
   };
   // Update the project
   await Project.updateProject(project);
+  // Send global event
+  cmp.bus.emit(EGlobalEvent.projectsChanged, {
+    mode: EEditorMode.edit,
+    project: project
+  });
 }
 
 </script>

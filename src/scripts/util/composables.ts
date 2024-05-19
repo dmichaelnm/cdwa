@@ -4,8 +4,11 @@ import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import { inject, Ref, ref } from 'vue';
 import { Logging } from 'src/scripts/util/logging';
-import { TMessageDialogOptions } from 'src/scripts/util/types';
+import { EDocumentType, EEditorMode, TMessageDialogOptions } from 'src/scripts/util/types';
 import { Timestamp } from 'firebase/firestore';
+import { firebaseAuth } from 'src/scripts/util/firebase';
+import { globalConfig } from 'src/scripts/config/global-config';
+import { httpClient } from 'boot/axios';
 
 const messageDialogOptions = ref<TMessageDialogOptions>({
   title: '',
@@ -49,7 +52,7 @@ export function useMessageDialog(): {
     message: string,
     details?: string,
     color?: string,
-    callback?: (value?: string) => boolean | void
+    callback?: (value?: string) => boolean | void | Promise<boolean> | Promise<void>
   ) => void,
   /**
    * Displays a success dialog with the given title, message, details, and an optional callback function.
@@ -66,7 +69,24 @@ export function useMessageDialog(): {
     title: string,
     message: string,
     details?: string,
-    callback?: (value?: string) => boolean | void
+    callback?: (value?: string) => boolean | void | Promise<boolean> | Promise<void>
+  ) => void,
+  /**
+   * Displays a confirmation dialog box with the specified title, message, details,
+   * and optional callback function.
+   *
+   * @param {string} title - The title of the confirmation dialog.
+   * @param {string} message - The message shown in the body of the confirmation dialog.
+   * @param {string} [details] - Additional details or information to display in the dialog.
+   * @param {Function} [callback] - Optional callback function to be executed when the user clicks a button.
+   *
+   * @returns {void}
+   */
+  showConfirmationDialog: (
+    title: string,
+    message: string,
+    details?: string,
+    callback?: (value?: string) => boolean | void | Promise<boolean> | Promise<void>
   ) => void
 } {
   return {
@@ -76,7 +96,7 @@ export function useMessageDialog(): {
       message: string,
       details?: string,
       color?: string,
-      callback?: (value?: string) => boolean | void
+      callback?: (value?: string) => boolean | void | Promise<boolean> | Promise<void>
     ) => {
       messageDialogOptions.value.title = title;
       messageDialogOptions.value.message = message;
@@ -90,13 +110,27 @@ export function useMessageDialog(): {
       title: string,
       message: string,
       details?: string,
-      callback?: (value?: string) => boolean | void
+      callback?: (value?: string) => boolean | void | Promise<boolean> | Promise<void>
     ): void => {
       messageDialogOptions.value.title = title;
       messageDialogOptions.value.message = message;
       messageDialogOptions.value.details = details ? details : null;
       messageDialogOptions.value.color = '#448753';
       messageDialogOptions.value.buttons = ['close'];
+      messageDialogOptions.value.callback = callback ? callback : null;
+      messageDialogOptions.value.visible = true;
+    },
+    showConfirmationDialog: (
+      title: string,
+      message: string,
+      details?: string,
+      callback?: (value?: string) => boolean | void | Promise<boolean> | Promise<void>
+    ): void => {
+      messageDialogOptions.value.title = title;
+      messageDialogOptions.value.message = message;
+      messageDialogOptions.value.details = details ? details : null;
+      messageDialogOptions.value.color = '#6897cf';
+      messageDialogOptions.value.buttons = ['okay', 'cancel'];
       messageDialogOptions.value.callback = callback ? callback : null;
       messageDialogOptions.value.visible = true;
     }
@@ -115,7 +149,7 @@ export function useFormatTimestamp(): (tmsp: Timestamp | null | undefined) => st
   return (tmsp: Timestamp | null | undefined) => {
     if (tmsp) {
       // Returns the formatted timestamp
-      return tmsp.toDate().toLocaleString(cmp.sessionStore.accountActive.data.preferences.uiLanguage);
+      return tmsp.toDate().toLocaleString(cmp.sessionStore.account?.data.preferences.uiLanguage);
     }
     return '';
   };
@@ -127,17 +161,17 @@ export function useFormatTimestamp(): (tmsp: Timestamp | null | undefined) => st
  *
  * @returns {Function} The wrapped task execution function.
  */
-export function useRunTask(): (
-  task: () => Promise<boolean | void>,
+export function useRunTask(): <R>(
+  task: () => Promise<any>,
   errorHandler?: (error: unknown) => boolean
-) => Promise<boolean> {
+) => Promise<R | undefined> {
   // Get composables
   const cmp = useComposables();
   // Get message dialog composable
   const { showMessageDialog } = useMessageDialog();
   // Return the composable
   return (
-    task: () => Promise<boolean | void>,
+    task: () => Promise<any>,
     errorHandler?: (error: unknown) => boolean
   ) => new Promise((resolve) => {
     // Lock the screen
@@ -146,8 +180,7 @@ export function useRunTask(): (
     task()
       // Process result of the task
       .then(result => {
-        // Return task execution result
-        resolve(typeof result === 'boolean' ? result as boolean : true);
+        resolve(result);
       })
       // Process error
       .catch(error => {
@@ -168,7 +201,7 @@ export function useRunTask(): (
           );
         }
         // Task was not successful
-        resolve(false);
+        resolve(undefined);
       })
       .finally(() => {
         // Unlock the screen
@@ -195,5 +228,121 @@ export function useComposables() {
     router: useRouter(),
     sessionStore: useSessionStore(),
     bus: inject('bus') as EventBus
+  };
+}
+
+export function useCloudFunctions(): {
+  /**
+   * Sends a POST request to the server with specified function name and payload.
+   *
+   * @param {string} functionName - The name of the server function to call.
+   * @param {I} payload - The payload data to send to the server.
+   *
+   * @returns {Promise<O>} - Promise that resolves with the response from the server.
+   *
+   * @template I - The type of input data
+   * @template O - The type of result data
+   */
+  post: <I, O>(functionName: string, payload: I) => Promise<O>,
+  /**
+   * Deletes a project with the given project ID.
+   *
+   * @param {string} projectId - The ID of the project to be deleted.
+   *
+   * @returns {Promise<void>} - A promise that resolves when the project is successfully deleted.
+   */
+  cfDeleteProject: (projectId: string) => Promise<void>
+} {
+  return {
+    post: async <I, O>(functionName: string, payload: I): Promise<O> => {
+      // Get token from current firebase user
+      const token = await firebaseAuth.currentUser?.getIdToken(true);
+      if (token) {
+        // Get functions URL
+        const functionsUrl = globalConfig.cloudFunctionsURL.replace(/:function:/g, functionName);
+        // Send POST request to Firebase Functions
+        const result = await httpClient.post(
+          functionsUrl,
+          payload,
+          { headers: { 'authorization': 'Bearer ' + token } }
+        );
+        // Return the result data
+        return result.data as O;
+      }
+      // No user found
+      throw new Error('No authorized Firebase user found.');
+    },
+    cfDeleteProject: async (projectId: string): Promise<void> => {
+      // Get Post function
+      const { post } = useCloudFunctions();
+      // Call Cloud Function "deleteProject"
+      await post('deleteProject', { id: projectId });
+    }
+  };
+}
+
+/**
+ * Provides routing functionality for navigating between pages and opening editors.
+ *
+ * @returns {object} An object containing the following methods:
+ *   - `openEditor`: Opens the editor for a document.
+ *   - `to`: Routes to a specific path.
+ */
+export function useRouting(): {
+  /**
+   * Opens the editor for a document.
+   *
+   * @param {EDocumentType} type - The type of the document.
+   * @param {EEditorMode} mode - The mode in which the editor should be opened.
+   * @param {string} [itemId] - The ID of the item to be edited (optional).
+   *
+   * @returns {Promise<void>} A Promise that resolves when the editor is opened.
+   */
+  openEditor: (type: EDocumentType, mode: EEditorMode, itemId?: string) => Promise<void>,
+  /**
+   * Routes to a specific path.
+   *
+   * @param {string} path - The path.
+   *
+   * @returns {Promise<void>} A promise that resolves when the operation is completed successfully.
+   */
+  to: (path: string) => Promise<void>
+} {
+  // Get composables
+  const cmp = useComposables();
+  // Get show confirm dialog
+  const { showConfirmationDialog } = useMessageDialog();
+  // Return the functions
+  return {
+    openEditor: async (type: EDocumentType, mode: EEditorMode, itemId?: string) => {
+      // Lock the editor
+      cmp.sessionStore.editorLock = true;
+      // Set query parameter
+      cmp.sessionStore.queryParams = { mode: mode, itemId: itemId };
+      // Open the editor page
+      await cmp.router.push({ path: `/${type}/editor` });
+    },
+    to: async (path: string) => {
+      // Check if editor is locked
+      if (cmp.sessionStore.editorLock) {
+        // Show confirm dialog for discard changes
+        showConfirmationDialog(
+          cmp.i18n.t('dialog.discard.title'),
+          cmp.i18n.t('dialog.discard.message'),
+          undefined,
+          (value) => {
+            if (value === 'okay') {
+              // Unlock editor
+              cmp.sessionStore.editorLock = false;
+              // Route to path
+              cmp.router.push({ path: path });
+            }
+          }
+        );
+      } else {
+        // Route to path
+        await cmp.router.push({ path: path });
+      }
+    }
   };
 }

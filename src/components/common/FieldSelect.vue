@@ -3,6 +3,7 @@
   <q-select :model-value="modelValue"
             :options="options"
             :borderless="borderless"
+            :standout="!borderless"
             dense
             options-dense
             map-options

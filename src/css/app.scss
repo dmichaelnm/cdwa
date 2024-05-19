@@ -53,6 +53,31 @@ body.body--dark {
   font-size: 9pt;
 }
 
+.q-field--standout.q-field--highlighted .q-field__control {
+  background-color: rgb(0, 0, 0, .07);
+  box-shadow: 0 0;
+}
+
+.body--dark .q-field--standout.q-field--highlighted .q-field__control {
+  background-color: rgb(255, 255, 255, 0.07);
+}
+
+.q-field--standout.q-field--highlighted .q-field__native {
+  color: $light-text-strong;
+}
+
+.body--dark .q-field--standout.q-field--highlighted .q-field__native {
+  color: $dark-text-strong;
+}
+
+.q-field--standout.q-field--highlighted .q-field__append {
+  color: $light-text;
+}
+
+.body--dark .q-field--standout.q-field--highlighted .q-field__append {
+  color: $dark-text;
+}
+
 // ============================================================================
 // QSeparator
 // ============================================================================

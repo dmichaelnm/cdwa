@@ -85,6 +85,20 @@ export default {
         // Unknown email address
         emailUnknown: 'The email address is unknown.'
       }
+    },
+    // Delete Document Dialog
+    delete: {
+      // Title
+      title: 'Delete {type}?',
+      // Message
+      message: 'Are you sure you want to delete the {type} "{name}"? This action can not be undone.'
+    },
+    // Discard Changes Dialog
+    discard: {
+      // Title
+      title: 'Discard Changes?',
+      // Message
+      message: 'Are you sure you want to exit the editor? All changes made so far will be lost.'
     }
   },
 
@@ -169,6 +183,10 @@ export default {
 
   // Project Messages
   project: {
+    // Name of the document type
+    type: 'Project',
+    // Name of the document type with an article
+    theType: 'Project',
     // Project Labels
     label: {
       // Project Name

@@ -15,7 +15,7 @@
           <!-- Create Button -->
           <button-push :label="$t(`${type}.button.create`)"
                        v-if="permission(EEditorMode.create)"
-                       @click="cmp.router.push({path: `/${type}/editor`, query: {mode: EEditorMode.create}})" />
+                       @click="openEditor(type, EEditorMode.create)" />
         </div>
       </div>
     </div>
@@ -29,7 +29,11 @@
       <!-- Create Button -->
       <button-push :label="$t(`${type}.button.create`)"
                    v-if="permission(EEditorMode.create)"
-                   @click="cmp.router.push({path: `/${type}/editor`, query: {mode: EEditorMode.create}})" />
+                   @click="openEditor(type, EEditorMode.create)" />
+      <!-- Close Button -->
+      <button-push :label="$t('button.close')"
+                   color="#808080"
+                   @click="cmp.router.push({path: '/'})" />
     </template>
     <!-- Table -->
     <q-table :rows="items"
@@ -53,10 +57,11 @@
             <!-- Edit Button -->
             <button-icon size="sm" icon="edit"
                          v-if="permission(EEditorMode.edit, props.row)"
-                         @click="cmp.router.push({ path: `${type}/editor`, query: {mode: EEditorMode.edit, id: props.row.id } })" />
+                         @click="openEditor(type, EEditorMode.edit, props.row.id)" />
             <!-- Delete Button -->
             <button-icon size="sm" icon="delete"
-                         v-if="permission(EEditorMode.delete, props.row)" />
+                         v-if="permission(EEditorMode.delete, props.row)"
+                         @click="confirmDeletion(props.row)" />
           </div>
         </q-td>
       </template>
@@ -138,7 +143,8 @@
 
 <script setup lang="ts">
 import * as fd from 'src/scripts/firestore/firestore-document';
-import { useComposables, useFormatTimestamp } from 'src/scripts/util/composables';
+import { FirestoreDocument, IDocumentCommonData } from 'src/scripts/firestore/firestore-document';
+import * as cp from 'src/scripts/util/composables';
 import { EDocumentType, EEditorMode } from 'src/scripts/util/types';
 import ButtonPush from 'components/common/ButtonPush.vue';
 import PageFrame from 'components/app/PageFrame.vue';
@@ -147,8 +153,11 @@ import { QTableColumn } from 'quasar';
 import ButtonIcon from 'components/common/ButtonIcon.vue';
 
 // Composable
-const cmp = useComposables();
-const formatTimestamp = useFormatTimestamp();
+const cmp = cp.useComposables();
+const formatTimestamp = cp.useFormatTimestamp();
+const { showConfirmationDialog } = cp.useMessageDialog();
+const { openEditor } = cp.useRouting();
+const runTask = cp.useRunTask();
 
 // Defines the properties of this component.
 const props = defineProps<{
@@ -160,6 +169,8 @@ const props = defineProps<{
   customColumns: QTableColumn[];
   // Function to determine permissions
   permission: (mode: EEditorMode, item?: fd.FirestoreDocument<any>) => boolean;
+  // Function for deleting the item
+  delete: (item: FirestoreDocument<any>) => Promise<void>;
 }>();
 
 // Column definitions for the overview table
@@ -206,5 +217,33 @@ const columns = computed(() => {
   // Return the array
   return array;
 });
+
+/**
+ * Shows a confirmation dialog and deletes the specified item if confirmed.
+ *
+ * @param {FirestoreDocument<IDocumentCommonData>} item - The item to be deleted.
+ *
+ * @return {void}
+ */
+function confirmDeletion(item: FirestoreDocument<IDocumentCommonData>): void {
+  // Show confirmation dialog
+  showConfirmationDialog(
+    cmp.i18n.t('dialog.delete.title', { type: cmp.i18n.t(`${props.type}.type`) }),
+    cmp.i18n.t('dialog.delete.message', {
+      type: cmp.i18n.t(`${props.type}.type`),
+      theType: cmp.i18n.t(`${props.type}.theType`),
+      name: item.data.common.name
+    }),
+    undefined,
+    async (value) => {
+      if (value === 'okay') {
+        await runTask(async () => {
+          // Call the delete function
+          await props.delete(item);
+        });
+      }
+    }
+  );
+}
 
 </script>

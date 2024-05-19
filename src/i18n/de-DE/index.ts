@@ -85,6 +85,21 @@ export default {
         // Unknown email address
         emailUnknown: 'Die Email-Adresse ist unbekannt.'
       }
+    },
+    // Delete Document Dialog
+    delete: {
+      // Title
+      title: '{type} löschen?',
+      // Message
+      message: 'Sind Sie sicher, dass Sie {theType} "{name}" löschen wollen? Dieser Vorgang kann nicht rückgängig gemacht werden.'
+    },
+    // Discard Changes Dialog
+    discard: {
+      // Title
+      title: 'Änderungen verwerfen?',
+      // Message
+      message: 'Sie sind sicher, dass Sie den Editor verlassen wollen? Alle bisher gemachten Änderungen gehen dadurch ' +
+        'verloren.'
     }
   },
 
@@ -170,6 +185,10 @@ export default {
 
   // Project Messages
   project: {
+    // Name of the document type
+    type: 'Projekt',
+    // Name of the document type with an article
+    theType: 'das Projekt',
     // Project Labels
     label: {
       // Project Name

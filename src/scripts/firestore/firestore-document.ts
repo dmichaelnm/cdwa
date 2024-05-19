@@ -54,7 +54,7 @@ export interface IDocumentCommonData {
     name: string;
     // Optional description of the document
     description: string | null;
-  }
+  };
 }
 
 /**
@@ -163,7 +163,7 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
         by: getAuthorizedUserName(),
         at: fs.Timestamp.now()
       }
-    }
+    };
     // The document instance to be created
     let document: R;
     // If there is an id specified, create the document with that ID
@@ -263,7 +263,7 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
     path: string,
     id: string,
     creator: (config: TFirestoreDocumentConfig<D>) => R,
-    processor?: (document: R) => Promise<void> | void,
+    processor?: (document: R) => Promise<void> | void
   ): Promise<R> {
     // Create the document reference
     const documentRef = fs.doc(firestore, path, id);

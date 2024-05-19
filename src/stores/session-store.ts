@@ -8,6 +8,12 @@ export const useSessionStore = defineStore('session', {
     account: null as Account | null,
     // Array of accessible projects
     projects: [] as Project[],
+    // Active project
+    project: null as Project | null,
+    // Editor Lock
+    editorLock: false as boolean,
+    // Query parameter
+    queryParams: {} as any
   }),
   getters: {
     /**
@@ -36,18 +42,30 @@ export const useSessionStore = defineStore('session', {
     /**
      * Retrieves a project based on the given project ID.
      *
-     * @param {string} projectId - The ID of the project to retrieve.
+     * @param {string | null} projectId - The ID of the project to be retrieved.
      *
-     * @returns {Project} The project object matching the given project ID.
-     *
-     * @throws {Error} If no project is found for the given project ID.
+     * @return {Project | null} - The retrieved project or null if no project is found.
      */
-    getProject(projectId: string): Project {
-      const project = this.projects.find(prj => prj.id === projectId);
-      if (project) {
-        return project as Project;
+    getProject(projectId: string | null): Project | null {
+      if (projectId === null) {
+        return null;
+      } else {
+        const project = this.projects.find(prj => prj.id === projectId);
+        return project ? project as Project : null;
       }
-      throw new Error(`No project found for ID "${projectId}.`);
+    },
+    /**
+     * Removes a project from the list of projects.
+     *
+     * @param {string} projectId - The ID of the project to be removed.
+     *
+     * @return {void}
+     */
+    removeProject(projectId: string): void {
+      const index = this.projects.findIndex(p => p.id === projectId);
+      if (index > -1) {
+        this.projects.splice(index, 1);
+      }
     },
     /**
      * Resets the session.

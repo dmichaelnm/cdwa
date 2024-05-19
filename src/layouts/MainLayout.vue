@@ -1,6 +1,9 @@
 <template>
   <!-- Layout -->
   <q-layout view="hHh Lpr fFf">
+    <!-- Message Dialog -->
+    <message-dialog v-model="messageDialogOptions.visible"
+                    :options="messageDialogOptions" />
 
     <!-- Header -->
     <q-header>
@@ -10,6 +13,19 @@
         <div class="row q-col-gutter-x-md items-center">
           <!-- Application Title Column -->
           <div class="col-auto application-header-title">{{ $t('application.title') }}</div>
+          <!-- Project Overview Column -->
+          <div class="col-auto" v-if="hasProject">
+            <!-- Project Overview -->
+            <button-icon size="md" icon="mdi-home-outline" @click="to('/project')" />
+          </div>
+          <!-- Active Project Selection Column -->
+          <div class="col-auto" v-if="hasProject">
+            <!-- Active Project Selection -->
+            <field-select v-model="activeProjectId"
+                          :options="projectOptions"
+                          class="active-project-selector"
+                          @update:modelValue="value => switchProject(value)" />
+          </div>
           <!-- Space Column -->
           <div class="col-grow" />
           <!-- Acount Name Column -->
@@ -113,6 +129,7 @@
 }
 
 .application-header-title {
+  padding-right: 32px;
   font-size: 16pt;
   font-variant: petite-caps;
 }
@@ -135,15 +152,20 @@
 .body--dark .application-footer-hint {
   color: $dark-text-hint;
 }
+
+.active-project-selector {
+  width: 250px;
+  border-radius: 4px;
+}
 </style>
 
 <script setup lang="ts">
 import * as tp from 'src/scripts/util/types';
 import * as fs from 'firebase/firestore';
 import { version } from 'src/scripts/config/version';
-import { computed, onBeforeMount } from 'vue';
-import { useComposables } from 'src/scripts/util/composables';
-import { getLanguageOptions } from 'src/scripts/config/options';
+import { computed, onBeforeMount, onBeforeUnmount, ref } from 'vue';
+import { useComposables, useMessageDialog, useRouting, useRunTask } from 'src/scripts/util/composables';
+import { getLanguageOptions, TSelectionOption } from 'src/scripts/config/options';
 import { Logging } from 'src/scripts/util/logging';
 import { Account } from 'src/scripts/firestore/account';
 import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
@@ -152,9 +174,14 @@ import SocialMedia from 'components/app/SocialMedia.vue';
 import ButtonIcon from 'components/common/ButtonIcon.vue';
 import MenuItem from 'components/common/MenuItem.vue';
 import { Project } from 'src/scripts/firestore/project';
+import MessageDialog from 'components/common/MessageDialog.vue';
+import FieldSelect from 'components/common/FieldSelect.vue';
 
 // Get main composable instances
 const cmp = useComposables();
+const runTask = useRunTask();
+const { messageDialogOptions } = useMessageDialog();
+const { to } = useRouting();
 
 // Computed UI mode
 const uiMode = computed(() => {
@@ -163,6 +190,23 @@ const uiMode = computed(() => {
     : { label: cmp.i18n.t('menu.darkMode'), icon: 'dark_mode' };
 });
 
+// Computed project options for active project selection
+const projectOptions = computed<TSelectionOption<string>[]>(() => {
+  return cmp.sessionStore.projects.map(prj => {
+    return {
+      value: prj.id,
+      label: prj.getName()
+    };
+  });
+});
+
+// Flag controlling whether project related controls are shown
+const hasProject = computed(() => {
+  return activeProjectId.value !== null;
+});
+
+// Current ID of active project
+const activeProjectId = ref<string | null>(null);
 
 /**
  * Lifecycle event method called before this component is mounted.
@@ -172,6 +216,23 @@ onBeforeMount(() => {
 
   // Lock the screen
   cmp.quasar.loading.show({ delay: 0 });
+
+  // Register event listener for changes in the projects array of the session store
+  cmp.bus.on(tp.EGlobalEvent.projectsChanged, (event) => {
+    if (event.mode === tp.EEditorMode.delete) {
+      // Check if deleted project is the active project
+      if (event.project.id === activeProjectId.value) {
+        // Switch to another project
+        switchProject(null);
+      }
+    } else if (event.mode === tp.EEditorMode.create) {
+      // If there is no active project, make the new project to active project
+      if (activeProjectId.value === null) {
+        // Switch to new project
+        switchProject(event.project.id);
+      }
+    }
+  })
 
   // Register event listener called when the account has changed
   Account.onAccountStateChange(async (account) => {
@@ -192,16 +253,25 @@ onBeforeMount(() => {
       cmp.i18n.locale.value = account.data.preferences.uiLanguage;
       // Load all projects of the user
       cmp.sessionStore.projects = await Project.loadProjects();
-
+      // Switch to current project
+      await switchProject(account.data.state.activeProject);
       // If there are no projects, route to project overview page
       if (cmp.sessionStore.projects.length === 0) {
         await cmp.router.push({ path: '/project' });
       }
     }
-
     // Unlock the screen
     cmp.quasar.loading.hide();
   });
+});
+
+/**
+ * Lifecycle event method called before this component is unmounted.
+ */
+onBeforeUnmount(() => {
+  Logging.debug('MainLayout#onBeforeUnmount');
+  // Deregister event listeners
+  cmp.bus.off(tp.EGlobalEvent.projectsChanged);
 });
 
 /**
@@ -236,6 +306,35 @@ function switchUILanguage(languageCode: tp.EUILanguage): void {
   Account.update(cmp.sessionStore.accountActive);
   // Set the cookie
   cmp.quasar.cookies.set(tp.ECookie.uiLanguage, languageCode, { expires: 365 });
+}
+
+/**
+ * Switches the active project to the specified project ID.
+ *
+ * @param {string | null} projectId - The ID of the project to switch to. If null, the first project in the list of
+ *                                    visible projects will be chosen.
+ *
+ * @returns {Promise<void>} - A Promise that resolves when the project has been switched.
+ */
+async function switchProject(projectId: string | null): Promise<void> {
+  await runTask(async () => {
+    // Check, if projectId exists in the list of visible projects
+    if (cmp.sessionStore.getProject(projectId) === null) {
+      // Invalid project ID, take first project in the list
+      projectId = cmp.sessionStore.projects.length > 0
+        ? cmp.sessionStore.projects[0].id
+        : null;
+    }
+    // Set active project ID
+    activeProjectId.value = projectId;
+    // If project ID is not null, load the project
+    if (projectId !== null) {
+      cmp.sessionStore.project = await Project.loadProject(projectId);
+    }
+    // Update the session with the new project ID
+    cmp.sessionStore.accountActive.data.state.activeProject = projectId;
+    await FirestoreDocument.update(cmp.sessionStore.accountActive);
+  });
 }
 
 /**

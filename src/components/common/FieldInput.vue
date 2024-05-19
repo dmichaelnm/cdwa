@@ -12,7 +12,7 @@
            lazy-rules="ondemand"
            spellcheck="false"
            stack-label
-           :filled="!readonly"
+           :standout="!readonly"
            :readonly="readonly"
            :borderless="readonly"
            dense

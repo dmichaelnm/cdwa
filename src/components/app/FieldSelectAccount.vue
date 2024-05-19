@@ -14,7 +14,7 @@
     <!-- Template: Select Button -->
     <template #before>
       <!-- Select Button -->
-      <button-icon size="sm" icon="person_search" @click="dialogVisible = true" />
+      <button-icon size="sm" icon="person_search" @click="dialogVisible = true" v-if="!readonly"/>
     </template>
     <!-- Template: Account Name -->
     <template #control>
@@ -44,6 +44,8 @@ const props = defineProps<{
   label: string;
   // Validator
   validate?: (account: Account) => string | null;
+  // Flag controlling whether this component is readonly
+  readonly?: boolean;
 }>();
 
 // Define the events emitted by this component.

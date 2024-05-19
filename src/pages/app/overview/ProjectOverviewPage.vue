@@ -2,6 +2,7 @@
   <!-- Overview Page -->
   <overview-page :type="EDocumentType.project"
                  :permission="getPermission"
+                 :delete="deleteProject"
                  :items="cmp.sessionStore.projects"
                  :custom-columns="[{ name: 'owner', label: $t('project.label.owner'), align: 'left', sortable: true,
                                      headerStyle: 'width: 200px', field: row => row.data.owner.displayName},
@@ -11,14 +12,16 @@
 </template>
 
 <script setup lang="ts">
-import { useComposables } from 'src/scripts/util/composables';
+import { useCloudFunctions, useComposables, useRunTask } from 'src/scripts/util/composables';
 import OverviewPage from 'components/app/OverviewPage.vue';
-import { EDocumentType, EEditorMode } from 'src/scripts/util/types';
+import { EDocumentType, EEditorMode, EGlobalEvent } from 'src/scripts/util/types';
 import { IProjectData } from 'src/scripts/firestore/project';
 import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
 
 // Composable
 const cmp = useComposables();
+const { cfDeleteProject } = useCloudFunctions();
+const runTask = useRunTask();
 
 /**
  * Determines whether the current user has permission to perform the specified action.
@@ -52,6 +55,27 @@ function getPermission(mode: EEditorMode, item?: FirestoreDocument<IProjectData>
   }
   // No permission
   return false;
+}
+
+/**
+ * Deletes a project.
+ *
+ * @param project - The project to be deleted.
+ *
+ * @returns A promise that resolves when the project is successfully deleted.
+ */
+async function deleteProject(project: FirestoreDocument<IProjectData>): Promise<void> {
+  await runTask(async () => {
+    // Delete the project in Firestore
+    await cfDeleteProject(project.id);
+    // Remove the project from the projects list
+    cmp.sessionStore.removeProject(project.id);
+    // Send global event
+    cmp.bus.emit(EGlobalEvent.projectsChanged, {
+      mode: EEditorMode.delete,
+      project: project
+    });
+  });
 }
 
 </script>

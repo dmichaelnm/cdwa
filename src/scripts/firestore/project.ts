@@ -3,7 +3,7 @@ import * as tp from 'src/scripts/util/types';
 import * as fs from 'firebase/firestore';
 import { ProjectDocument } from 'src/scripts/firestore/project-document';
 import { Account } from 'src/scripts/firestore/account';
-import { Role } from 'src/scripts/firestore/role';
+import { IRoleData, Role } from 'src/scripts/firestore/role';
 import { getAuthorizedUserId } from 'src/scripts/util/firebase';
 import { toArray } from 'src/scripts/util/utilities';
 
@@ -170,9 +170,9 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
    */
   static async loadProjects(): Promise<Project[]> {
     // Retrieve the map of visible projects from Firestore
-    const map = await fd.FirestoreDocument.query(
+    const map = await fd.FirestoreDocument.query<IProjectData, Project>(
       tp.EDocumentType.project,
-      (config: fd.TFirestoreDocumentConfig<IProjectData>) => new Project(config),
+      (config) => new Project(config),
       undefined,
       fs.where('access', 'array-contains', getAuthorizedUserId())
     );
@@ -181,6 +181,30 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
       map,
       (p1: Project, p2: Project) => p1.getName().localeCompare(p2.getName())
     );
+  }
+
+  /**
+   * Loads a project from Firestore based on the given projectId.
+   *
+   * @param {string} projectId - The ID of the project to load.
+   *
+   * @returns {Promise<Project>} - A promise that resolves to a Project object representing the loaded project.
+   */
+  static async loadProject(projectId: string): Promise<Project> {
+    // Load the project document from Firestore
+    const project = await fd.FirestoreDocument.load<IProjectData, Project>(
+      tp.EDocumentType.project,
+      projectId,
+      (config) => new Project(config)
+    );
+    // Load the roles of the project
+    const roles = await fd.FirestoreDocument.query<IRoleData, Role>(
+      project.getFullPath() + tp.EDocumentType.role,
+      (config) => new Role(config, project)
+    );
+    project.children.set(tp.EDocumentType.role, roles);
+    // Return the project
+    return project;
   }
 
   /**

@@ -4,6 +4,8 @@
 export type TGlobalConfig = {
   // Application wide log level
   logLevel: ELogLevel
+  // Cloud Functions URL
+  cloudFunctionsURL: string;
 };
 
 /**
@@ -21,7 +23,7 @@ export type TMessageDialogOptions = {
   // Dialog Buttons
   buttons: string[];
   // Callback handler when dialog is about to be closed
-  callback: ((value?: string) => boolean | void) | null;
+  callback: ((value?: string) => boolean | void | Promise<boolean> | Promise<void>) | null;
   // Visibility
   visible: boolean;
 };
@@ -67,7 +69,9 @@ export interface INamed {
  */
 export enum EGlobalEvent {
   // UI Language has changed
-  languageChanged = 'languageChanged'
+  languageChanged = 'languageChanged',
+  // Projects array in session store has changed
+  projectsChanged = 'projectsChanged'
 }
 
 /**

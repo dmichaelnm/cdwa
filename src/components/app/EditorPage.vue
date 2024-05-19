@@ -39,9 +39,9 @@ const cmp = useComposables();
 const runTask = useRunTask();
 
 // Mode parameter
-const mode = cmp.route.query.mode as EEditorMode;
+const mode = cmp.sessionStore.queryParams.mode as EEditorMode;
 // Item ID parameter
-const itemId = cmp.route.query.id as string;
+const itemId = cmp.sessionStore.queryParams.itemId as string | undefined;
 
 // Defines the properties of this component.
 const props = defineProps<{
@@ -61,14 +61,11 @@ const props = defineProps<{
  * Lifecycle event method called before this component is mounted.
  */
 onBeforeMount(() => {
-  // Ignore when project was not yet loaded
-  if (cmp.sessionStore.projects.length > 0) {
-    // Start apply task
-    runTask(async () => {
-      // If in Edit mode, call the apply function with the item ID
-      await props.apply(mode, itemId);
-    });
-  }
+  // Start apply task
+  runTask(async () => {
+    // If in Edit mode, call the apply function with the item ID
+    await props.apply(mode, itemId);
+  });
 });
 
 /**
@@ -77,6 +74,9 @@ onBeforeMount(() => {
  * @return {void}
  */
 function closeEditor(): void {
+  // Unlock editor
+  cmp.sessionStore.editorLock = false;
+  // Close the editor and route back to caller
   cmp.router.back();
 }
 
@@ -97,7 +97,7 @@ async function save(): Promise<void> {
           await props.create();
         } else if (mode === EEditorMode.edit) {
           // Update the document
-          await props.update(itemId);
+          await props.update(itemId as string);
         }
         // Close the editor
         closeEditor();

@@ -20,6 +20,15 @@ export default {
 
   // Enumeration Labels
   enum: {
+    // Attribute Types
+    type: {
+      // String
+      string: 'String',
+      // Number
+      number: 'Number',
+      // Boolean
+      boolean: 'Boolean'
+    },
     // Project Member Roles
     role: {
       // Owner
@@ -55,12 +64,20 @@ export default {
     altered: 'Altered by / at',
     // Created By At
     created: 'Created by / at',
+    // Custom Attributes
+    customAttributes: 'Custom Attributes',
     // Description
     description: 'Description (optional)',
     // Details
     details: 'Details',
+    // Key
+    key: 'Key',
     // Rows per Page
-    rowsPerPage: 'Rows per page'
+    rowsPerPage: 'Rows per page',
+    // Type
+    type: 'Type',
+    // Value
+    value: 'Value'
   },
 
   // General Button Labels
@@ -75,6 +92,19 @@ export default {
     okay: 'Okay',
     // Save
     save: 'Save'
+  },
+
+  // General Messages
+  message: {
+    // Custom Attributes Table
+    customAttributes: {
+      // Message
+      message: 'Here you can define your own attributes, which can later be referenced in templates. An attribute must ' +
+        'have a unique key and be either a character string, a number or a boolean value. Any number of attributes can ' +
+        'be defined.',
+      // Empty Table Message
+      messageEmpty: 'No custom attributes have been created yet.'
+    }
   },
 
   // General Error Messages

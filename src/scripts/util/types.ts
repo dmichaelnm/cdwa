@@ -46,7 +46,7 @@ export type TDocumentAttribute = {
 /**
  * Represents the type of input for a column in an editable table.
  */
-export type TEditableTableColumnInput = 'none' | 'string' | 'number' | 'boolean' | 'select';
+export type TEditableTableColumnInput = 'none' | 'string' | 'checkbox' | 'select';
 
 /**
  * Represents a column in an editable table.
@@ -59,6 +59,8 @@ export type TEditableTableColumn = QTableColumn &
     options?: TSelectionOption<any>[],
     // Flag controlling whether the labels of the options should be translated
     translate?: boolean
+    // Flag controlling whether the icons in a selection are shown
+    showIcons?: boolean
   }
 
 /**

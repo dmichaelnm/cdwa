@@ -20,6 +20,15 @@ export default {
 
   // Enumeration Labels
   enum: {
+    // Attribute Types
+    type: {
+      // String
+      string: 'Zeichenkette',
+      // Number
+      number: 'Zahlenwert',
+      // Boolean
+      boolean: 'Wahrheitswert'
+    },
     // Project Member Roles
     role: {
       // Owner
@@ -55,12 +64,20 @@ export default {
     altered: 'Geändert von / am',
     // Created By At
     created: 'Erstellt von / am',
+    // Custom Attributes
+    customAttributes: 'Benutzerdefinierte Attribute',
     // Description
     description: 'Beschreibung (optional)',
     // Details
     details: 'Details',
+    // Key
+    key: 'Schlüssel',
     // Rows per Page
-    rowsPerPage: 'Zeilen pro Seite'
+    rowsPerPage: 'Zeilen pro Seite',
+    // Type
+    type: 'Typ',
+    // Value
+    value: 'Wert'
   },
 
   // General Button Labels
@@ -75,6 +92,19 @@ export default {
     okay: 'Okay',
     // Save
     save: 'Speichern'
+  },
+
+  // General Messages
+  message: {
+    // Custom Attributes Table
+    customAttributes: {
+      // Message
+      message: 'Hier können eigene Attribute definiert werden, auf die später in Vorlagen referenziert werden kann. ' +
+        'Ein Attribut muss dabei einen eindeutigen Schlüssel haben und entweder eine Zeichenkette, eine Zahl oder ein ' +
+        'Wahrheitswert sein. Es können beliebig viele Attribute definiert werden.',
+      // Empty Table Message
+      messageEmpty: 'Bisher wurden noch keine benutzerdefinierten Attribute erstellt.'
+    }
   },
 
   // General Error Messages

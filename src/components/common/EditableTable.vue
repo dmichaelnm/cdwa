@@ -48,23 +48,45 @@
               <!-- Table Column -->
               <q-td :props="props" class="editable-table-column">
                 <!-- Table Column Value -->
-                <div>{{ props.value }}</div>
+                <div v-if="getInputType(col, props.row) !== 'checkbox'">{{ props.value }}</div>
+                <!-- Table Column Checkbox -->
+                <div v-if="getInputType(col, props.row) === 'checkbox'">
+                  <!-- Checkbox -->
+                  <q-checkbox v-model="props.row[col.name]" dense v-if="!readonly" />
+                  <!-- True Icon Readonly -->
+                  <q-icon name="check" v-if="readonly && props.row[col.name]" />
+                </div>
                 <!-- Popup Edit: Selection -->
                 <q-popup-edit :ref="`pe_${col.name}_${props.rowIndex}`"
                               v-model="props.row[col.name]"
                               v-if="!readonly && getInputType(col, props.row) === 'select'"
                               v-slot="scope"
-                              style="box-shadow: 0 0"
                               anchor="center middle"
-                              @show="$refs.select.showPopup()">
+                              @show="(<typeof FieldSelect>$refs.select).showPopup()">
                   <!-- Selection Input -->
                   <field-select ref="select"
                                 v-model="scope.value"
-                                :options="col.options"
+                                :options="col.options as TSelectionOption<any>[]"
                                 :translate="col.translate"
+                                :show-icons="col.showIcons"
                                 borderless
                                 @update:modelValue="value => onValueUpdated(props.rowIndex, col.name, value,
                                                               <QPopupEdit>$refs[`pe_${col.name}_${props.rowIndex}`])" />
+                </q-popup-edit>
+                <!-- Popup Edit: String -->
+                <q-popup-edit :ref="`pe_${col.name}_${props.rowIndex}`"
+                              v-model="props.row[col.name]"
+                              v-if="!readonly && getInputType(col, props.row) === 'string'"
+                              v-slot="scope"
+                              anchor="center middle"
+                              @show="(<typeof FieldInput>$refs.input).select()">
+                  <!-- Text Input -->
+                  <field-input ref="input"
+                               v-model="scope.value"
+                               borderless
+                               @focusout="onValueUpdated(props.rowIndex, col.name, scope.value)"
+                               @keyup.enter="(<QPopupEdit>$refs[`pe_${col.name}_${props.rowIndex}`]).hide()"
+                               @blur="(<QPopupEdit>$refs[`pe_${col.name}_${props.rowIndex}`]).hide()" />
                 </q-popup-edit>
               </q-td>
             </slot>
@@ -122,6 +144,8 @@ import { TEditableTableColumn, TEditableTableColumnInput } from 'src/scripts/uti
 import { computed, ref } from 'vue';
 import FieldSelect from 'components/common/FieldSelect.vue';
 import { QPopupEdit } from 'quasar';
+import { TSelectionOption } from 'src/scripts/config/options';
+import FieldInput from 'components/common/FieldInput.vue';
 
 // Defines the properties of this component.
 const props = defineProps<{
@@ -217,9 +241,12 @@ function getInputType(column: TEditableTableColumn, row: any): TEditableTableCol
   if (typeof column.input === 'function') {
     // If input type is a function, evaluate the function
     return column.input(row);
-  } else {
+  } else if (column.input) {
     // Return the static input type
     return column.input;
+  } else {
+    // Return default
+    return 'none';
   }
 }
 

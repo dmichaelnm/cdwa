@@ -1,6 +1,7 @@
 <template>
   <!-- Input Field -->
-  <q-input :model-value="modelValue"
+  <q-input ref="input"
+           :model-value="modelValue"
            :label="label"
            :type="type"
            :autofocus="autoFocus"
@@ -9,24 +10,31 @@
            :error-message="error"
            :rules="[value => (!mandatory || value?.toString().length > 0) || $t('error.emptyInputField') ]"
            :rows="type === 'textarea' ? 2 : 1"
+           :borderless="borderless"
+           :standout="!borderless"
+           :readonly="readonly"
+           :hide-bottom-space="error === undefined"
+           :hide-hint="error === undefined"
            lazy-rules="ondemand"
            spellcheck="false"
            stack-label
-           standout
-           :readonly="readonly"
            dense
            @update:modelValue="value => modelValue = value" />
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { QInput } from 'quasar';
+
+// Input reference
+const input = ref<QInput | null>(null);
 
 // Defines the properties of this component.
 const props = defineProps<{
   // Model Value
   modelValue: string | number | null;
   // Label of this component
-  label: string;
+  label?: string;
   // The type of this input component
   type?: 'text' | 'textarea' | 'number' | 'password';
   // Flag controlling the field gains the focus on initialization
@@ -39,6 +47,8 @@ const props = defineProps<{
   error?: string;
   // Flag controlling whether this input field is readonly
   readonly?: boolean;
+  // Flag controlling whether this input field is borderless
+  borderless?: boolean;
 }>();
 
 // Define the events emitted by this component.
@@ -52,5 +62,18 @@ const modelValue = computed({
   get: () => props.modelValue,
   set: (value: string | number | null) => emit('update:modelValue', value)
 });
+
+/**
+ * Selects the text within an input field.
+ * If the input field has a value, it will be selected.
+ *
+ * @return {void}
+ */
+function select(): void {
+  input.value?.select();
+}
+
+// Exposed functions
+defineExpose({ select });
 
 </script>

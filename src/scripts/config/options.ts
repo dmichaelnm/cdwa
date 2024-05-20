@@ -1,4 +1,4 @@
-import { EProjectMemberRole, EUILanguage } from 'src/scripts/util/types';
+import { EDocumentAttributeType, EProjectMemberRole, EUILanguage } from 'src/scripts/util/types';
 import * as flags from 'quasar-extras-svg-icons/country-flag-icons';
 
 /**
@@ -42,5 +42,21 @@ export function getRoleOptions(): TSelectionOption<EProjectMemberRole>[] {
     { value: EProjectMemberRole.deployer, label: 'enum.role.deployer' },
     // Maintainer
     { value: EProjectMemberRole.maintainer, label: 'enum.role.maintainer' }
-  ] ;
+  ];
+}
+
+/**
+ * Retrieves an array of selection options that represent the available document attribute types.
+ *
+ * @returns {TSelectionOption<EDocumentAttributeType>[]} An array of selection options.
+ */
+export function getTypeOptions(): TSelectionOption<EDocumentAttributeType>[] {
+  return [
+    // String
+    { value: EDocumentAttributeType.string, label: 'enum.type.string' },
+    // Number
+    { value: EDocumentAttributeType.number, label: 'enum.type.number' },
+    // Boolean
+    { value: EDocumentAttributeType.boolean, label: 'enum.type.boolean' }
+  ];
 }

@@ -25,3 +25,39 @@ export function toArray<R>(
   // Return the result
   return result;
 }
+
+/**
+ * Converts the given value to a number.
+ *
+ * @param {any} value - The value to be converted to a number.
+ *
+ * @returns {number | null} - The converted number or null if the conversion fails.
+ */
+export function toNumber(value: any): number | null {
+  const nmbr = parseFloat(value);
+  if (!isNaN(nmbr) && isFinite(nmbr)) {
+    return nmbr;
+  }
+  return null;
+}
+
+/**
+ * Converts a value to a boolean.
+ *
+ * @param {any} value - The value to convert.
+ *
+ * @returns {boolean} The converted boolean value.
+ */
+export function toBoolean(value: any): boolean {
+  if (typeof value === 'boolean') {
+    return value as boolean;
+  } else if (typeof value === 'string') {
+    const str = (value as string).trim().toLowerCase();
+    return (str === 'true' || str === '1');
+  } else if (typeof value === 'number') {
+    const nmbr = value as number;
+    return nmbr > 0;
+  } else {
+    return false;
+  }
+}

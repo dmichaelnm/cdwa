@@ -6,7 +6,7 @@
 
   <!-- Editor Page -->
   <editor-page ref="editor"
-               :type="EDocumentType.project"
+               :type="tp.EDocumentType.project"
                :form="form"
                :apply="applyValues"
                :create="createProject"
@@ -25,7 +25,7 @@
             <!-- Name Input -->
             <field-input v-model="projectName"
                          :label="$t('project.label.name')"
-                         :readonly="mode === EEditorMode.view"
+                         :readonly="mode === tp.EEditorMode.view"
                          mandatory
                          auto-focus />
           </div>
@@ -53,7 +53,7 @@
             <!-- Description Input -->
             <field-input v-model="projectDescription"
                          :label="$t('label.description')"
-                         :readonly="mode === EEditorMode.view"
+                         :readonly="mode === tp.EEditorMode.view"
                          type="textarea" />
           </div>
         </div>
@@ -66,8 +66,10 @@
             <q-tabs v-model="currentTabName" align="left" no-caps dense>
               <!-- Members Tab Definition -->
               <q-tab name="members" :label="$t('project.label.members')" />
+              <!-- Custom Attributes Tab Definition -->
+              <q-tab name="attributes" :label="$t('label.customAttributes')" />
               <!-- Project Details -->
-              <q-tab name="details" :label="$t('label.details')"  v-if="mode !== EEditorMode.create" />
+              <q-tab name="details" :label="$t('label.details')" v-if="mode !== tp.EEditorMode.create" />
             </q-tabs>
             <!-- Tab Panels -->
             <q-tab-panels v-model="currentTabName" keep-alive>
@@ -85,12 +87,18 @@
                                 :add="() => { dialogVisible = true }"
                                 :message="$t('project.editor.edit.members.message')"
                                 :message-empty="$t('project.editor.edit.members.messageEmpty')"
-                                :readonly="mode === EEditorMode.view"
+                                :readonly="mode === tp.EEditorMode.view"
                                 deletable />
+              </q-tab-panel>
+              <!-- Custom Attributes Tab Panel -->
+              <q-tab-panel name="attributes">
+                <!-- Custom Attributes Table -->
+                <custom-attributes-table :attributes="projectAttributes"
+                                         :readonly="mode === tp.EEditorMode.view" />
               </q-tab-panel>
               <!-- Project Details -->
               <q-tab-panel name="details">
-                <document-details :data="projectDetails" />
+                <document-details :data="projectDetails as TDocumentMetaData" />
               </q-tab-panel>
             </q-tab-panels>
           </div>
@@ -104,7 +112,7 @@
 <script setup lang="ts">
 import { useComposables } from 'src/scripts/util/composables';
 import EditorPage from 'components/app/EditorPage.vue';
-import { EDocumentType, EEditorMode, EGlobalEvent, EProjectMemberRole } from 'src/scripts/util/types';
+import * as tp from 'src/scripts/util/types';
 import { computed, ref } from 'vue';
 import FieldInput from 'components/common/FieldInput.vue';
 import FieldSelectAccount from 'components/app/FieldSelectAccount.vue';
@@ -116,6 +124,7 @@ import EditableTable from 'components/common/EditableTable.vue';
 import AccountSelectDialog from 'components/app/AccountSelectDialog.vue';
 import { getRoleOptions } from 'src/scripts/config/options';
 import DocumentDetails from 'components/app/DocumentDetails.vue';
+import CustomAttributesTable from 'components/app/CustomAttributesTable.vue';
 
 // Composable
 const cmp = useComposables();
@@ -126,7 +135,7 @@ const editor = ref<typeof EditorPage | null>(null);
 const form = ref<QForm | null>(null);
 
 // Editor mode
-const mode = cmp.sessionStore.queryParams.mode as EEditorMode;
+const mode = cmp.sessionStore.queryParams.mode as tp.EEditorMode;
 // Current tab name
 const currentTabName = ref('members');
 // Account Selection Dialog visibility
@@ -136,7 +145,7 @@ const managerAccount = ref<Account | null>(null);
 
 // Project Manager Editable
 const projectManagerEditable = computed(() => {
-  return cmp.sessionStore.account && cmp.sessionStore.account.id === projectOwner.value?.accountId && mode !== EEditorMode.view;
+  return cmp.sessionStore.account && cmp.sessionStore.account.id === projectOwner.value?.accountId && mode !== tp.EEditorMode.view;
 });
 
 // Project Name
@@ -149,6 +158,8 @@ const projectManager = ref<TProjectMember | null>(null);
 const projectDescription = ref<string | null>(null);
 // Project Members
 const projectMembers = ref<TProjectMember[]>([]);
+// Project Attributes
+const projectAttributes = ref<tp.TDocumentAttribute[]>([]);
 // Project Details
 const projectDetails = ref<TDocumentMetaData | null>(null);
 
@@ -160,18 +171,18 @@ const projectDetails = ref<TDocumentMetaData | null>(null);
  *
  * @returns {Promise<void>} A promise that resolves when the values have been applied.
  */
-async function applyValues(mode: EEditorMode, projectId?: string): Promise<void> {
-  if (mode === EEditorMode.create) {
+async function applyValues(mode: tp.EEditorMode, projectId?: string): Promise<void> {
+  if (mode === tp.EEditorMode.create) {
     // Initialize default values
     projectOwner.value = {
       accountId: cmp.sessionStore.account?.id as string,
       displayName: cmp.sessionStore.account?.getName() as string,
-      role: EProjectMemberRole.owner
+      role: tp.EProjectMemberRole.owner
     };
     projectManager.value = {
       accountId: cmp.sessionStore.account?.id as string,
       displayName: cmp.sessionStore.account?.getName() as string,
-      role: EProjectMemberRole.manager
+      role: tp.EProjectMemberRole.manager
     };
   } else {
     // Get project document
@@ -183,10 +194,14 @@ async function applyValues(mode: EEditorMode, projectId?: string): Promise<void>
     projectManager.value = project.getManager();
     // Copy members array
     projectMembers.value = project.data.members
-      .filter(mbr => mbr.role !== EProjectMemberRole.owner && mbr.role !== EProjectMemberRole.manager)
+      .filter(mbr => mbr.role !== tp.EProjectMemberRole.owner && mbr.role !== tp.EProjectMemberRole.manager)
       .map(mbr => {
         return { ...mbr } as TProjectMember;
       });
+    // Copy attributes array
+    projectAttributes.value = project.data.attributes.map(att => {
+      return { ...att } as tp.TDocumentAttribute;
+    });
     // Get metadata
     projectDetails.value = project.data as TDocumentMetaData;
   }
@@ -205,13 +220,13 @@ async function createProject(): Promise<FirestoreDocument<IProjectData>> {
     projectName.value,
     projectDescription.value,
     createMembersArray(),
-    []
+    projectAttributes.value
   );
   // Add new project to session store project list
   cmp.sessionStore.projects.push(project);
   // Send global event
-  cmp.bus.emit(EGlobalEvent.projectsChanged, {
-    mode: EEditorMode.create,
+  cmp.bus.emit(tp.EGlobalEvent.projectsChanged, {
+    mode: tp.EEditorMode.create,
     project: project
   });
   // Return the new project
@@ -232,11 +247,12 @@ async function updateProject(projectId: string): Promise<void> {
   project.data.common.name = projectName.value;
   project.data.common.description = projectDescription.value;
   project.data.members = createMembersArray();
+  project.data.attributes = projectAttributes.value;
   // Update the project
   await Project.updateProject(project);
   // Send global event
-  cmp.bus.emit(EGlobalEvent.projectsChanged, {
-    mode: EEditorMode.edit,
+  cmp.bus.emit(tp.EGlobalEvent.projectsChanged, {
+    mode: tp.EEditorMode.edit,
     project: project
   });
 }
@@ -270,7 +286,7 @@ function setProjectManager(account: Account | null): void {
     projectManager.value = {
       accountId: account.id,
       displayName: account.getName(),
-      role: EProjectMemberRole.manager
+      role: tp.EProjectMemberRole.manager
     };
   }
 }
@@ -311,7 +327,7 @@ function addProjectMember(account: Account): void {
   projectMembers.value.push({
     accountId: account.id,
     displayName: account.getName(),
-    role: EProjectMemberRole.visitor
+    role: tp.EProjectMemberRole.visitor
   });
 }
 

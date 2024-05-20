@@ -50,6 +50,15 @@ jobs:
           echo "};" >> firebase.ts
           cd ../../..
 
+      - name: Generate Global Configuration
+        run: |
+          cd src/scripts/config
+          echo "import * as tp from 'src/scripts/util/types';" > global-config.ts
+          echo "export const globalConfig: tp.TGlobalConfig = {" >> global-config.ts
+          echo "  logLevel: tp.ELogLevel.${{vars.LOG_LEVEL}}," >> global-config.ts
+          echo "  cloudFunctionsURL: '${{vars.CLOUD_FUNCTIONS_URL}}'" >> global-config.ts
+          echo "};" >> global-config.ts
+
       - name: Build Quasar Application
         run: npx quasar build
 

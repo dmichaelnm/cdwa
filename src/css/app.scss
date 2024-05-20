@@ -1,0 +1,142 @@
+@import "quasar.variables";
+
+// ============================================================================
+// Body
+// ============================================================================
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 10pt;
+  color: $light-text;
+  background-color: $light-background-1;
+}
+
+body.body--dark {
+  color: $dark-text;
+  background-color: $dark-background-1;
+}
+
+// ============================================================================
+// Frame
+// ============================================================================
+
+.frame {
+  background-color: $light-background-0;
+  box-shadow: 5px 5px 10px 0 $light-shadow-0;
+}
+
+.body--dark .frame {
+  background-color: $dark-background-0;
+  box-shadow: 5px 5px 10px 0 $dark-shadow;
+}
+
+// ============================================================================
+// QMenu
+// ============================================================================
+
+.q-menu {
+  font-size: 9pt;
+  background-color: $light-background-0;
+  box-shadow: 5px 5px 10px 0 $light-shadow-0;
+}
+
+.body--dark .q-menu {
+  background-color: $dark-background-0;
+  box-shadow: 5px 5px 10px 0 $dark-shadow;
+}
+
+// ============================================================================
+// QField
+// ============================================================================
+
+.q-field {
+  font-size: 9pt;
+}
+
+.q-field__native {
+  letter-spacing: 0;
+}
+
+.q-field--standout.q-field--highlighted .q-field__control {
+  background-color: rgb(0, 0, 0, .07);
+  box-shadow: 0 0;
+}
+
+.body--dark .q-field--standout.q-field--highlighted .q-field__control {
+  background-color: rgb(255, 255, 255, 0.07);
+}
+
+.q-field--standout.q-field--highlighted .q-field__native {
+  color: $light-text-strong;
+}
+
+.body--dark .q-field--standout.q-field--highlighted .q-field__native {
+  color: $dark-text-strong;
+}
+
+.q-field--standout.q-field--highlighted .q-field__append {
+  color: $light-text;
+}
+
+.body--dark .q-field--standout.q-field--highlighted .q-field__append {
+  color: $dark-text;
+}
+
+// ============================================================================
+// QSeparator
+// ============================================================================
+
+.q-separator {
+  background-color: $light-frame;
+}
+
+.body--dark .q-separator {
+  background-color: $dark-frame;
+}
+
+// ============================================================================
+// Dialog
+// ============================================================================
+
+.dialog-frame {
+  width: 700px;
+  max-width: 700px;
+  padding: 16px;
+  background-color: $light-background-0;
+  box-shadow: 5px 5px 10px 0 $light-shadow-1;
+}
+
+.body--dark .dialog-frame {
+  background-color: $dark-background-0;
+  box-shadow: 5px 5px 10px 0 $dark-shadow;
+}
+
+.dialog-title {
+  font-size: 12pt;
+  font-weight: bold;
+  font-variant: petite-caps;
+}
+
+// ============================================================================
+// QTable
+// ============================================================================
+
+.q-table__container {
+  background-color: transparent;
+}
+
+// ============================================================================
+// QTab
+// ============================================================================
+
+.q-tab__label {
+  font-size: 10pt;
+  font-variant: petite-caps;
+  color: $primary;
+  font-weight: normal;
+  line-height: 1em;
+}
+
+.q-tab-panels {
+  background-color: transparent;
+}

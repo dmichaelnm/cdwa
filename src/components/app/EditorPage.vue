@@ -6,6 +6,7 @@
     <template #buttons>
       <!-- Save Button -->
       <button-push :label="$t('button.save')"
+                   v-if="mode !== EEditorMode.view"
                    @click="save" />
       <!-- Cancel Button -->
       <button-push :label="$t('button.cancel')"

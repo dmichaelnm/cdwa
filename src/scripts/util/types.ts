@@ -1,3 +1,6 @@
+import { QTableColumn } from 'quasar';
+import { TSelectionOption } from 'src/scripts/config/options';
+
 /**
  * Defines the type of the global configuration instance for the application.
  */
@@ -39,6 +42,24 @@ export type TDocumentAttribute = {
   // The value of the attribute type
   value: string | number | boolean;
 }
+
+/**
+ * Represents the type of input for a column in an editable table.
+ */
+export type TEditableTableColumnInput = 'none' | 'string' | 'number' | 'boolean' | 'select';
+
+/**
+ * Represents a column in an editable table.
+ */
+export type TEditableTableColumn = QTableColumn &
+  {
+    // The type of the inline editor.
+    input?: TEditableTableColumnInput | { (row: any): TEditableTableColumnInput },
+    // The options used for a selection inline editor.
+    options?: TSelectionOption<any>[],
+    // Flag controlling whether the labels of the options should be translated
+    translate?: boolean
+  }
 
 /**
  * This interface represents an object that has an identifier.
@@ -95,7 +116,9 @@ export enum EEditorMode {
   // Edit a document
   edit = 'edit',
   // Delete a document
-  delete = 'delete'
+  delete = 'delete',
+  // View a document
+  view = 'view'
 }
 
 /**
@@ -125,9 +148,7 @@ export enum EDocumentType {
   // Account
   account = 'account',
   // Project
-  project = 'project',
-  // Project Role
-  role = 'role'
+  project = 'project'
 }
 
 /**
@@ -158,6 +179,20 @@ export enum EDocumentAttributeType {
   boolean = 'boolean'
 }
 
-export enum EPermission {
-
+/**
+ * Enumeration representing different roles for project members.
+ */
+export enum EProjectMemberRole {
+  // Owner
+  owner = 'owner',
+  // Manager
+  manager = 'manager',
+  // Maintainer
+  maintainer = 'maintainer',
+  // Deployer
+  deployer = 'deployer',
+  // Developer
+  developer = 'developer',
+  // Visitor
+  visitor = 'visitor'
 }

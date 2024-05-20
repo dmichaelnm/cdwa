@@ -1,4 +1,4 @@
-import { EUILanguage } from 'src/scripts/util/types';
+import { EProjectMemberRole, EUILanguage } from 'src/scripts/util/types';
 import * as flags from 'quasar-extras-svg-icons/country-flag-icons';
 
 /**
@@ -25,4 +25,22 @@ export function getLanguageOptions(): TSelectionOption<EUILanguage>[] {
     // German
     { value: EUILanguage.deDE, label: 'language.deDE', icon: flags.flagDE }
   ];
+}
+
+/**
+ * Retrieves the available role options for project members.
+ *
+ * @returns {TSelectionOption<EProjectMemberRole>[]} An array of selection options for project member roles
+ */
+export function getRoleOptions(): TSelectionOption<EProjectMemberRole>[] {
+  return [
+    // Visitor
+    { value: EProjectMemberRole.visitor, label: 'enum.role.visitor' },
+    // Developer
+    { value: EProjectMemberRole.developer, label: 'enum.role.developer' },
+    // Deployer
+    { value: EProjectMemberRole.deployer, label: 'enum.role.deployer' },
+    // Maintainer
+    { value: EProjectMemberRole.maintainer, label: 'enum.role.maintainer' }
+  ] ;
 }

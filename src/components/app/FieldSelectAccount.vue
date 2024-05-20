@@ -8,7 +8,7 @@
   <q-field :model-value="modelValue"
            :label="label"
            readonly
-           borderless
+           standout
            stack-label
            dense>
     <!-- Template: Select Button -->

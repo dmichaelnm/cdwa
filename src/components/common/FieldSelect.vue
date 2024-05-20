@@ -1,9 +1,11 @@
 <template>
   <!-- Select Component -->
-  <q-select :model-value="modelValue"
+  <q-select ref="select"
+            :model-value="modelValue"
             :options="options"
             :borderless="borderless"
             :standout="!borderless"
+            :autocomplete="autoComplete"
             dense
             options-dense
             map-options
@@ -45,12 +47,16 @@
 </style>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useComposables } from 'src/scripts/util/composables';
 import { TSelectionOption } from 'src/scripts/config/options';
+import { QSelect } from 'quasar';
 
 // Composable
 const cmp = useComposables();
+
+// Select reference
+const select = ref<QSelect | null>(null);
 
 // Defines the properties of this component.
 const props = defineProps<{
@@ -68,6 +74,8 @@ const props = defineProps<{
   showIcons?: boolean;
   // Flag controlling whether the label must be translated
   translate?: boolean;
+  // Auto complete attribute
+  autoComplete?: string;
 }>();
 
 // Define the events emitted by this component.
@@ -93,5 +101,17 @@ const selectedIcon = computed(() => {
   const option = props.options.find(opt => opt.value === modelValue.value);
   return option ? option.icon : undefined;
 });
+
+/**
+ * Shows the popup for the select component.
+ *
+ * @return {void}
+ */
+function showPopup(): void {
+  select.value.showPopup();
+}
+
+// Exposed functions
+defineExpose({ showPopup });
 
 </script>

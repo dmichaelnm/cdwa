@@ -69,7 +69,13 @@ exports.deleteProject = onRequest(
       if (snapshot.length > 0) {
         const data = snapshot.at(0)?.data();
         if (data) {
-          if (data.owner.accountId === user.uid) {
+          // Get members array
+          const members = data.members as { accountId: string, role: string }[];
+          // Check if the caller is the owner of the project
+          const owner = members.find(
+            mbr => mbr.accountId === user.uid && mbr.role === 'owner'
+          );
+          if (owner) {
             // User is permitted to delete the project
             await admin.firestore().recursiveDelete(documentRef);
             response.sendStatus(200);

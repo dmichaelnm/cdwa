@@ -6,7 +6,7 @@
                 :message="$t('dialog.accountSelect.message')"
                 :form="form"
                 :submit="submit"
-                @before-show="email = ''">
+                @before-show="resetDialog">
 
     <!-- Form -->
     <q-form ref="form"
@@ -95,6 +95,17 @@ async function submit(): Promise<boolean> {
   emit('accountSelected', account);
   // Account validated, return true
   return true;
+}
+
+/**
+ * Resets the dialog by clearing the input fields and resetting validation.
+ *
+ * @return {void}
+ */
+function resetDialog(): void {
+  form.value?.resetValidation();
+  email.value = '';
+  emailError.value = '';
 }
 
 </script>

@@ -88,6 +88,9 @@ module.exports = {
     // does not work with type definitions
     'no-unused-vars': 'off',
 
+    // Disable warning mutating properties
+    'vue/no-mutating-props': 'off',
+
     // allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }

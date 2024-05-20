@@ -53,6 +53,10 @@ body.body--dark {
   font-size: 9pt;
 }
 
+.q-field__native {
+  letter-spacing: 0;
+}
+
 .q-field--standout.q-field--highlighted .q-field__control {
   background-color: rgb(0, 0, 0, .07);
   box-shadow: 0 0;
@@ -118,5 +122,21 @@ body.body--dark {
 // ============================================================================
 
 .q-table__container {
+  background-color: transparent;
+}
+
+// ============================================================================
+// QTab
+// ============================================================================
+
+.q-tab__label {
+  font-size: 10pt;
+  font-variant: petite-caps;
+  color: $primary;
+  font-weight: normal;
+  line-height: 1em;
+}
+
+.q-tab-panels {
   background-color: transparent;
 }

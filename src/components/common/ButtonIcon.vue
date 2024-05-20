@@ -4,8 +4,10 @@
          :size="size"
          :href="href"
          :target="target"
+         :dense="dense"
          round
-         flat
+         :flat="!highlighted"
+         :color="highlighted ? 'primary' : undefined"
          @click="emit('click')">
     <!-- Default Slot -->
     <slot />
@@ -28,6 +30,10 @@ defineProps<{
   href?: string;
   // Target of an external link
   target?: '_blank' | '_self';
+  // Flag controlling whether this button is dense
+  dense?: boolean;
+  // Flag controlling whether this button is highlighted
+  highlighted?: boolean;
 }>();
 
 // Define the events emitted by this component.

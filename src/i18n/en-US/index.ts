@@ -18,6 +18,25 @@ export default {
     deDE: 'German'
   },
 
+  // Enumeration Labels
+  enum: {
+    // Project Member Roles
+    role: {
+      // Owner
+      owner: 'Owner',
+      // Manager
+      manager: 'Manager',
+      // Maintainer
+      maintainer: 'Maintainer',
+      // Deployer
+      deployer: 'Deployer',
+      // Developer
+      developer: 'Developer',
+      // Visitor
+      visitor: 'Visitor'
+    }
+  },
+
   // General Menu Labels
   menu: {
     // Dark Mode
@@ -38,6 +57,8 @@ export default {
     created: 'Created by / at',
     // Description
     description: 'Description (optional)',
+    // Details
+    details: 'Details',
     // Rows per Page
     rowsPerPage: 'Rows per page'
   },
@@ -194,7 +215,15 @@ export default {
       // Project Owner
       owner: 'Owner',
       // Project Manager
-      manager: 'Project Manager'
+      manager: 'Project Manager',
+      // Project Member
+      memberName: 'Project Member Name',
+      // Project Members
+      members: 'Project Members',
+      // Own Role
+      ownRole: 'Own Role',
+      // Roles
+      role: 'Role'
     },
     // Project Button Labels
     button: {
@@ -231,20 +260,35 @@ export default {
         // Message
         message: 'Here you can customize the properties of the project such as name or description and also add or ' +
           'remove members of the project or adjust their roles. If you are the project owner, you can also change the ' +
-          'project manager.'
+          'project manager.',
+        // Members Table Messages
+        members: {
+          // Message
+          message: 'Here you will see a list of all members of your project. Every member will be able to see this ' +
+            'project, regardless of the member\'s role. If you are the owner or project manager, you can add and ' +
+            'remove new members here and you can also define the roles of the members here. The roles determine what ' +
+            'permissions the members have.',
+          // Empty Table Message
+          messageEmpty: 'No members have been assigned to this project yet.',
+          // Error Messages
+          error: {
+            // New member is owner
+            isOwner: 'The project owner cannot be added as a member.',
+            // New member is manager
+            isManager: 'The project manager cannot be added as a member.',
+            // New member is already added
+            isMember: 'This account is already a project member.'
+          }
+        }
+      },
+      // View Project Messages
+      view: {
+        // Title
+        title: 'View Project',
+        // Message
+        message: 'Here you can view the properties of the project. However, there is no possibility of making changes ' +
+          'due to a lack of authorization.'
       }
-    }
-  },
-
-  // Role Messages
-  role: {
-    // Default Messages
-    default: {
-      // Default Role Name
-      name: 'Visitor',
-      // Default Role Description
-      description: 'This role has no permissions. Accounts that only have this role cannot make any changes to the ' +
-        'project.'
     }
   }
 };

@@ -43,6 +43,7 @@
              :pagination-label="(f, e, t) => f + ' - ' + e + ' / ' + t"
              :pagination="{ rowsPerPage: 10, sortBy: 'name' }"
              wrap-cells flat>
+      <!-- Template: Header Column -->
       <template #header-cell="props">
         <!-- Table Header Cell -->
         <q-th :props="props">
@@ -55,6 +56,10 @@
         <!-- Table Cell -->
         <q-td :props="props" class="vertical-top">
           <div class="overview-table-actions">
+            <!-- View Button -->
+            <button-icon size="sm" icon="visibility"
+                         v-if="permission(EEditorMode.view, props.row)"
+                         @click="openEditor(type, EEditorMode.view, props.row.id)" />
             <!-- Edit Button -->
             <button-icon size="sm" icon="edit"
                          v-if="permission(EEditorMode.edit, props.row)"

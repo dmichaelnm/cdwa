@@ -29,7 +29,10 @@
           <!-- Space Column -->
           <div class="col-grow" />
           <!-- Acount Name Column -->
-          <div class="col-auto application-header-accountname">{{ cmp.sessionStore.accountDisplayName }}</div>
+          <div class="col-auto application-header-accountname">
+            <div>{{ cmp.sessionStore.accountDisplayName }}</div>
+            <div>{{ cmp.sessionStore.project ? $t(`enum.role.${cmp.sessionStore.project.getOwnRole()}`) : '' }}</div>
+          </div>
           <!-- Account Menu Column -->
           <div class="col-auto">
             <!-- Account Menu Button -->
@@ -135,6 +138,7 @@
 }
 
 .application-header-accountname {
+  text-align: right;
   font-size: 9pt;
   font-variant: petite-caps;
 }
@@ -232,7 +236,7 @@ onBeforeMount(() => {
         switchProject(event.project.id);
       }
     }
-  })
+  });
 
   // Register event listener called when the account has changed
   Account.onAccountStateChange(async (account) => {
@@ -240,7 +244,7 @@ onBeforeMount(() => {
 
     if (account === null) {
       // If the account is null, redirect to login page
-      await cmp.router.push({ path: 'auth/login' });
+      await cmp.router.push({ path: '/auth/login' });
     } else {
       // Store account on session
       cmp.sessionStore.account = account;
@@ -330,6 +334,8 @@ async function switchProject(projectId: string | null): Promise<void> {
     // If project ID is not null, load the project
     if (projectId !== null) {
       cmp.sessionStore.project = await Project.loadProject(projectId);
+    } else {
+      cmp.sessionStore.project = null;
     }
     // Update the session with the new project ID
     cmp.sessionStore.accountActive.data.state.activeProject = projectId;

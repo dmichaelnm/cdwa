@@ -12,9 +12,8 @@
            lazy-rules="ondemand"
            spellcheck="false"
            stack-label
-           :standout="!readonly"
+           standout
            :readonly="readonly"
-           :borderless="readonly"
            dense
            @update:modelValue="value => modelValue = value" />
 </template>

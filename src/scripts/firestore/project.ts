@@ -2,8 +2,6 @@ import * as fd from 'src/scripts/firestore/firestore-document';
 import * as tp from 'src/scripts/util/types';
 import * as fs from 'firebase/firestore';
 import { ProjectDocument } from 'src/scripts/firestore/project-document';
-import { Account } from 'src/scripts/firestore/account';
-import { IRoleData, Role } from 'src/scripts/firestore/role';
 import { getAuthorizedUserId } from 'src/scripts/util/firebase';
 import { toArray } from 'src/scripts/util/utilities';
 
@@ -16,7 +14,7 @@ export type TProjectMember = {
   // Display name of the member
   displayName: string;
   // Array of IDs of roles of the member
-  roles?: string[];
+  role: tp.EProjectMemberRole;
 }
 
 /**
@@ -28,10 +26,6 @@ export type TProjectMember = {
 export interface IProjectData extends fd.IDocumentCommonData, fd.IDocumentMetaData, fd.IDocumentAttributeData {
   // Array of account IDs with access to this project
   access?: string[];
-  // The owner of the project
-  owner: TProjectMember;
-  // The manager of the project
-  manager: TProjectMember;
   // Array of project members
   members: TProjectMember[];
 }
@@ -90,56 +84,110 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
   }
 
   /**
+   * Returns the owner of the project.
+   *
+   * @returns {TProjectMember} The owner of the project.
+   *
+   * @throws {Error} Throws an error if the project has no owner.
+   */
+  getOwner(): TProjectMember {
+    // Get the owner
+    const owner = this.data.members.find(mbr => mbr.role === tp.EProjectMemberRole.owner);
+    if (owner) {
+      // Return the owner
+      return owner;
+    }
+    // Project has no owner
+    throw new Error(`Project "${this.getName()} has no owner.`);
+  }
+
+  /**
+   * Returns the manager of the project.
+   *
+   * @returns {TProjectMember} The manager of the project.
+   *
+   * @throws {Error} If the project has no manager.
+   */
+  getManager(): TProjectMember {
+    // Get the manager
+    const manager = this.data.members.find(mbr => mbr.role === tp.EProjectMemberRole.manager);
+    if (manager) {
+      // Return the manager
+      return manager;
+    }
+    // Project has no owner
+    throw new Error(`Project "${this.getName()} has no manager.`);
+  }
+
+  /**
+   * Retrieves the role of the authorized user in the project.
+   *
+   * @returns {tp.EProjectMemberRole} The role of the authorized user.
+   *
+   * @throws {Error} Throws an error if the authorized user is not a member of the project.
+   */
+  getOwnRole(): tp.EProjectMemberRole {
+    // Get current user ID
+    const id = getAuthorizedUserId();
+    // Get role for ID
+    const member = this.data.members.find(mbr => mbr.accountId === id);
+    if (member) {
+      // Return role
+      return member.role;
+    }
+    // No member found
+    throw new Error(`No member with ID "${id}" found in project "${this.getName()}".`);
+  }
+
+  /**
+   * Checks if the current user has any of the specified roles.
+   *
+   * @param {...tp.EProjectMemberRole[]} roles - The roles to check.
+   *
+   * @return {boolean} - True if the current user has any of the specified roles, false otherwise.
+   */
+  hasRole(...roles: tp.EProjectMemberRole[]): boolean {
+    // Get current user id
+    const id = getAuthorizedUserId();
+    // Find the project member
+    const member = this.data.members.find(mbr => mbr.accountId === id);
+    if (member) {
+      // Check if one of the roles apply
+      return roles.some(r => r === member.role);
+    }
+    // Member not found
+    return false;
+  }
+
+  /**
    * Creates a new project with the given information.
    *
    * @param {string} name - The name of the project.
    * @param {string | null} description - The description of the project. Can be null.
-   * @param {Account} owner - The owner of the project.
-   * @param {Account} manager - The project manager.
+   * @param {TProjectMember[]} members - The members of the project.
    * @param {TDocumentAttribute[]} attributes - The attributes of the project.
-   * @param {string} visitorRoleName - The name of the role for visitors.
-   * @param {string | null} visitorRoleDescription - The description of the role for visitors. Can be null.
    *
    * @returns {Promise<Project>} - A Promise that resolves with the created project.
    */
   static async createProject(
     name: string,
     description: string | null,
-    owner: Account,
-    manager: Account,
-    attributes: tp.TDocumentAttribute[],
-    visitorRoleName: string,
-    visitorRoleDescription: string | null
+    members: TProjectMember[],
+    attributes: tp.TDocumentAttribute[]
   ): Promise<Project> {
     // Create the data structure for the project
     const data: IProjectData = {
-      access: Project.createAccessList(
-        owner.id,
-        manager.id
-      ),
+      access: Project.createAccessList(members),
       common: { name: name, description: description },
-      owner: { accountId: owner.id, displayName: owner.getName() },
-      manager: { accountId: manager.id, displayName: manager.getName() },
-      members: [],
+      members: members,
       attributes: attributes
     };
     // Create the project document
-    const project = await fd.FirestoreDocument.create(
+    return await fd.FirestoreDocument.create(
       tp.EDocumentType.project as string,
       data,
       (config) => new Project(config)
     );
-    // Create a role without permissions for visitors
-    const role = await Role.createRole(
-      project,
-      visitorRoleName,
-      visitorRoleDescription,
-      []
-    );
-    // Add role to project
-    project.addDocument(role);
-    // Return the project
-    return project;
   }
 
   /**
@@ -154,10 +202,7 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
       project,
       (data: IProjectData) => {
         // Refresh the access list
-        data.access = Project.createAccessList(
-          data.owner.accountId,
-          data.manager.accountId
-        );
+        data.access = Project.createAccessList(project.data.members);
         return data;
       }
     );
@@ -197,24 +242,18 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
       projectId,
       (config) => new Project(config)
     );
-    // Load the roles of the project
-    const roles = await fd.FirestoreDocument.query<IRoleData, Role>(
-      project.getFullPath() + tp.EDocumentType.role,
-      (config) => new Role(config, project)
-    );
-    project.children.set(tp.EDocumentType.role, roles);
     // Return the project
     return project;
   }
 
   /**
-   * Creates an access list based on the provided account IDs.
+   * Creates an access list based on the given member array.
    *
-   * @param {string[]} accountIDs - The account IDs to create the access list from.
+   * @param {TProjectMember[]} memberArray - An array of project members.
    *
-   * @return {string[]} - The access list created from the provided account IDs.
+   * @return {string[]} - The access list containing unique account IDs.
    */
-  private static createAccessList(...accountIDs: string[]): string[] {
-    return [...new Set<string>(accountIDs)];
+  private static createAccessList(memberArray: TProjectMember[]): string[] {
+    return [...new Set<string>(memberArray.map(mbr => mbr.accountId))];
   }
 }

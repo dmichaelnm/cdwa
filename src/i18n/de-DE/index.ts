@@ -18,6 +18,25 @@ export default {
     deDE: 'Deutsch'
   },
 
+  // Enumeration Labels
+  enum: {
+    // Project Member Roles
+    role: {
+      // Owner
+      owner: 'Eigentümer',
+      // Manager
+      manager: 'Projektleiter',
+      // Maintainer
+      maintainer: 'Betreuer',
+      // Deployer
+      deployer: 'Bereitsteller',
+      // Developer
+      developer: 'Entwickler',
+      // Visitor
+      visitor: 'Besucher'
+    }
+  },
+
   // General Menu Labels
   menu: {
     // Dark Mode
@@ -38,6 +57,8 @@ export default {
     created: 'Erstellt von / am',
     // Description
     description: 'Beschreibung (optional)',
+    // Details
+    details: 'Details',
     // Rows per Page
     rowsPerPage: 'Zeilen pro Seite'
   },
@@ -196,7 +217,15 @@ export default {
       // Project Owner
       owner: 'Eigentümer',
       // Project Manager
-      manager: 'Projektleiter'
+      manager: 'Projektleiter',
+      // Project Member
+      memberName: 'Name des Projekt-Mitglieds',
+      // Project Members
+      members: 'Projekt-Mitglieder',
+      // Own Role
+      ownRole: 'Eigene Rolle',
+      // Roles
+      role: 'Rolle'
     },
     // Project Button Labels
     button: {
@@ -234,20 +263,35 @@ export default {
         // Message
         message: 'Hier können Sie die Eigenschaften des Projekts wie Name oder Beschreibung anpassen und auch ' +
           'Mitglieder des Projekts hinzufügen oder entfernen oder deren Rollen anpassen. Wenn Sie der Projekteigentümer ' +
-          'sind, können Sie außerdem den Projektleiter ändern.'
+          'sind, können Sie außerdem den Projektleiter ändern.',
+        // Members Table Messages
+        members: {
+          // Message
+          message: 'Hier sehen Sie eine Liste aller Mitglieder Ihres Projekts. Jedes Mitglied wird dieses Projekt ' +
+            'sehen können, unabhängig davon, welche Rolle das Mitglied hat. Sofern Sie der Eigentümer oder ' +
+            'Projektleiter sind, können Sie hier neue Miglieder hinzufügen und auch entfernen und Sie können hier ' +
+            'auch die Rollen der Mitglieder festlegen. Die Rollen bestimmen, welche Berechtigungen die Mitglieder haben.',
+          // Empty Table Message
+          messageEmpty: 'Bisher wurden diesem Projekt noch keine Mitglieder zugeordnet.',
+          // Error Messages
+          error: {
+            // New member is owner
+            isOwner: 'Der Projekteigentümer kann nicht als Mitglied hinzugefügt werden.',
+            // New member is manager
+            isManager: 'Der Projektleiter kann nicht als Mitglied hinzugefügt werden.',
+            // New member is already added
+            isMember: 'Dieses Konto ist bereits ein Projekt-Mitglied.'
+          }
+        }
+      },
+      // View Project Messages
+      view: {
+        // Title
+        title: 'Projekt betrachten',
+        // Message
+        message: 'Hier können Sie die Eigenschaften des Projekts einsehen. Eine Möglichkeit zur Änderung besteht ' +
+          'jedoch aufgrund fehlender Berechtigungen nicht.'
       }
-    }
-  },
-
-  // Role Messages
-  role: {
-    // Default Messages
-    default: {
-      // Default Role Name
-      name: 'Besucher',
-      // Default Role Description
-      description: 'Diese Rolle besitzt keinerlei Berechtigungen. Konten, die ausschließlich diese Rolle innehaben, ' +
-        'können keinerlei Änderungen am Projekt vornehmen.'
     }
   }
 };

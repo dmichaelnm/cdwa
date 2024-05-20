@@ -45,6 +45,11 @@ export interface IDocumentMetaData {
 }
 
 /**
+ * Represents the type of metadata for a document.
+ */
+export type TDocumentMetaData = IDocumentMetaData;
+
+/**
  * Represents the common data structure for a document.
  */
 export interface IDocumentCommonData {

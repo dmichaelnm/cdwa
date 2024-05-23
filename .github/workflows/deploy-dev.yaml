@@ -57,6 +57,15 @@ jobs:
           echo "  cloudFunctionsURL: '${{vars.CLOUD_FUNCTIONS_URL}}'" >> global-config.ts
           echo "};" >> global-config.ts
 
+      - name: Generate Functions Secrets
+        run: |
+          cd functions/src
+          echo "export const encryption = {" > secret.ts
+          echo "  prefix: '${{secrets.ENCRYPTION_PREFIX}}'," >> secret.ts
+          echo "  suffix: '${{secrets.ENCRYPTION_SUFFIX}}'," >> secret.ts
+          echo "}" >> secret.ts
+          cd ../..
+
       - name: Build Quasar Application
         run: npx quasar build
 

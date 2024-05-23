@@ -1,8 +1,10 @@
 import { onRequest, Request } from 'firebase-functions/v2/https';
 import { Response } from 'express';
+import { encryption } from './secret';
 
 import * as admin from 'firebase-admin';
 import * as logger from 'firebase-functions/logger';
+import * as crypto from 'crypto-js';
 
 admin.initializeApp();
 
@@ -48,6 +50,64 @@ async function isAuthorized(
     response.sendStatus(403);
   }
 }
+
+/**
+ * Encrypts the string array from the request body using a specified algorithm and key.
+ */
+exports.encrypt = onRequest(
+  { region: 'europe-west3', cors: true },
+  async (request, response) => {
+    await isAuthorized(request, response, async () => {
+      // Get the client provided salt
+      const salt = request.body.salt as string;
+      // Get the array of plain value to be encrypted
+      const plainValues = request.body.plain as string[];
+      // Create the key
+      const key = encryption.prefix + salt + encryption.suffix;
+      // Hash the key
+      const hashedKey = crypto.SHA512(key).toString(crypto.enc.Base64);
+      // Create the array of encrypted string
+      const encryptedValues: string[] = [];
+      // Iterate over all plain values and encrypt them
+      plainValues.forEach(plainValue => {
+        // Encrypt the plain value
+        const encryptedValue = crypto.AES.encrypt(plainValue, hashedKey).toString();
+        // Add the encrypted value to the result array
+        encryptedValues.push(encryptedValue);
+      });
+      // Set response
+      response.json(encryptedValues);
+    });
+  });
+
+/**
+ * Decrypts the string array from the request body using a specified algorithm and key.
+ */
+exports.decrypt = onRequest(
+  { region: 'europe-west3', cors: true },
+  async (request, response) => {
+    await isAuthorized(request, response, async () => {
+      // Get the client provided salt
+      const salt = request.body.salt as string;
+      // Get the array of plain value to be encrypted
+      const encryptedValues = request.body.encrypted as string[];
+      // Create the key
+      const key = encryption.prefix + salt + encryption.suffix;
+      // Hash the key
+      const hashedKey = crypto.SHA512(key).toString(crypto.enc.Base64);
+      // Create the array of encrypted string
+      const plainValues: string[] = [];
+      // Iterate over all plain values and encrypt them
+      encryptedValues.forEach(encryptedValue => {
+        // Encrypt the plain value
+        const plainValue = crypto.AES.decrypt(encryptedValue, hashedKey).toString(crypto.enc.Utf8);
+        // Add the encrypted value to the result array
+        plainValues.push(plainValue);
+      });
+      // Set response
+      response.json(plainValues);
+    });
+  });
 
 /**
  * Deletes a project from the system.

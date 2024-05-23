@@ -164,11 +164,10 @@ export class Account extends FirestoreDocument<IAccountData> implements tp.IName
       state: { locked: true, activeProject: null, lastLogin: null }
     };
     // Create and return the firestore document
-    return FirestoreDocument.create<IAccountData, Account>(
+    return FirestoreDocument.createDocument<IAccountData, Account>(
       tp.EDocumentType.account,
       data,
       (config) => new Account(config),
-      undefined,
       credentials.user.uid
     );
   }
@@ -200,6 +199,7 @@ export class Account extends FirestoreDocument<IAccountData> implements tp.IName
     const result = await FirestoreDocument.query<IAccountData, Account>(
       tp.EDocumentType.account,
       (config) => new Account(config),
+      undefined,
       undefined,
       fs.where('profile.email', '==', email)
     );

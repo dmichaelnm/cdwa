@@ -20,6 +20,13 @@ export default {
 
   // Enumeration Labels
   enum: {
+    // Applications
+    application: {
+      // Amazon S3 Bucket
+      s3: 'Amazon AWS S3 Bucket',
+      // Snowflake Database
+      snowflake: 'Snowflake Database'
+    },
     // Attribute Types
     type: {
       // String
@@ -142,7 +149,7 @@ export default {
       // Title
       title: 'Delete {type}?',
       // Message
-      message: 'Are you sure you want to delete the {type} "{name}"? This action can not be undone.'
+      message: 'Are you sure you want to delete {article} {type} "{name}"? This action can not be undone.'
     },
     // Discard Changes Dialog
     discard: {
@@ -236,8 +243,8 @@ export default {
   project: {
     // Name of the document type
     type: 'Project',
-    // Name of the document type with an article
-    theType: 'Project',
+    // Article of the document type
+    article: 'the',
     // Project Labels
     label: {
       // Project Name
@@ -318,6 +325,91 @@ export default {
         // Message
         message: 'Here you can view the properties of the project. However, there is no possibility of making changes ' +
           'due to a lack of authorization.'
+      }
+    }
+  },
+
+  // Connection Messages
+  connection: {
+    // Name of the document type
+    type: 'Connection',
+    // Article of the document type
+    article: 'the',
+    // Connection Labels
+    label: {
+      // Access Key ID
+      accessKeyId: 'Access Key ID',
+      // Account
+      account: 'Account',
+      // Application
+      application: 'Application',
+      // Bucket Name
+      bucket: 'Bucket Name',
+      // Database
+      database: 'Database',
+      // Connection Name
+      name: 'Connection Name',
+      // Password
+      password: 'Password',
+      // Connection Properties
+      properties: 'Connection Properties',
+      // Region
+      region: 'Region',
+      // Role
+      role: 'Role',
+      // Secret Access Key
+      secretAccessKey: 'Secret Access Key',
+      // User Name
+      username: 'Username',
+      // Warehouse
+      warehouse: 'Warehouse'
+    },
+    // Button Labels
+    button: {
+      // Create Connection Button
+      create: 'New Connection',
+      // Test Connection Button
+      test: 'Test Connection'
+    },
+    // Connection Overview Messages
+    overview: {
+      // Title
+      title: 'Overview - Connections',
+      // Message
+      message: 'This overview shows all connections to external applications created in this project. Depending on ' +
+        'what permissions you have, you can edit or delete them here.',
+      // Empty Table Message
+      empty: 'For this project, no connections to external applications such as a cloud database have yet been ' +
+        'established. Such connections can be used to easily create model artifacts via reverse engineering and to ' +
+        'later make them available on the target system.'
+    },
+    // Connection Editor Page
+    editor: {
+      // Create Connection
+      create: {
+        // Title
+        title: 'Create New Connection',
+        // Message
+        message: 'Here you can create a new connection to an external application. To do this, select which ' +
+          'application it is and then specify the properties necessary to establish a connection to this application. ' +
+          'Please note that you cannot change the type of application later.'
+      },
+      // Edit Connection
+      edit: {
+        // Title
+        title: 'Edit Connection',
+        // Message
+        message: 'Here you can edit the selected connection and, for example, update the login information. Please ' +
+          'note that you can no longer change the application. In this case you have to create a new connection and ' +
+          'delete it.'
+      },
+      // View connection
+      view: {
+        // Title
+        title: 'View Connection',
+        // Message
+        message: 'Here you can view the properties of the connection. However, there is no possibility of making ' +
+          'changes due to a lack of authorization.'
       }
     }
   }

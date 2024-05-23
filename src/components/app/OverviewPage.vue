@@ -11,11 +11,20 @@
       <!-- Create Button Row -->
       <div class="row">
         <!-- Create Button Column -->
-        <div class="col text-center">
-          <!-- Create Button -->
-          <button-push :label="$t(`${type}.button.create`)"
-                       v-if="permission(EEditorMode.create)"
-                       @click="openEditor(type, EEditorMode.create)" />
+        <div class="col text-center q-gutter-y-md">
+          <div>
+            <!-- Create Button -->
+            <button-push :label="$t(`${type}.button.create`)"
+                         v-if="permission(EEditorMode.create)"
+                         @click="openEditor(type, EEditorMode.create)" />
+          </div>
+          <div>
+            <!-- Close Button -->
+            <button-push :label="$t('button.close')"
+                         flat
+                         color="#808080"
+                         @click="cmp.router.push({path: '/'})" />
+          </div>
         </div>
       </div>
     </div>
@@ -34,6 +43,7 @@
       <!-- Close Button -->
       <button-push :label="$t('button.close')"
                    color="#808080"
+                   flat
                    @click="cmp.router.push({path: '/'})" />
     </template>
     <!-- Table -->
@@ -104,7 +114,7 @@
                 :key="col.name"
                 v-slot:[`body-cell-${col.name}`]="props">
         <!-- Slot -->
-        <slot :name="`body-cell-${col.name}`" v-bind="props">
+        <slot :name="`body-cell-${col.name}`" :props="props">
           <!-- Table Cell -->
           <q-td :props="props" class="vertical-top">
             <!-- Field Value -->
@@ -237,7 +247,7 @@ function confirmDeletion(item: FirestoreDocument<IDocumentCommonData>): void {
     cmp.i18n.t('dialog.delete.title', { type: cmp.i18n.t(`${props.type}.type`) }),
     cmp.i18n.t('dialog.delete.message', {
       type: cmp.i18n.t(`${props.type}.type`),
-      theType: cmp.i18n.t(`${props.type}.theType`),
+      article: cmp.i18n.t(`${props.type}.article`),
       name: item.data.common.name
     }),
     undefined,

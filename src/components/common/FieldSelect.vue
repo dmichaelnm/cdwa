@@ -2,10 +2,14 @@
   <!-- Select Component -->
   <q-select ref="select"
             :model-value="modelValue"
+            :label="label"
             :options="options"
             :borderless="borderless"
             :standout="!borderless"
             :autocomplete="autoComplete"
+            :readonly="readonly"
+            :hide-dropdown-icon="readonly"
+            stack-label
             dense
             options-dense
             map-options
@@ -14,7 +18,7 @@
     <!-- Template: Icon -->
     <template #prepend v-if="icon || showIcons">
       <!-- Icon -->
-      <q-icon :name="showIcons ? selectedIcon : icon" />
+      <q-icon :name="showIcons ? selectedIcon : icon"/>
     </template>
     <!-- Template Selected -->
     <template #selected>
@@ -64,6 +68,8 @@ const props = defineProps<{
   modelValue: any;
   // Selection Options
   options: TSelectionOption<any>[];
+  // Label of this component
+  label?: string;
   // Icon of this component
   icon?: string;
   // Size of the icon in an option
@@ -76,6 +82,8 @@ const props = defineProps<{
   translate?: boolean;
   // Auto complete attribute
   autoComplete?: string;
+  // Flag controlling whether this component is readonly
+  readonly?: boolean
 }>();
 
 // Define the events emitted by this component.

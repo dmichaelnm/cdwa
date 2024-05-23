@@ -84,6 +84,7 @@
                   <field-input ref="input"
                                v-model="scope.value"
                                borderless
+                               hide-bottom-space
                                @focusout="onValueUpdated(props.rowIndex, col.name, scope.value)"
                                @keyup.enter="(<QPopupEdit>$refs[`pe_${col.name}_${props.rowIndex}`]).hide()"
                                @blur="(<QPopupEdit>$refs[`pe_${col.name}_${props.rowIndex}`]).hide()" />

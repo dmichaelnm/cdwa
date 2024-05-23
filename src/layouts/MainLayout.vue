@@ -15,8 +15,9 @@
           <div class="col-auto application-header-title">{{ $t('application.title') }}</div>
           <!-- Project Overview Column -->
           <div class="col-auto" v-if="hasProject">
-            <!-- Project Overview -->
-            <button-icon size="md" icon="mdi-home-outline" @click="to('/project')" />
+            <!-- Project Overview Button -->
+            <button-icon size="md" icon="mdi-home-outline" @click="to('/project')"
+                         :tooltip="$t('project.overview.title')" />
           </div>
           <!-- Active Project Selection Column -->
           <div class="col-auto" v-if="hasProject">
@@ -25,6 +26,12 @@
                           :options="projectOptions"
                           class="active-project-selector"
                           @update:modelValue="value => switchProject(value)" />
+          </div>
+          <!-- Connections Overview Column -->
+          <div class="col-auto" v-if="hasProject">
+            <!-- Connections Overview Button -->
+            <button-icon size="md" icon="mdi-connection" @click="to('/connection')"
+                         :tooltip="$t('connection.overview.title')" />
           </div>
           <!-- Space Column -->
           <div class="col-grow" />

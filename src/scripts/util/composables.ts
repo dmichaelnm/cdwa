@@ -212,13 +212,6 @@ export function useRunTask(): <R>(
 
 /**
  * Returns an object with various composable functions.
- *
- * An object containing the following composable functions:
- *   - i18n: The useI18n() function from the Vue i18n library.
- *   - quasar: The useQuasar() function from the Quasar framework.
- *   - route: The useRoute() function from Vue Router.
- *   - router: The useRouter() function from Vue Router.
- *   - sessionStore: The useSessionStore() function for managing session data.
  */
 export function useComposables() {
   return {
@@ -231,6 +224,9 @@ export function useComposables() {
   };
 }
 
+/**
+ * Returns an object with four methods for interacting with server-side cloud functions.
+ */
 export function useCloudFunctions(): {
   /**
    * Sends a POST request to the server with specified function name and payload.
@@ -251,7 +247,25 @@ export function useCloudFunctions(): {
    *
    * @returns {Promise<void>} - A promise that resolves when the project is successfully deleted.
    */
-  cfDeleteProject: (projectId: string) => Promise<void>
+  cfDeleteProject: (projectId: string) => Promise<void>,
+  /**
+   * Encrypts the given values using the provided key.
+   *
+   * @param {string} key - The encryption key.
+   * @param {string[]} values - The values to be encrypted.
+   *
+   * @returns {Promise<string[]>} - A Promise that resolves to an array of encrypted values.
+   */
+  cfEncrypt: (key: string, values: string[]) => Promise<string[]>,
+  /**
+   * Decrypts the given values using the provided key.
+   *
+   * @param {string} key - The decryption key.
+   * @param {string[]} values - The array of values to decrypt.
+   *
+   * @return {Promise<string[]>} - A Promise that resolves to an array of decrypted values.
+   */
+  cfDecrypt: (key: string, values: string[]) => Promise<string[]>
 } {
   return {
     post: async <I, O>(functionName: string, payload: I): Promise<O> => {
@@ -277,6 +291,24 @@ export function useCloudFunctions(): {
       const { post } = useCloudFunctions();
       // Call Cloud Function "deleteProject"
       await post('deleteProject', { id: projectId });
+    },
+    cfEncrypt: async (key: string, values: string[]): Promise<string[]> => {
+      // Get Post function
+      const { post } = useCloudFunctions();
+      // Call Cloud Function "encrypt"
+      return await post('encrypt', {
+        key: key,
+        plain: values
+      });
+    },
+    cfDecrypt: async (key: string, values: string[]): Promise<string[]> => {
+      // Get Post function
+      const { post } = useCloudFunctions();
+      // Call Cloud Function "encrypt"
+      return await post('decrypt', {
+        key: key,
+        encrypted: values
+      });
     }
   };
 }

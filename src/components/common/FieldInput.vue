@@ -13,13 +13,13 @@
            :borderless="borderless"
            :standout="!borderless"
            :readonly="readonly"
-           :hide-bottom-space="error === undefined"
-           :hide-hint="error === undefined"
+           :hide-hint="hideBottomSpace"
+           :hide-bottom-space="hideBottomSpace"
            lazy-rules="ondemand"
            spellcheck="false"
            stack-label
            dense
-           @update:modelValue="value => modelValue = value" />
+           @update:modelValue="value => modelValue = upperCase && typeof value === 'string' ? value.toUpperCase() : value" />
 </template>
 
 <script setup lang="ts">
@@ -49,6 +49,10 @@ const props = defineProps<{
   readonly?: boolean;
   // Flag controlling whether this input field is borderless
   borderless?: boolean;
+  // Flag controlling whether the value of this input field is in uppercase
+  upperCase?: boolean;
+  // Flag controlling whether the bottom space is hidden
+  hideBottomSpace?: boolean
 }>();
 
 // Define the events emitted by this component.

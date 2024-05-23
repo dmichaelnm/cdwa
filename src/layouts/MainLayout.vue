@@ -191,7 +191,7 @@ import FieldSelect from 'components/common/FieldSelect.vue';
 // Get main composable instances
 const cmp = useComposables();
 const runTask = useRunTask();
-const { messageDialogOptions } = useMessageDialog();
+const { messageDialogOptions, showConfirmationDialog } = useMessageDialog();
 const { to } = useRouting();
 
 // Computed UI mode
@@ -328,26 +328,49 @@ function switchUILanguage(languageCode: tp.EUILanguage): void {
  * @returns {Promise<void>} - A Promise that resolves when the project has been switched.
  */
 async function switchProject(projectId: string | null): Promise<void> {
-  await runTask(async () => {
-    // Check, if projectId exists in the list of visible projects
-    if (cmp.sessionStore.getProject(projectId) === null) {
-      // Invalid project ID, take first project in the list
-      projectId = cmp.sessionStore.projects.length > 0
-        ? cmp.sessionStore.projects[0].id
-        : null;
-    }
-    // Set active project ID
-    activeProjectId.value = projectId;
-    // If project ID is not null, load the project
-    if (projectId !== null) {
-      cmp.sessionStore.project = await Project.loadProject(projectId);
-    } else {
-      cmp.sessionStore.project = null;
-    }
-    // Update the session with the new project ID
-    cmp.sessionStore.accountActive.data.state.activeProject = projectId;
-    await FirestoreDocument.update(cmp.sessionStore.accountActive);
-  });
+  // Check editor mode
+  if (cmp.sessionStore.editorLock) {
+    // Reset active project ID
+    activeProjectId.value = cmp.sessionStore.project?.id as string;
+    // Show confirm dialog for discard changes
+    showConfirmationDialog(
+      cmp.i18n.t('dialog.discard.title'),
+      cmp.i18n.t('dialog.discard.message'),
+      undefined,
+      async (value) => {
+        // Check confirmation
+        if (value === 'okay') {
+          // Reset editor lock
+          cmp.sessionStore.editorLock = false;
+          // Switch project
+          await switchProject(projectId);
+          // Route to main page
+          await to('/');
+        }
+      }
+    );
+  } else {
+    await runTask(async () => {
+      // Check, if projectId exists in the list of visible projects
+      if (cmp.sessionStore.getProject(projectId) === null) {
+        // Invalid project ID, take first project in the list
+        projectId = cmp.sessionStore.projects.length > 0
+          ? cmp.sessionStore.projects[0].id
+          : null;
+      }
+      // Set active project ID
+      activeProjectId.value = projectId;
+      // If project ID is not null, load the project
+      if (projectId !== null) {
+        cmp.sessionStore.project = await Project.loadProject(projectId);
+      } else {
+        cmp.sessionStore.project = null;
+      }
+      // Update the session with the new project ID
+      cmp.sessionStore.accountActive.data.state.activeProject = projectId;
+      await FirestoreDocument.update(cmp.sessionStore.accountActive);
+    });
+  }
 }
 
 /**

@@ -166,19 +166,21 @@ onBeforeMount(() => {
 function applyValues(mode: EEditorMode, id?: string): void {
   if (mode !== EEditorMode.create) {
     // Get the active project
-    const project = cmp.sessionStore.project as Project;
-    // Get the connection document
-    const connection = project.getDocument<conn.IConnectionData, conn.Connection>(EDocumentType.connection, id as string);
-    // Apply values
-    connectionName.value = connection.data.common.name;
-    connectionDescription.value = connection.data.common.description;
-    connectionApplication.value = connection.data.application;
-    // Apply properties for AWS S3 Bucket
-    connectionProperties.value[connectionApplication.value] = { ...connection.data.properties };
-    // Copy custom attributes
-    connectionAttributes.value = copyAttributes(connection.data.attributes);
-    // Get connection details
-    connectionDetails.value = connection.data;
+    const project = cmp.sessionStore.project;
+    if (project) {
+      // Get the connection document
+      const connection = project.getDocument<conn.IConnectionData, conn.Connection>(EDocumentType.connection, id as string);
+      // Apply values
+      connectionName.value = connection.data.common.name;
+      connectionDescription.value = connection.data.common.description;
+      connectionApplication.value = connection.data.application;
+      // Apply properties for AWS S3 Bucket
+      connectionProperties.value[connectionApplication.value] = { ...connection.data.properties };
+      // Copy custom attributes
+      connectionAttributes.value = copyAttributes(connection.data.attributes);
+      // Get connection details
+      connectionDetails.value = connection.data;
+    }
   }
 }
 

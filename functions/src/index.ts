@@ -5,6 +5,8 @@ import { encryption } from './secret';
 import * as admin from 'firebase-admin';
 import * as logger from 'firebase-functions/logger';
 import * as crypto from 'crypto-js';
+import Snowflake from './application/snowflake';
+import S3 from './application/s3';
 
 admin.initializeApp();
 
@@ -111,10 +113,6 @@ exports.decrypt = onRequest(
 
 /**
  * Deletes a project from the system.
- *
- * @param {number} projectId - The ID of the project to be deleted.
- *
- * @returns {boolean} - A boolean representing whether the project was successfully deleted.
  */
 exports.deleteProject = onRequest(
   { region: 'europe-west3', cors: true },
@@ -153,3 +151,28 @@ exports.deleteProject = onRequest(
     });
   }
 );
+
+/**
+ * Tests the connection to a specified application.
+ */
+exports.testConnection = onRequest(
+  { region: 'europe-west3', cors: true },
+  async (request, response) => {
+    await isAuthorized(request, response, async () => {
+      // Application to be tested
+      const application = request.body.application;
+      // Properties for connecting to the application
+      const properties = request.body.properties;
+
+      if (application === 'snowflake') {
+        // Test Snowflake connection
+        response.json(await Snowflake.testConnection(properties));
+      } else if (application === 's3') {
+        // Test S3 connection
+        response.json(await S3.testConnection(properties));
+      } else {
+        logger.error(`Unknown application "${application}"."`);
+        response.sendStatus(500);
+      }
+    });
+  });

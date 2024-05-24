@@ -9,6 +9,7 @@ import { Timestamp } from 'firebase/firestore';
 import { firebaseAuth } from 'src/scripts/util/firebase';
 import { globalConfig } from 'src/scripts/config/global-config';
 import { httpClient } from 'boot/axios';
+import { EConnectionApplication, TConnectionProperties } from 'src/scripts/firestore/connection';
 
 const messageDialogOptions = ref<TMessageDialogOptions>({
   title: '',
@@ -72,6 +73,23 @@ export function useMessageDialog(): {
     callback?: (value?: string) => boolean | void | Promise<boolean> | Promise<void>
   ) => void,
   /**
+   * Displays an error dialog with the given title, message, details, and an optional callback function.
+   *
+   * @param {string} title - The title of the error dialog.
+   * @param {string} message - The main message of the error dialog.
+   * @param {string} [details] - Additional details to be displayed in the error dialog. Defaults to null.
+   * @param {Function} [callback] - An optional callback function that will be called when the error dialog is
+   *        closed. The function should accept a single string parameter and return a boolean value.
+   *
+   * @returns {void}
+   */
+  showErrorDialog: (
+    title: string,
+    message: string,
+    details?: string,
+    callback?: (value?: string) => boolean | void | Promise<boolean> | Promise<void>
+  ) => void,
+  /**
    * Displays a confirmation dialog box with the specified title, message, details,
    * and optional callback function.
    *
@@ -116,6 +134,20 @@ export function useMessageDialog(): {
       messageDialogOptions.value.message = message;
       messageDialogOptions.value.details = details ? details : null;
       messageDialogOptions.value.color = '#448753';
+      messageDialogOptions.value.buttons = ['close'];
+      messageDialogOptions.value.callback = callback ? callback : null;
+      messageDialogOptions.value.visible = true;
+    },
+    showErrorDialog: (
+      title: string,
+      message: string,
+      details?: string,
+      callback?: (value?: string) => boolean | void | Promise<boolean> | Promise<void>
+    ): void => {
+      messageDialogOptions.value.title = title;
+      messageDialogOptions.value.message = message;
+      messageDialogOptions.value.details = details ? details : null;
+      messageDialogOptions.value.color = '#ca6570';
       messageDialogOptions.value.buttons = ['close'];
       messageDialogOptions.value.callback = callback ? callback : null;
       messageDialogOptions.value.visible = true;
@@ -265,7 +297,17 @@ export function useCloudFunctions(): {
    *
    * @return {Promise<string[]>} - A Promise that resolves to an array of decrypted values.
    */
-  cfDecrypt: (key: string, values: string[]) => Promise<string[]>
+  cfDecrypt: (key: string, values: string[]) => Promise<string[]>,
+  /**
+   * Tests a connection to a given application using the provided properties.
+   *
+   * @param {EConnectionApplication} application - The application to test the connection for.
+   * @param {TConnectionProperties} properties - The connection properties to use for testing.
+   *
+   * @returns {Promise<{ status: 'okay' | 'error', message: string }>} - The result of the connection test, which includes the status and a message.
+   */
+  cfTestConnection: (application: EConnectionApplication, properties: TConnectionProperties)
+    => Promise<{ status: 'okay' | 'error', message: string }>
 } {
   return {
     post: async <I, O>(functionName: string, payload: I): Promise<O> => {
@@ -308,6 +350,18 @@ export function useCloudFunctions(): {
       return await post('decrypt', {
         key: key,
         encrypted: values
+      });
+    },
+    cfTestConnection: async (application: EConnectionApplication, properties: TConnectionProperties): Promise<{
+      status: 'okay' | 'error',
+      message: string
+    }> => {
+      // Get Post function
+      const { post } = useCloudFunctions();
+      // Call Cloud Function "testConnection"
+      return await post('testConnection', {
+        application: application,
+        properties: properties
       });
     }
   };

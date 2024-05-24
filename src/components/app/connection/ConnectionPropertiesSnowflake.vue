@@ -65,21 +65,25 @@
       <!-- Button Column -->
       <div class="col text-right">
         <!-- Test Connection Button -->
-        <button-push :label="$t('connection.button.test')" />
+        <button-push :label="$t('connection.button.test')"
+                     @click="testConnection" />
       </div>
     </div>
   </div>
 </template>
 
-<style scoped lang="scss">
-
-</style>
-
 <script setup lang="ts">
-import { TConnectionPropertiesSnowflake } from 'src/scripts/firestore/connection';
+import { EConnectionApplication, TConnectionPropertiesSnowflake } from 'src/scripts/firestore/connection';
 import { computed } from 'vue';
 import FieldInput from 'components/common/FieldInput.vue';
 import ButtonPush from 'components/common/ButtonPush.vue';
+import { useCloudFunctions, useComposables, useMessageDialog, useRunTask } from 'src/scripts/util/composables';
+
+// Composables
+const cmp = useComposables();
+const { showSuccessDialog, showErrorDialog } = useMessageDialog();
+const { cfTestConnection } = useCloudFunctions();
+const runTask = useRunTask();
 
 // Defines the properties of this component.
 const props = defineProps<{
@@ -100,5 +104,33 @@ const properties = computed({
   get: () => props.modelValue,
   set: newValue => emit('update:modelValue', newValue)
 });
+
+/**
+ * Test connection function that checks if the connection to a Snowflake Database is successful.
+ *
+ * @returns A Promise that resolves to void.
+ */
+async function testConnection(): Promise<void> {
+  // Start test task
+  await runTask(async () => {
+    // Call test function
+    const result = await cfTestConnection(EConnectionApplication.snowflake, properties.value);
+    if (result.status === 'okay') {
+      // Show success dialog
+      showSuccessDialog(
+        cmp.i18n.t('connection.dialog.success.title'),
+        cmp.i18n.t('connection.dialog.success.message'),
+        result.message
+      );
+    } else {
+      // Show error dialog
+      showErrorDialog(
+        cmp.i18n.t('connection.dialog.error.title'),
+        cmp.i18n.t('connection.dialog.error.message'),
+        result.message
+      );
+    }
+  });
+}
 
 </script>

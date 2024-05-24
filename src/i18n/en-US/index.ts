@@ -411,6 +411,23 @@ export default {
         message: 'Here you can view the properties of the connection. However, there is no possibility of making ' +
           'changes due to a lack of authorization.'
       }
+    },
+    // Dialog Messages
+    dialog: {
+      // Success Dialog
+      success: {
+        // Title
+        title: 'Connection Successful',
+        // Message
+        message: 'The connection to the external application was successfully established.'
+      },
+      // Error Dialog
+      error: {
+        // Title
+        title: 'Connection Failed',
+        // Message
+        message: 'Unfortunately, the connection to the external application could not be established.'
+      }
     }
   }
 };

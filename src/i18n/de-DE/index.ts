@@ -416,6 +416,23 @@ export default {
         message: 'Hier können Sie die Eigenschaften der Verbindung betrachten. Eine Möglichkeit der Änderung besteht ' +
           'aufgrund fehlender Berechtigungen jedoch nicht.'
       }
+    },
+    // Dialog Messages
+    dialog: {
+      // Success Dialog
+      success: {
+        // Title
+        title: 'Verbindung erfolgreich',
+        // Message
+        message: 'Die Verbindung zur externen Anwendung konnte erfolgreich hergestellt werden.'
+      },
+      // Error Dialog
+      error: {
+        // Title
+        title: 'Verbindung fehlgeschlagen',
+        // Message
+        message: 'Die Verbindung zur externen Anwendung konnte leider nicht hergestellt werden.'
+      }
     }
   }
 };

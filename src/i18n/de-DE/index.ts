@@ -374,6 +374,18 @@ export default {
       // Test Connection Button
       test: 'Verbindung testen'
     },
+    // Application Connection Properties Messages
+    application: {
+      // AWS S3 Bucket
+      s3: 'Geben Sie hier die notwendigen Informationen für den Zugriff auf das AWS S3 Bucket an. Aus ' +
+        'Sicherheitsgründen wird empfohlen, einen eigenen Benutzer für den Zugriff anzulegen, der nur die absolut ' +
+        'notwendigen Berechtigungen besitzt. Dies können Sie im Bereich IAM Ihrer AWS-Konsole machen. Dort können ' +
+        'dann auch die notwendigen Schlüssel-Informationen für den Benutzer generiert werden.',
+      // Snowflake Database
+      snowflake: 'Geben Sie hier die notwendigen Informationen für den Zugriff auf die Snowflake Datenbank an. Aus ' +
+        'Sicherheitsgründen wird empfohlen, einen eigenen Benutzer nur mit den absolut notwendigen Zugriffsrechten ' +
+        'anzulegen. Dies können Sie im Admin-Bereich unter "User & Roles" der Snowflake-Web-UI machen.'
+    },
     // Connection Overview Page
     overview: {
       // Title

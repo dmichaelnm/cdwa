@@ -11,6 +11,8 @@
          @click="emit('click')">
     <!-- Default Slot -->
     <slot />
+    <!-- Tooltip -->
+    <q-tooltip v-if="tooltip">{{ tooltip }}</q-tooltip>
   </q-btn>
 </template>
 
@@ -34,6 +36,8 @@ defineProps<{
   dense?: boolean;
   // Flag controlling whether this button is highlighted
   highlighted?: boolean;
+  // An optional tooltip text
+  tooltip?: string;
 }>();
 
 // Define the events emitted by this component.

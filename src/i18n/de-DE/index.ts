@@ -20,6 +20,13 @@ export default {
 
   // Enumeration Labels
   enum: {
+    // Applications
+    application: {
+      // Amazon S3 Bucket
+      s3: 'Amazon AWS S3 Bucket',
+      // Snowflake Database
+      snowflake: 'Snowflake Datenbank'
+    },
     // Attribute Types
     type: {
       // String
@@ -142,7 +149,7 @@ export default {
       // Title
       title: '{type} löschen?',
       // Message
-      message: 'Sind Sie sicher, dass Sie {theType} "{name}" löschen wollen? Dieser Vorgang kann nicht rückgängig gemacht werden.'
+      message: 'Sind Sie sicher, dass Sie {article} {type} "{name}" löschen wollen? Dieser Vorgang kann nicht rückgängig gemacht werden.'
     },
     // Discard Changes Dialog
     discard: {
@@ -238,8 +245,8 @@ export default {
   project: {
     // Name of the document type
     type: 'Projekt',
-    // Name of the document type with an article
-    theType: 'das Projekt',
+    // Article of the document type
+    article: 'das',
     // Project Labels
     label: {
       // Project Name
@@ -321,6 +328,110 @@ export default {
         // Message
         message: 'Hier können Sie die Eigenschaften des Projekts einsehen. Eine Möglichkeit zur Änderung besteht ' +
           'jedoch aufgrund fehlender Berechtigungen nicht.'
+      }
+    }
+  },
+
+  // Connection Messages
+  connection: {
+    // Name of the document type
+    type: 'Verbindung',
+    // Article of the document type
+    article: 'die',
+    // Connection Labels
+    label: {
+      // Access Key ID
+      accessKeyId: 'ID des Zugriffs-Schlüssels',
+      // Account
+      account: 'Konto',
+      // Application
+      application: 'Applikation',
+      // Bucket Name
+      bucket: 'Name des Buckets',
+      // Database
+      database: 'Datenbank',
+      // Connection Name
+      name: 'Name der Verbindung',
+      // Password
+      password: 'Kennwort',
+      // Connection Properties
+      properties: 'Verbindungseigenschaften',
+      // Region
+      region: 'Region',
+      // Role
+      role: 'Rolle',
+      // Secret Access Key
+      secretAccessKey: 'Geheimer Zugriffs-Schlüssel',
+      // User Name
+      username: 'Benutzername',
+      // Warehouse
+      warehouse: 'Warehouse'
+    },
+    // Button Labels
+    button: {
+      // Create Connection Button
+      create: 'Neue Verbindung',
+      // Test Connection Button
+      test: 'Verbindung testen'
+    },
+    // Connection Overview Page
+    overview: {
+      // Title
+      title: 'Übersicht - Verbindungen',
+      // Message
+      message: 'Diese Übersicht zeigt alle in diesem Projekt angelegten Verbindungen zu externen Applikationen. ' +
+        'Je nach dem, welche Berechtigungen Sie haben, können Sie diese hier bearbeiten oder auch löschen.',
+      // Empty Table Message
+      empty: 'Für dieses Projekt wurden bisher noch keine Verbindungen zu externen Applikationen wie zum Beispiel ' +
+        'einer Cloud-Datenbank hergestellt. Solche Verbindungen können genutzt werden, um Modell-Artefakte per ' +
+        'Reverse Engineering leicht erstellen zu können sowie diese später auch auf dem Ziel-System bereitstellen zu ' +
+        'können.'
+    },
+    // Connection Editor Page
+    editor: {
+      // Create Connection
+      create: {
+        // Title
+        title: 'Neue Verbindung erstellen',
+        // Message
+        message: 'Hier können Sie eine neue Verbindung zu einer externen Applikation erstellen. Wählen Sie dazu aus, ' +
+          'um welche Applikation es sich handelt und geben Sie dann die notwendigen Eigenschaften für den Aufbau ' +
+          'einer Verbindung zu dieser Applikation an. Beachten Sie, dass Sie die Art der Applikation später nicht ' +
+          'mehr ändern können.'
+      },
+      // Edit Connection
+      edit: {
+        // Title
+        title: 'Verbindung bearbeiten',
+        // Message
+        message: 'Hier können Sie die gewählte Verbindung bearbeiten und zum Beispiel die Anmeldeinformation ' +
+          'aktualisieren. Beachten Sie, dass Sie die Applikation nicht mehr ändern können. Für diesen Fall müssen Sie ' +
+          'eine neue Verbindung erstellen und diese löschen.'
+      },
+      // View connection
+      view: {
+        // Title
+        title: 'Verbindung betrachten',
+        // Message
+        message: 'Hier können Sie die Eigenschaften der Verbindung betrachten. Eine Möglichkeit der Änderung besteht ' +
+          'aufgrund fehlender Berechtigungen jedoch nicht.'
+      }
+    },
+    // Dialog Messages
+    dialog: {
+      // Success Dialog
+      success: {
+        // Title
+        title: 'Verbindung erfolgreich',
+        // Message
+        message: 'Die Verbindung zur externen Anwendung konnte erfolgreich hergestellt werden.'
+      },
+      // Error Dialog
+      error: {
+        // Title
+        title: 'Verbindung fehlgeschlagen',
+        // Message
+        message: 'Die Verbindung zur externen Anwendung konnte leider nicht hergestellt werden.'
       }
     }
   }

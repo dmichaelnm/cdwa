@@ -3,6 +3,7 @@ import * as fs from 'firebase/firestore';
 import { Assert } from 'src/scripts/util/assert';
 import { firestore, getAuthorizedUserName } from 'src/scripts/util/firebase';
 import { Logging } from 'src/scripts/util/logging';
+import { Project } from 'src/scripts/firestore/project';
 
 /**
  * The type of configuration for a Firestore document.
@@ -146,7 +147,6 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
    * @param {string} path - The path of the Firestore collection where the document will be created.
    * @param {D} data - The data to be saved in the document.
    * @param {function} creator - A function for creating a new instance of a firestore document.
-   * @param {function} [processor] - An optional function that performs additional processing on the created document.
    * @param {string} [id] - An optional ID to be assigned to the document. If not provided, Firestore will generate a new ID.
    *
    * @returns {Promise<R>} - A Promise that resolves with the created FirestoreDocument instance.
@@ -154,11 +154,10 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
    * @template D The type of the document data.
    * @template R The type of the document instance.
    */
-  static async create<D extends object, R extends FirestoreDocument<D>>(
+  static async createDocument<D extends object, R extends FirestoreDocument<D>>(
     path: string,
     data: D,
     creator: (config: TFirestoreDocumentConfig<D>) => R,
-    processor?: (document: R) => Promise<void> | void,
     id?: string
   ): Promise<R> {
     // Apply metadata for creating the document
@@ -185,10 +184,6 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
       // Create the new document instance
       document = creator({ documentRef: reference, data: data });
     }
-    // If a processor is specified, call it with the document instance
-    if (processor) {
-      await processor(document);
-    }
     // Logging
     Logging.debug('FirestoreDocument#create', document);
     // Return the new document instance
@@ -201,6 +196,7 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
    * @param {R} document - The document to be updated.
    * @param {function} [processor] - Optional data processing function to be applied before updating the document.
    *                                Takes the document's data as input and returns processed data.
+   * @param {D} data - Optional data used for update instead of the document data
    *
    * @return {Promise<void>} - A Promise that resolves when the document has been successfully updated.
    *
@@ -209,7 +205,8 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
    */
   static async update<D extends object, R extends FirestoreDocument<D>>(
     document: R,
-    processor?: (data: D) => D
+    processor?: (data: D) => D,
+    data?: D
   ): Promise<void> {
     // Logging
     Logging.debug('FirestoreDocument#update', document);
@@ -222,12 +219,12 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
       };
     }
     // Process data before updating the document
-    let data = document.data;
+    let _data = data ? data : document.data;
     if (processor) {
-      data = processor(data);
+      _data = processor(_data);
     }
     // Update the document
-    await fs.updateDoc(fs.doc(firestore, document.path + '/' + document.id), data);
+    await fs.updateDoc(fs.doc(firestore, document.path + '/' + document.id), _data);
   }
 
   /**
@@ -296,6 +293,7 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
    *
    * @param {string} path - The path to the Firestore collection.
    * @param {function} creator - A function that creates a FirestoreDocument object.
+   * @param {Project} [project] - The project the documents are queried for.
    * @param {function} [processor] - An optional function to process the FirestoreDocument objects.
    * @param {...fs.QueryConstraint} constraints - Optional constraints to filter the query.
    *
@@ -307,7 +305,8 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
   static async query<D extends object, R extends FirestoreDocument<D>>(
     path: string,
     creator: (config: TFirestoreDocumentConfig<D>) => R,
-    processor?: (document: R) => Promise<void> | void,
+    project?: Project,
+    processor?: (data: D, project?: Project) => Promise<void> | void,
     ...constraints: fs.QueryConstraint[]
   ): Promise<Map<string, R>> {
     // Create the Firestore query object
@@ -325,9 +324,9 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
       const firestoreDocument = snapshot.docs[i];
       // Create document object
       const document = creator({ document: firestoreDocument });
-      // Post process document
+      // Process document after loading
       if (processor) {
-        processor(document);
+        await processor(document.data, project);
       }
       // Add document to map
       result.set(document.id, document);
@@ -345,7 +344,7 @@ export class FirestoreDocument<D extends object> implements tp.IIdentifiable {
    *
    * @returns {string} - The parent path of the given path.
    */
-  private static extractParentPath(path: string): string {
+  static extractParentPath(path: string): string {
     const splitted: string[] = path.split('/');
     return splitted.slice(0, splitted.length - 1).join('/');
   }

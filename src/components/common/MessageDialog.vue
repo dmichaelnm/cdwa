@@ -29,7 +29,7 @@
       <!-- Dialog Details Row -->
       <div class="row" v-if="options.details">
         <!-- Dialog Details Column -->
-        <div class="col dialog-details">{{ options.details }}</div>
+        <div class="col dialog-details"><span v-html="options.details" /></div>
       </div>
 
       <!-- Dialog Buttons Row -->

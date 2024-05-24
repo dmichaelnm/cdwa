@@ -9,8 +9,9 @@
                    v-if="mode !== EEditorMode.view"
                    @click="save" />
       <!-- Cancel Button -->
-      <button-push :label="$t('button.cancel')"
+      <button-push :label="mode !== EEditorMode.view ? $t('button.cancel') : $t('button.close')"
                    color="#808080"
+                   flat
                    @click="closeEditor" />
     </template>
 

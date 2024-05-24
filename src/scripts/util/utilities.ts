@@ -1,3 +1,5 @@
+import { TDocumentAttribute } from 'src/scripts/util/types';
+
 /**
  * Converts the values of a Map to an array.
  *
@@ -60,4 +62,17 @@ export function toBoolean(value: any): boolean {
   } else {
     return false;
   }
+}
+
+/**
+ * Copies the attributes of a document.
+ *
+ * @param {TDocumentAttribute[]} attributes - The attributes of the document.
+ *
+ * @return {TDocumentAttribute[]} - The copied attributes.
+ */
+export function copyAttributes(attributes: TDocumentAttribute[]): TDocumentAttribute[] {
+  return attributes.map(attr => {
+    return { key: attr.key, type: attr.type, value: attr.value };
+  });
 }

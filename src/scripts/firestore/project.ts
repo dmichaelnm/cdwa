@@ -4,6 +4,7 @@ import * as fs from 'firebase/firestore';
 import { ProjectDocument } from 'src/scripts/firestore/project-document';
 import { getAuthorizedUserId } from 'src/scripts/util/firebase';
 import { toArray } from 'src/scripts/util/utilities';
+import { Connection, IConnectionData } from 'src/scripts/firestore/connection';
 
 /**
  * Represents a project member.
@@ -72,6 +73,84 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
     // Add the document
     documents.set(document.id, document);
     this.children.set(type, documents);
+  }
+
+  /**
+   * Retrieves a document of the specified type and ID from the project.
+   *
+   * @param {EDocumentType} type - The type of the document.
+   * @param {string} id - The ID of the document.
+   *
+   * @returns {R} - The retrieved document of type R.
+   *
+   * @throws {Error} - If the document is not found.
+   *
+   * @template D - The type if data structure of the document
+   * @template R - The type of the document
+   */
+  getDocument<D extends object, R extends ProjectDocument<D>>(
+    type: tp.EDocumentType,
+    id: string
+  ): R {
+    // Get the map with documents of the expected type
+    const map = this.getDocuments<D>(type);
+    // Check, if the expected ID exists in the map
+    if (map.has(id)) {
+      // Return the document
+      return map.get(id) as R;
+    }
+    // Not found, throw an exception
+    throw new Error(`Document of type "${type}" and ID "${id}" not found in project "${this.getName()}.`);
+  }
+
+  /**
+   * Gets the documents of the specified type.
+   *
+   * @param {tp.EDocumentType} type - The type of the documents to retrieve.
+   *
+   * @returns {Map<string, ProjectDocument<D>>} - A map containing the retrieved documents.
+   *
+   * @template D - The type of the document object.
+   */
+  getDocuments<D extends object>(type: tp.EDocumentType): Map<string, ProjectDocument<D>> {
+    if (this.children.has(type)) {
+      return this.children.get(type) as Map<string, ProjectDocument<D>>;
+    }
+    // Return an empty map
+    return new Map<string, ProjectDocument<D>>();
+  }
+
+  /**
+   * Sets the documents for a specific type.
+   *
+   * @param {tp.EDocumentType} type - The type of the documents to be set.
+   * @param {Map<string, ProjectDocument<D>>} documents - The documents to be set.
+   *
+   * @return {void}
+   */
+  setDocuments<D extends object>(type: tp.EDocumentType, documents: Map<string, ProjectDocument<D>>): void {
+    this.children.set(type, documents);
+  }
+
+  /**
+   * Removes a document from the project.
+   *
+   * @param {FirestoreDocument} document - The document to be removed.
+   *
+   * @return {void}
+   */
+  removeDocument<D extends object>(document: fd.FirestoreDocument<D>): void {
+    const documents = this.getDocuments(document.type);
+    documents.delete(document.id);
+  }
+
+  /**
+   * Returns an array of Connection objects.
+   *
+   * @returns {Connection[]} An array of Connection objects.
+   */
+  getConnections(): Connection[] {
+    return toArray(this.getDocuments<IConnectionData>(tp.EDocumentType.connection)) as Connection[];
   }
 
   /**
@@ -183,7 +262,7 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
       attributes: attributes
     };
     // Create the project document
-    return await fd.FirestoreDocument.create(
+    return await fd.FirestoreDocument.createDocument(
       tp.EDocumentType.project as string,
       data,
       (config) => new Project(config)
@@ -219,6 +298,7 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
       tp.EDocumentType.project,
       (config) => new Project(config),
       undefined,
+      undefined,
       fs.where('access', 'array-contains', getAuthorizedUserId())
     );
     // Convert the map into an array and return the array
@@ -242,6 +322,8 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
       projectId,
       (config) => new Project(config)
     );
+    // Load all connections
+    await Connection.loadConnections(project);
     // Return the project
     return project;
   }

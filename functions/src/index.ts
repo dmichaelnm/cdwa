@@ -1,8 +1,12 @@
 import { onRequest, Request } from 'firebase-functions/v2/https';
 import { Response } from 'express';
+import { encryption } from './secret';
 
 import * as admin from 'firebase-admin';
 import * as logger from 'firebase-functions/logger';
+import * as crypto from 'crypto-js';
+import Snowflake from './application/snowflake';
+import S3 from './application/s3';
 
 admin.initializeApp();
 
@@ -50,11 +54,65 @@ async function isAuthorized(
 }
 
 /**
+ * Encrypts the string array from the request body using a specified algorithm and key.
+ */
+exports.encrypt = onRequest(
+  { region: 'europe-west3', cors: true },
+  async (request, response) => {
+    await isAuthorized(request, response, async () => {
+      // Get the client provided salt
+      const salt = request.body.salt as string;
+      // Get the array of plain value to be encrypted
+      const plainValues = request.body.plain as string[];
+      // Create the key
+      const key = encryption.prefix + salt + encryption.suffix;
+      // Hash the key
+      const hashedKey = crypto.SHA512(key).toString(crypto.enc.Base64);
+      // Create the array of encrypted string
+      const encryptedValues: string[] = [];
+      // Iterate over all plain values and encrypt them
+      plainValues.forEach(plainValue => {
+        // Encrypt the plain value
+        const encryptedValue = crypto.AES.encrypt(plainValue, hashedKey).toString();
+        // Add the encrypted value to the result array
+        encryptedValues.push(encryptedValue);
+      });
+      // Set response
+      response.json(encryptedValues);
+    });
+  });
+
+/**
+ * Decrypts the string array from the request body using a specified algorithm and key.
+ */
+exports.decrypt = onRequest(
+  { region: 'europe-west3', cors: true },
+  async (request, response) => {
+    await isAuthorized(request, response, async () => {
+      // Get the client provided salt
+      const salt = request.body.salt as string;
+      // Get the array of plain value to be encrypted
+      const encryptedValues = request.body.encrypted as string[];
+      // Create the key
+      const key = encryption.prefix + salt + encryption.suffix;
+      // Hash the key
+      const hashedKey = crypto.SHA512(key).toString(crypto.enc.Base64);
+      // Create the array of encrypted string
+      const plainValues: string[] = [];
+      // Iterate over all plain values and encrypt them
+      encryptedValues.forEach(encryptedValue => {
+        // Encrypt the plain value
+        const plainValue = crypto.AES.decrypt(encryptedValue, hashedKey).toString(crypto.enc.Utf8);
+        // Add the encrypted value to the result array
+        plainValues.push(plainValue);
+      });
+      // Set response
+      response.json(plainValues);
+    });
+  });
+
+/**
  * Deletes a project from the system.
- *
- * @param {number} projectId - The ID of the project to be deleted.
- *
- * @returns {boolean} - A boolean representing whether the project was successfully deleted.
  */
 exports.deleteProject = onRequest(
   { region: 'europe-west3', cors: true },
@@ -93,3 +151,28 @@ exports.deleteProject = onRequest(
     });
   }
 );
+
+/**
+ * Tests the connection to a specified application.
+ */
+exports.testConnection = onRequest(
+  { region: 'europe-west3', cors: true },
+  async (request, response) => {
+    await isAuthorized(request, response, async () => {
+      // Application to be tested
+      const application = request.body.application;
+      // Properties for connecting to the application
+      const properties = request.body.properties;
+
+      if (application === 'snowflake') {
+        // Test Snowflake connection
+        response.json(await Snowflake.testConnection(properties));
+      } else if (application === 's3') {
+        // Test S3 connection
+        response.json(await S3.testConnection(properties));
+      } else {
+        logger.error(`Unknown application "${application}"."`);
+        response.sendStatus(500);
+      }
+    });
+  });

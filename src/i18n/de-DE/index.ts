@@ -82,6 +82,8 @@ export default {
     description: 'Beschreibung (optional)',
     // Details
     details: 'Details',
+    // Filter
+    filter: 'Filtern',
     // Key
     key: 'Schlüssel',
     // Rows per Page

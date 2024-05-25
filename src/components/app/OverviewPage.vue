@@ -1,6 +1,6 @@
 <template>
   <!-- Empty Page -->
-  <q-page class="flex flex-center" v-if="items.length === 0">
+  <q-page class="flex flex-center page" v-if="items.length === 0">
     <!-- Main DIV -->
     <div class="overview-page-empty q-col-gutter-y-md">
       <!-- Empty Message Row -->
@@ -121,6 +121,14 @@
 
 <style scoped lang="scss">
 @import "src/css/quasar.variables";
+
+.page {
+  box-shadow: inset 0 0 10px 0 $light-shadow-0;
+}
+
+.body--dark .page {
+  box-shadow: inset 0 0 10px 0 $dark-shadow;
+}
 
 .overview-page-empty {
   width: 500px;

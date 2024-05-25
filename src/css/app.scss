@@ -22,12 +22,12 @@ body.body--dark {
 
 .frame {
   background-color: $light-background-0;
-  box-shadow: 5px 5px 10px 0 $light-shadow-0;
+  box-shadow: 0 0 10px 0 $light-shadow-0;
 }
 
 .body--dark .frame {
   background-color: $dark-background-0;
-  box-shadow: 5px 5px 10px 0 $dark-shadow;
+  box-shadow: 0 0 10px 0 $dark-shadow;
 }
 
 // ============================================================================
@@ -37,12 +37,12 @@ body.body--dark {
 .q-menu {
   font-size: 9pt;
   background-color: $light-background-0;
-  box-shadow: 5px 5px 10px 0 $light-shadow-0;
+  box-shadow: 0 0 10px 0 $light-shadow-0;
 }
 
 .body--dark .q-menu {
   background-color: $dark-background-0;
-  box-shadow: 5px 5px 10px 0 $dark-shadow;
+  box-shadow: 0 0 10px 0 $dark-shadow;
 }
 
 // ============================================================================
@@ -111,12 +111,12 @@ body.body--dark {
   max-width: 700px;
   padding: 16px;
   background-color: $light-background-0;
-  box-shadow: 5px 5px 10px 0 $light-shadow-1;
+  box-shadow: 0 0 10px 0 $light-shadow-1;
 }
 
 .body--dark .dialog-frame {
   background-color: $dark-background-0;
-  box-shadow: 5px 5px 10px 0 $dark-shadow;
+  box-shadow: 0 0 10px 0 $dark-shadow;
 }
 
 .dialog-title {

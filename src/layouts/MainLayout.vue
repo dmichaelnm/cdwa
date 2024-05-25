@@ -120,6 +120,16 @@
       </template>
     </application-footer>
 
+    <!-- Toolbox Drawer -->
+    <q-drawer v-model="isToolboxVisible"
+              overlay
+              side="right"
+              class="toolbox"
+              :width="200">
+      <!-- Toolbox -->
+      <toolbox-drawer />
+    </q-drawer>
+
     <!-- Page Container -->
     <q-page-container>
       <!-- Router View -->
@@ -136,13 +146,11 @@
   padding: 8px;
   color: $light-text;
   background-color: $light-background-0;
-  box-shadow: 0 5px 10px 0 $light-shadow-0;
 }
 
 .body--dark .application-header {
   color: $dark-text;
   background-color: $dark-background-0;
-  box-shadow: 0 5px 10px 0 $dark-shadow;
 }
 
 .application-header-title {
@@ -175,6 +183,16 @@
   width: 250px;
   border-radius: 4px;
 }
+
+.toolbox {
+  background-color: $light-background-0;
+  box-shadow: -10px 0 10px -11px $light-shadow-0;
+}
+
+.body--dark .toolbox {
+  background-color: $dark-background-0;
+  box-shadow: -10px 0 10px -11px $dark-shadow;
+}
 </style>
 
 <script setup lang="ts">
@@ -194,6 +212,7 @@ import MenuItem from 'components/common/MenuItem.vue';
 import { Project } from 'src/scripts/firestore/project';
 import MessageDialog from 'components/common/MessageDialog.vue';
 import FieldSelect from 'components/common/FieldSelect.vue';
+import ToolboxDrawer from 'components/app/ToolboxDrawer.vue';
 
 // Get main composable instances
 const cmp = useComposables();
@@ -229,6 +248,11 @@ const hasDiagrams = computed(() => {
   const project = cmp.sessionStore.project;
   // Check if the project has diagrams
   return project ? project.getDiagrams().length > 0 : false;
+});
+
+// Visibility of the toolbox
+const isToolboxVisible = computed(() => {
+  return cmp.route.path === '/';
 });
 
 // Current ID of active project

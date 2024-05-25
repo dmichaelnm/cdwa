@@ -1,6 +1,6 @@
 <template>
   <!-- Page -->
-  <q-page>
+  <q-page class="page">
     <!-- Page DIV -->
     <div>
       <!-- Row -->
@@ -49,15 +49,23 @@
 <style scoped lang="scss">
 @import "src/css/quasar.variables";
 
+.page {
+  box-shadow: inset 0 0 10px 0 $light-shadow-0;
+}
+
+.body--dark .page {
+  box-shadow: inset 0 0 10px 0 $dark-shadow;
+}
+
 .page-frame {
   padding: 16px;
   background-color: $light-background-0;
-  box-shadow: 5px 5px 10px 0 $light-shadow-0;
+  box-shadow: 0 0 10px 0 $light-shadow-0;
 }
 
 .body--dark .page-frame {
   background-color: $dark-background-0;
-  box-shadow: 5px 5px 10px 0 $dark-shadow;
+  box-shadow: 0 0 10px 0 $dark-shadow;
 }
 
 .page-frame-title {

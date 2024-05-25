@@ -29,7 +29,8 @@
 }
 
 .button-icon-highlighted {
-  color: $primary;
+  color: white;
+  background-color: $primary;
 }
 
 .button-icon-disabled {

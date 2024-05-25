@@ -12,6 +12,7 @@
            :rows="type === 'textarea' ? 2 : 1"
            :borderless="borderless"
            :standout="!borderless"
+           :square="squared"
            :readonly="readonly"
            :hide-hint="hideBottomSpace"
            :hide-bottom-space="hideBottomSpace"
@@ -52,7 +53,9 @@ const props = defineProps<{
   // Flag controlling whether the value of this input field is in uppercase
   upperCase?: boolean;
   // Flag controlling whether the bottom space is hidden
-  hideBottomSpace?: boolean
+  hideBottomSpace?: boolean;
+  // Flag controlling whether the field is squared
+  squared?: boolean;
 }>();
 
 // Define the events emitted by this component.

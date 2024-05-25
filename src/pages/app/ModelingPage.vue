@@ -1,6 +1,6 @@
 <template>
   <!-- Page -->
-  <q-page>
+  <q-page class="page">
     <!-- Diagram Tab Definitions -->
     <q-tabs v-model="cmp.sessionStore.currentDiagramId"
             align="left"
@@ -25,9 +25,17 @@
 </template>
 
 <style scoped lang="scss">
+@import "src/css/quasar.variables";
 @import "@vue-flow/core/dist/style.css";
 @import "@vue-flow/core/dist/style.css";
 
+.page {
+  box-shadow: inset 0 0 10px 0 $light-shadow-0;
+}
+
+.body--dark .page {
+  box-shadow: inset 0 0 10px 0 $dark-shadow;
+}
 </style>
 
 <script setup lang="ts">

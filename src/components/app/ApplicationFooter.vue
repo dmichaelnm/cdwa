@@ -31,11 +31,9 @@
 .app-footer {
   padding: 4px;
   background-color: $light-background-0;
-  box-shadow: 0 -5px 10px 0 $light-shadow-0;
 }
 
 .body--dark .app-footer {
   background-color: $dark-background-0;
-  box-shadow: 0 -5px 10px 0 $dark-shadow;
 }
 </style>

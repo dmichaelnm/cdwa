@@ -50,6 +50,11 @@ export default {
       developer: 'Entwickler',
       // Visitor
       visitor: 'Besucher'
+    },
+    // Diagram types
+    diagram: {
+      // Architecture
+      architecture: 'Architektur-Modell'
     }
   },
 
@@ -328,6 +333,66 @@ export default {
         // Message
         message: 'Hier können Sie die Eigenschaften des Projekts einsehen. Eine Möglichkeit zur Änderung besteht ' +
           'jedoch aufgrund fehlender Berechtigungen nicht.'
+      }
+    }
+  },
+
+  // Diagram Messages
+  diagram: {
+    // Name of the type
+    type: 'Diagramm',
+    // Article of the type
+    article: 'das',
+    // Labels
+    label: {
+      // Diagram Name
+      name: 'Name des Diagramms',
+      // Diagram Type
+      type: 'Typ des Diagramms'
+    },
+    // Button Messages
+    button: {
+      // Create Diagram
+      create: 'Neues Diagramm'
+    },
+    // Diagram Overview Messages
+    overview: {
+      // Title
+      title: 'Übersicht - Diagramme',
+      // Message
+      message: 'Hier sehen Sie eine Übersicht über alle bisher in diesem Projekt erstellten Diagramme. Ein Diagramm ' +
+        'bietet eine bestimmte Sicht oder einen Ausschnitt auf Ihr Modell. Es gibt verschiedene Typen von Diagrammen ' +
+        'die verschiedene Aspekte Ihres Modell abbilden.',
+      // Empty Table Message
+      empty: 'Für dieses Projekt existiert noch kein Diagramm. Um mit der Modellierung beginnen zu können, müssen ' +
+        'Sie mindestens ein Diagramm anlegen.'
+    },
+    // Diagram Editor Messages
+    editor: {
+      // Create Messages
+      create: {
+        // Title
+        title: 'Neues Diagramm erstellen',
+        // Message
+        message: 'Erstellen Sie hier ein neues Diagramm, um eine neue Sicht oder einen Ausschnitt Ihres Modells ' +
+          'darzustellen. Je nach dem, welchen Diagrammtyp Sie wählen, können Sie unterschiedliche Aspekte Ihres Modells darstellen.'
+      },
+      // Edit Messages
+      edit: {
+        // Title
+        title: 'Diagramm bearbeiten',
+        // Message
+        message: 'Hier können Sie die Eigenschaften des Diagramms bearbeiten. Sie können jedoch nicht mehr den Typ ' +
+          'des Diagramms ändern. Hierzu müssten Sie ein neues Diagramm anlegen und dieses danach löschen. Dabei ' +
+          'geht jedoch der Inhalt des Diagramms verloren.'
+      },
+      // View Messages
+      view: {
+        // Title
+        title: 'Diagramm betrachten',
+        // Message
+        message: 'Hier können Sie die Eigenschaften des Diagramms einsehen. Aufgrund fehlender Berechtigungen können ' +
+          'Sie jedoch keine Änderungen vornehmen.'
       }
     }
   },

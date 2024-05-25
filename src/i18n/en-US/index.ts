@@ -50,6 +50,11 @@ export default {
       developer: 'Developer',
       // Visitor
       visitor: 'Visitor'
+    },
+    // Diagram types
+    diagram: {
+      // Architecture
+      architecture: 'Architecture Model'
     }
   },
 
@@ -325,6 +330,65 @@ export default {
         // Message
         message: 'Here you can view the properties of the project. However, there is no possibility of making changes ' +
           'due to a lack of authorization.'
+      }
+    }
+  },
+
+  // Diagram Messages
+  diagram: {
+    // Name of the type
+    type: 'Diagram',
+    // Article of the type
+    article: 'the',
+    // Labels
+    label: {
+      // Diagram Name
+      name: 'Diagram Name',
+      // Diagram Type
+      type: 'Diagram Type'
+    },
+    // Button Messages
+    button: {
+      // Create Diagram
+      create: 'New Diagram'
+    },
+    // Diagram Overview Messages
+    overview: {
+      // Title
+      title: 'Overview - Diagrams',
+      // Message
+      message: 'Here you can see an overview of all the diagrams created so far in this project. A diagram ' +
+        'provides a specific view or section of your model. There are different types of diagrams that represent ' +
+        'different aspects of your model.',
+      // Empty Table Message
+      empty: 'There is no diagram for this project yet. To start modeling, you must create at least one diagram.'
+    },
+    // Diagram Editor Messages
+    editor: {
+      // Create Messages
+      create: {
+        // Title
+        title: 'Create New Diagram',
+        // Message
+        message: 'Create a new diagram here to represent a new view or section of your model. Depending on which ' +
+          'diagram type you choose, you can represent different aspects of your model.'
+      },
+      // Edit Messages
+      edit: {
+        // Title
+        title: 'Edit Diagram',
+        // Message
+        message: 'Here you can edit the properties of the diagram. However, you can no longer change the type of ' +
+          'diagram. To do this, you would have to create a new diagram and then delete it. However, the content of ' +
+          'the diagram is lost.'
+      },
+      // View Messages
+      view: {
+        // Title
+        title: 'View Diagram',
+        // Message
+        message: 'Here you can view the properties of the diagram. However, you cannot make any changes due to lack ' +
+          'of permissions.'
       }
     }
   },

@@ -5,6 +5,7 @@ import { ProjectDocument } from 'src/scripts/firestore/project-document';
 import { getAuthorizedUserId } from 'src/scripts/util/firebase';
 import { toArray } from 'src/scripts/util/utilities';
 import { Connection, IConnectionData } from 'src/scripts/firestore/connection';
+import { Diagram, IDiagramData } from 'src/scripts/firestore/diagram';
 
 /**
  * Represents a project member.
@@ -142,6 +143,15 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
   removeDocument<D extends object>(document: fd.FirestoreDocument<D>): void {
     const documents = this.getDocuments(document.type);
     documents.delete(document.id);
+  }
+
+  /**
+   * Retrieves an array of diagrams from the documents.
+   *
+   * @return {Diagram[]} The array of diagrams.
+   */
+  getDiagrams(): Diagram[] {
+    return toArray(this.getDocuments<IDiagramData>(tp.EDocumentType.diagram)) as Diagram[];
   }
 
   /**
@@ -324,6 +334,8 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
     );
     // Load all connections
     await Connection.loadConnections(project);
+    // Load all diagrams
+    await Diagram.loadDiagrams(project);
     // Return the project
     return project;
   }

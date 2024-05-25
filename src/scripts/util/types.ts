@@ -151,6 +151,8 @@ export enum EDocumentType {
   account = 'account',
   // Project
   project = 'project',
+  // Diagrams
+  diagram = 'diagram',
   // Connection
   connection = 'connection'
 }

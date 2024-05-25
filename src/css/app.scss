@@ -82,6 +82,14 @@ body.body--dark {
   color: $dark-text;
 }
 
+.q-field--standout.q-field--highlighted .q-field__prepend {
+  color: $light-text;
+}
+
+.body--dark .q-field--standout.q-field--highlighted .q-field__prepend {
+  color: $dark-text;
+}
+
 // ============================================================================
 // QSeparator
 // ============================================================================

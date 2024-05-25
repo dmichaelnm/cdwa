@@ -6,6 +6,11 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
+      // Modeling Page
+      {
+        path: '',
+        component: () => import('pages/app/ModelingPage.vue'),
+      },
       // Project Overview Page
       {
         path: 'project',
@@ -15,6 +20,16 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'project/editor',
         component: () => import('pages/app/editor/ProjectEditorPage.vue')
+      },
+      // Diagram Overview Page
+      {
+        path: '/diagram',
+        component: () => import('pages/app/overview/DiagramOverviewPage.vue')
+      },
+      // Diagram Editor Page
+      {
+        path: '/diagram/editor',
+        component: () => import('pages/app/editor/DiagramEditorPage.vue')
       },
       // Connection Overview Page
       {

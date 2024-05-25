@@ -18,13 +18,6 @@
                          v-if="permission(EEditorMode.create)"
                          @click="openEditor(type, EEditorMode.create)" />
           </div>
-          <div>
-            <!-- Close Button -->
-            <button-push :label="$t('button.close')"
-                         flat
-                         color="#808080"
-                         @click="cmp.router.push({path: '/'})" />
-          </div>
         </div>
       </div>
     </div>

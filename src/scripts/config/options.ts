@@ -1,6 +1,7 @@
 import { EDocumentAttributeType, EProjectMemberRole, EUILanguage } from 'src/scripts/util/types';
 import * as flags from 'quasar-extras-svg-icons/country-flag-icons';
 import { EConnectionApplication } from 'src/scripts/firestore/connection';
+import { EDiagramType } from 'src/scripts/firestore/diagram';
 
 /**
  * Type of selection option for a dropdown or select component.
@@ -116,5 +117,17 @@ export function getAWSRegions(): TSelectionOption<string>[] {
     { value: 'sa-east-1', label: 'South America (São Paulo)' },
     { value: 'us-gov-east-1', label: 'AWS GovCloud (US-East)' },
     { value: 'us-gov-west-1', label: 'AWS GovCloud (US-West)' }
+  ];
+}
+
+/**
+ * Retrieves the options for diagram types.
+ *
+ * @return {TSelectionOption<EDiagramType>[]} An array of diagram type options.
+ */
+export function getDiagramTypeOptions(): TSelectionOption<EDiagramType>[] {
+  return [
+    // Architecture Model
+    { value: EDiagramType.architecture, label: 'enum.diagram.architecture', icon: 'domain' }
   ];
 }

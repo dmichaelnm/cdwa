@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCloudFunctions, useComposables, useRunTask } from 'src/scripts/util/composables';
+import { useCloudFunctions, useComposables } from 'src/scripts/util/composables';
 import OverviewPage from 'components/app/OverviewPage.vue';
 import { EDocumentType, EEditorMode, EGlobalEvent, EProjectMemberRole } from 'src/scripts/util/types';
 import { IProjectData, Project } from 'src/scripts/firestore/project';
@@ -23,7 +23,6 @@ import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
 // Composable
 const cmp = useComposables();
 const { cfDeleteProject } = useCloudFunctions();
-const runTask = useRunTask();
 
 /**
  * Determines whether the current user has permission to perform the specified action.
@@ -54,7 +53,7 @@ function getPermission(mode: EEditorMode, item?: FirestoreDocument<IProjectData>
     // Check permission for delete
     if (mode === EEditorMode.delete) {
       // Only the owner can delete a project
-      return project.hasRole(EProjectMemberRole.owner)
+      return project.hasRole(EProjectMemberRole.owner);
     }
   }
   // No permission
@@ -69,16 +68,14 @@ function getPermission(mode: EEditorMode, item?: FirestoreDocument<IProjectData>
  * @returns A promise that resolves when the project is successfully deleted.
  */
 async function deleteProject(project: FirestoreDocument<IProjectData>): Promise<void> {
-  await runTask(async () => {
-    // Delete the project in Firestore
-    await cfDeleteProject(project.id);
-    // Remove the project from the projects list
-    cmp.sessionStore.removeProject(project.id);
-    // Send global event
-    cmp.bus.emit(EGlobalEvent.projectsChanged, {
-      mode: EEditorMode.delete,
-      project: project
-    });
+  // Delete the project in Firestore
+  await cfDeleteProject(project.id);
+  // Remove the project from the projects list
+  cmp.sessionStore.removeProject(project.id);
+  // Send global event
+  cmp.bus.emit(EGlobalEvent.projectsChanged, {
+    mode: EEditorMode.delete,
+    project: project
   });
 }
 

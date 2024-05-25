@@ -46,10 +46,6 @@
   </q-select>
 </template>
 
-<style scoped lang="scss">
-
-</style>
-
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useComposables } from 'src/scripts/util/composables';

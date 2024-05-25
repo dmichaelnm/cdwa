@@ -13,7 +13,7 @@
       <q-td :props="props">
         <div class="flex items-center">
           <!-- Application Icon -->
-          <q-icon :name="getApplicationIcon(props.row.data.application)" size="sm" style="padding-right: 4px"/>
+          <q-icon :name="getApplicationIcon(props.row.data.application)" size="sm" style="padding-right: 4px" />
           <!-- Application Label -->
           {{ $t(`enum.application.${props.row.data.application}`) }}
         </div>
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { useComposables, useRunTask } from 'src/scripts/util/composables';
+import { useComposables } from 'src/scripts/util/composables';
 import OverviewPage from 'components/app/OverviewPage.vue';
 import { EDocumentType, EEditorMode, EProjectMemberRole } from 'src/scripts/util/types';
 import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
@@ -33,7 +33,6 @@ import { computed } from 'vue';
 
 // Composable
 const cmp = useComposables();
-const runTask = useRunTask();
 
 // Array on connections to be displayed in the overview
 const connections = computed(() => {
@@ -88,13 +87,10 @@ function getPermission(mode: EEditorMode): boolean {
 async function deleteConnection(document: FirestoreDocument<IConnectionData>): Promise<void> {
   // Cast to connection
   const connection = document as Connection;
-  // Start deletion task
-  await runTask(async () => {
-    // Delete the Firestore document
-    await FirestoreDocument.delete(connection);
-    // Remove connection from the active project
-    connection.project.removeDocument(connection);
-  });
+  // Delete the Firestore document
+  await FirestoreDocument.delete(connection);
+  // Remove connection from the active project
+  connection.project.removeDocument(connection);
 }
 
 </script>

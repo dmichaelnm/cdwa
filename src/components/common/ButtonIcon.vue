@@ -5,9 +5,10 @@
          :href="href"
          :target="target"
          :dense="dense"
-         round
          :flat="!highlighted"
-         :color="highlighted ? 'primary' : undefined"
+         :class="classAttr"
+         :disable="disabled"
+         round
          @click="emit('click')">
     <!-- Default Slot -->
     <slot />
@@ -17,13 +18,35 @@
 </template>
 
 <style scoped lang="scss">
+@import "src/css/quasar.variables";
+
+.button-icon {
+  color: $light-text;
+}
+
+.body--dark .button-icon {
+  color: $dark-text;
+}
+
+.button-icon-highlighted {
+  color: $primary;
+}
+
+.button-icon-disabled {
+  color: $dark-text;
+}
+
+.body--dark .button-icon-disabled {
+  color: $light-text;
+}
 
 </style>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 
 // Defines the properties of this component.
-defineProps<{
+const props = defineProps<{
   // The icon of this button
   icon: string;
   // The size of this button
@@ -38,7 +61,20 @@ defineProps<{
   highlighted?: boolean;
   // An optional tooltip text
   tooltip?: string;
+  // Flag controlling whether this button is disabled
+  disabled?: boolean;
 }>();
+
+// Computed class attribute
+const classAttr = computed(() => {
+  if (props.disabled) {
+    return 'button-icon-disabled';
+  }
+  if (props.highlighted) {
+    return 'button-icon-highlighted';
+  }
+  return 'button-icon';
+});
 
 // Define the events emitted by this component.
 const emit = defineEmits<{

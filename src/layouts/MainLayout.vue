@@ -27,10 +27,17 @@
                           class="active-project-selector"
                           @update:modelValue="value => switchProject(value)" />
           </div>
+          <!-- Diagrams Overview Column -->
+          <div class="col-auto" v-if="hasProject">
+            <!-- Diagrams Overview Button -->
+            <button-icon size="md" icon="o_account_tree" @click="to('/diagram')"
+                         :tooltip="$t('diagram.overview.title')"
+                         :disabled="!hasDiagrams" />
+          </div>
           <!-- Connections Overview Column -->
           <div class="col-auto" v-if="hasProject">
             <!-- Connections Overview Button -->
-            <button-icon size="md" icon="mdi-connection" @click="to('/connection')"
+            <button-icon size="md" icon="o_settings_input_composite" @click="to('/connection')"
                          :tooltip="$t('connection.overview.title')" />
           </div>
           <!-- Space Column -->
@@ -216,6 +223,14 @@ const hasProject = computed(() => {
   return activeProjectId.value !== null;
 });
 
+// Flag controlling whether project has at least one diagram
+const hasDiagrams = computed(() => {
+  // Get Project
+  const project = cmp.sessionStore.project;
+  // Check if the project has diagrams
+  return project ? project.getDiagrams().length > 0 : false;
+});
+
 // Current ID of active project
 const activeProjectId = ref<string | null>(null);
 
@@ -266,9 +281,16 @@ onBeforeMount(() => {
       cmp.sessionStore.projects = await Project.loadProjects();
       // Switch to current project
       await switchProject(account.data.state.activeProject);
-      // If there are no projects, route to project overview page
+      // Route the target page
       if (cmp.sessionStore.projects.length === 0) {
+        // If there are no projects, route to project overview page
         await cmp.router.push({ path: '/project' });
+      } else if (cmp.sessionStore.project?.getDiagrams().length === 0) {
+        // If there are no diagrams in the project, route to diagrams overview
+        await cmp.router.push({ path: '/diagram' });
+      } else {
+        // Route to modeling page
+        await cmp.router.push({ path: '/' });
       }
     }
     // Unlock the screen

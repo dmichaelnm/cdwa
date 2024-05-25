@@ -43,8 +43,8 @@ import OverviewPage from 'components/app/OverviewPage.vue';
 import { EDocumentType, EEditorMode, EProjectMemberRole } from 'src/scripts/util/types';
 import { computed } from 'vue';
 import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
-import { Diagram, EDiagramType, IDiagramData } from 'src/scripts/firestore/diagram';
-import { getDiagramTypeOptions } from 'src/scripts/config/options';
+import { Diagram, IDiagramData } from 'src/scripts/firestore/diagram';
+import { getDiagramTypeIcon } from 'src/scripts/util/utilities';
 
 // Composable
 const cmp = useComposables();
@@ -53,20 +53,6 @@ const cmp = useComposables();
 const diagrams = computed(() => {
   return cmp.sessionStore.project ? cmp.sessionStore.project.getDiagrams() : [];
 });
-
-/**
- * Retrieves the icon associated with a given diagram type.
- *
- * @param {EDiagramType} type - The diagram type.
- *
- * @return {string | undefined} - The icon associated with the diagram type, or undefined if not found.
- */
-function getDiagramTypeIcon(type: EDiagramType): string | undefined {
-  // Get diagram option for type
-  const option = getDiagramTypeOptions().find(opt => opt.value === type);
-  // Return the icon
-  return option?.icon;
-}
 
 /**
  * Retrieves the permission level based on the provided editor mode.

@@ -13,7 +13,9 @@ export const useSessionStore = defineStore('session', {
     // Editor Lock
     editorLock: false as boolean,
     // Query parameter
-    queryParams: {} as any
+    queryParams: {} as any,
+    // ID of the current diagram
+    currentDiagramId: null as string | null
   }),
   getters: {
     /**

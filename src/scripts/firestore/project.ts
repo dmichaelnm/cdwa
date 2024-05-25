@@ -151,7 +151,14 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
    * @return {Diagram[]} The array of diagrams.
    */
   getDiagrams(): Diagram[] {
-    return toArray(this.getDocuments<IDiagramData>(tp.EDocumentType.diagram)) as Diagram[];
+    return toArray(
+      this.getDocuments<IDiagramData>(tp.EDocumentType.diagram),
+      (d1, d2) => {
+        const n1 = d1.data.common.name.toLowerCase();
+        const n2 = d2.data.common.name.toLowerCase();
+        return n1.localeCompare(n2);
+      }
+    ) as Diagram[];
   }
 
   /**
@@ -160,7 +167,14 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
    * @returns {Connection[]} An array of Connection objects.
    */
   getConnections(): Connection[] {
-    return toArray(this.getDocuments<IConnectionData>(tp.EDocumentType.connection)) as Connection[];
+    return toArray(
+      this.getDocuments<IConnectionData>(tp.EDocumentType.connection),
+      (c1, c2) => {
+        const n1 = c1.data.common.name.toLowerCase();
+        const n2 = c2.data.common.name.toLowerCase();
+        return n1.localeCompare(n2);
+      }
+    ) as Connection[];
   }
 
   /**

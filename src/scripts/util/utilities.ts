@@ -1,4 +1,6 @@
 import { TDocumentAttribute } from 'src/scripts/util/types';
+import { EDiagramType } from 'src/scripts/firestore/diagram';
+import { getDiagramTypeOptions } from 'src/scripts/config/options';
 
 /**
  * Converts the values of a Map to an array.
@@ -75,4 +77,15 @@ export function copyAttributes(attributes: TDocumentAttribute[]): TDocumentAttri
   return attributes.map(attr => {
     return { key: attr.key, type: attr.type, value: attr.value };
   });
+}
+
+/**
+ * Returns the icon for a given diagram type.
+ *
+ * @param {EDiagramType} type - The type of the diagram.
+ *
+ * @return {string|undefined} - The icon for the diagram type, or undefined if not found.
+ */
+export function getDiagramTypeIcon(type: EDiagramType): string | undefined {
+  return getDiagramTypeOptions().find(t => t.value === type)?.icon;
 }

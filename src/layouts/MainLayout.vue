@@ -281,17 +281,6 @@ onBeforeMount(() => {
       cmp.sessionStore.projects = await Project.loadProjects();
       // Switch to current project
       await switchProject(account.data.state.activeProject);
-      // Route the target page
-      if (cmp.sessionStore.projects.length === 0) {
-        // If there are no projects, route to project overview page
-        await cmp.router.push({ path: '/project' });
-      } else if (cmp.sessionStore.project?.getDiagrams().length === 0) {
-        // If there are no diagrams in the project, route to diagrams overview
-        await cmp.router.push({ path: '/diagram' });
-      } else {
-        // Route to modeling page
-        await cmp.router.push({ path: '/' });
-      }
     }
     // Unlock the screen
     cmp.quasar.loading.hide();
@@ -391,6 +380,17 @@ async function switchProject(projectId: string | null): Promise<void> {
       // Update the session with the new project ID
       cmp.sessionStore.accountActive.data.state.activeProject = projectId;
       await FirestoreDocument.update(cmp.sessionStore.accountActive);
+      // Route the target page
+      if (cmp.sessionStore.projects.length === 0) {
+        // If there are no projects, route to project overview page
+        await cmp.router.push({ path: '/project' });
+      } else if (cmp.sessionStore.project?.getDiagrams().length === 0) {
+        // If there are no diagrams in the project, route to diagrams overview
+        await cmp.router.push({ path: '/diagram' });
+      } else {
+        // Route to modeling page
+        await cmp.router.push({ path: '/' });
+      }
     });
   }
 }

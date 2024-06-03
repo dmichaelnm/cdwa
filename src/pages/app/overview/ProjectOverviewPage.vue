@@ -75,7 +75,7 @@ async function deleteProject(project: FirestoreDocument<IProjectData>): Promise<
   // Send global event
   cmp.bus.emit(EGlobalEvent.projectsChanged, {
     mode: EEditorMode.delete,
-    project: project
+    document: project
   });
 }
 

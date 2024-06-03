@@ -158,13 +158,13 @@ async function createDiagram(): Promise<FirestoreDocument<IDiagramData>> {
 }
 
 /**
- * Updates a diagram with new name and description.
+ * Updates a diagram in the Firestore database with the specified ID.
  *
  * @param {string} id - The ID of the diagram to be updated.
  *
- * @returns {Promise<void>} - A promise that resolves when the diagram is successfully updated.
+ * @returns {Promise<FirestoreDocument<IDiagramData>>} - A promise that resolves to the updated diagram document.
  */
-async function updateDiagram(id: string): Promise<void> {
+async function updateDiagram(id: string): Promise<FirestoreDocument<IDiagramData>> {
   // Get the active project
   const project = cmp.sessionStore.project as Project;
   // Get diagram
@@ -174,6 +174,8 @@ async function updateDiagram(id: string): Promise<void> {
   diagram.data.common.description = diagramDescription.value;
   // Update the document
   await ProjectDocument.updateDocument(diagram);
+  // Return the document
+  return diagram;
 }
 
 </script>

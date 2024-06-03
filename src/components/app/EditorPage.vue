@@ -56,7 +56,9 @@ const props = defineProps<{
   // Create handler function
   create: () => Promise<FirestoreDocument<any>>;
   // Update handler function
-  update: (id: string) => Promise<void>;
+  update: (id: string) => Promise<FirestoreDocument<any>>;
+  // Function for emitting a global event
+  globalEvent?: (document: FirestoreDocument<any> | null) => void
 }>();
 
 /**
@@ -91,15 +93,21 @@ async function save(): Promise<void> {
     await runTask(
       // Task execution
       async () => {
+        // The document that was created or updated
+        let document: FirestoreDocument<any> | null = null;
         if (mode === EEditorMode.create) {
           // Create a new document
-          await props.create();
+          document = await props.create();
         } else if (mode === EEditorMode.edit) {
           // Update the document
-          await props.update(itemId as string);
+          document = await props.update(itemId as string);
         }
         // Close the editor
         closeEditor();
+        // Send global event, if provided
+        if (props.globalEvent) {
+          props.globalEvent(document);
+        }
       }
     );
   }

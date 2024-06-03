@@ -10,7 +10,8 @@
                :form="form"
                :apply="applyValues"
                :create="createProject"
-               :update="updateProject">
+               :update="updateProject"
+               :global-event="emitGlobalEvent">
     <!-- Form -->
     <q-form ref="form"
             @submit="editor?.save()">
@@ -224,23 +225,18 @@ async function createProject(): Promise<FirestoreDocument<IProjectData>> {
   );
   // Add new project to session store project list
   cmp.sessionStore.projects.push(project);
-  // Send global event
-  cmp.bus.emit(tp.EGlobalEvent.projectsChanged, {
-    mode: tp.EEditorMode.create,
-    project: project
-  });
   // Return the new project
   return project;
 }
 
 /**
- * Updates a project with the specified projectId with the values from the form fields.
+ * Update a project in the database.
  *
- * @param {string} projectId - The id of the project to update.
+ * @param {string} projectId - The ID of the project to update.
  *
- * @returns {Promise} - A promise that resolves with no value upon successful project update.
+ * @returns {Promise<FirestoreDocument<IProjectData>>} - A promise that resolves to the updated project document.
  */
-async function updateProject(projectId: string): Promise<void> {
+async function updateProject(projectId: string): Promise<FirestoreDocument<IProjectData>> {
   // Get the project
   const project = cmp.sessionStore.getProject(projectId) as Project;
   // Apply values
@@ -250,11 +246,8 @@ async function updateProject(projectId: string): Promise<void> {
   project.data.attributes = projectAttributes.value;
   // Update the project
   await Project.updateProject(project);
-  // Send global event
-  cmp.bus.emit(tp.EGlobalEvent.projectsChanged, {
-    mode: tp.EEditorMode.edit,
-    project: project
-  });
+  // Return the project
+  return project;
 }
 
 /**
@@ -345,6 +338,22 @@ function createMembersArray(): TProjectMember[] {
     // Include the members
     ...projectMembers.value
   ];
+}
+
+/**
+ * Emits a global event with the given Firestore document.
+ *
+ * @param {FirestoreDocument<any> | null} document - The Firestore document to be emitted. Can be null.
+ *
+ * @return {void}
+ */
+function emitGlobalEvent(document: FirestoreDocument<any> | null): void {
+  if (document) {
+    cmp.bus.emit(tp.EGlobalEvent.projectsChanged, {
+      mode: mode,
+      document: document
+    });
+  }
 }
 
 </script>

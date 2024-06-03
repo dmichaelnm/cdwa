@@ -210,13 +210,13 @@ async function createConnection(): Promise<FirestoreDocument<conn.IConnectionDat
 }
 
 /**
- * Updates the connection with the given ID.
+ * Updates the connection document with the specified id.
  *
- * @param {string} id - The ID of the connection to update.
+ * @param {string} id - The id of the connection document to update.
  *
- * @return {Promise<void>} A Promise that resolves when the connection is updated.
+ * @return {Promise<FirestoreDocument<any>>} - A promise that resolves with the updated connection document.
  */
-async function updateConnection(id: string): Promise<void> {
+async function updateConnection(id: string): Promise<FirestoreDocument<any>> {
   // Get the active project
   const project = cmp.sessionStore.project as Project;
   // Get the connection document
@@ -230,6 +230,8 @@ async function updateConnection(id: string): Promise<void> {
   connection.data.attributes = connectionAttributes.value;
   // Update the connection document
   await conn.Connection.updateConnection(connection);
+  // Return the document
+  return connection;
 }
 
 /**

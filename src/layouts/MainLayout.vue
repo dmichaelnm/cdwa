@@ -11,6 +11,11 @@
       <div class="application-header">
         <!-- Header Toolbar Row -->
         <div class="row q-col-gutter-x-md items-center">
+          <!-- Project Tree Button -->
+          <div class="col-auto" v-if="hasProject">
+            <!-- Project Tree Visibility Button -->
+            <button-icon size="md" icon="mdi-file-tree-outline" @click="projectTreeVisible = !projectTreeVisible" />
+          </div>
           <!-- Application Title Column -->
           <div class="col-auto application-header-title">{{ $t('application.title') }}</div>
           <!-- Project Overview Column -->
@@ -26,19 +31,6 @@
                           :options="projectOptions"
                           class="active-project-selector"
                           @update:modelValue="value => switchProject(value)" />
-          </div>
-          <!-- Diagrams Overview Column -->
-          <div class="col-auto" v-if="hasProject">
-            <!-- Diagrams Overview Button -->
-            <button-icon size="md" icon="o_account_tree" @click="to('/diagram')"
-                         :tooltip="$t('diagram.overview.title')"
-                         :disabled="!hasDiagrams" />
-          </div>
-          <!-- Connections Overview Column -->
-          <div class="col-auto" v-if="hasProject">
-            <!-- Connections Overview Button -->
-            <button-icon size="md" icon="o_settings_input_composite" @click="to('/connection')"
-                         :tooltip="$t('connection.overview.title')" />
           </div>
           <!-- Space Column -->
           <div class="col-grow" />
@@ -120,14 +112,11 @@
       </template>
     </application-footer>
 
-    <!-- Toolbox Drawer -->
-    <q-drawer v-model="isToolboxVisible"
-              overlay
-              side="right"
-              class="toolbox"
-              :width="200">
-      <!-- Toolbox -->
-      <toolbox-drawer />
+    <!-- Project Tree -->
+    <q-drawer v-model="projectTreeVisible"
+              :width="300"
+              :breakpoint="500">
+
     </q-drawer>
 
     <!-- Page Container -->
@@ -212,7 +201,6 @@ import MenuItem from 'components/common/MenuItem.vue';
 import { Project } from 'src/scripts/firestore/project';
 import MessageDialog from 'components/common/MessageDialog.vue';
 import FieldSelect from 'components/common/FieldSelect.vue';
-import ToolboxDrawer from 'components/app/ToolboxDrawer.vue';
 
 // Get main composable instances
 const cmp = useComposables();
@@ -242,21 +230,10 @@ const hasProject = computed(() => {
   return activeProjectId.value !== null;
 });
 
-// Flag controlling whether project has at least one diagram
-const hasDiagrams = computed(() => {
-  // Get Project
-  const project = cmp.sessionStore.project;
-  // Check if the project has diagrams
-  return project ? project.getDiagrams().length > 0 : false;
-});
-
-// Visibility of the toolbox
-const isToolboxVisible = computed(() => {
-  return cmp.route.path === '/';
-});
-
 // Current ID of active project
 const activeProjectId = ref<string | null>(null);
+// Project Tree visibility
+const projectTreeVisible = ref(false);
 
 /**
  * Lifecycle event method called before this component is mounted.
@@ -268,10 +245,11 @@ onBeforeMount(() => {
   cmp.quasar.loading.show({ delay: 0 });
 
   // Register event listener for changes in the projects array of the session store
-  cmp.bus.on(tp.EGlobalEvent.projectsChanged, (event) => {
+  cmp.bus.on(tp.EGlobalEvent.projectsChanged, (event: { mode: tp.EEditorMode, document: FirestoreDocument<any> }) => {
+    Logging.debug('projectsChanged', event);
     if (event.mode === tp.EEditorMode.delete) {
       // Check if deleted project is the active project
-      if (event.project.id === activeProjectId.value) {
+      if (event.document.id === activeProjectId.value) {
         // Switch to another project
         switchProject(null);
       }
@@ -279,7 +257,7 @@ onBeforeMount(() => {
       // If there is no active project, make the new project to active project
       if (activeProjectId.value === null) {
         // Switch to new project
-        switchProject(event.project.id);
+        switchProject(event.document.id);
       }
     }
   });

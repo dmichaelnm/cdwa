@@ -1,8 +1,9 @@
 import * as fd from 'src/scripts/firestore/firestore-document';
 import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
 import { ProjectDocument } from 'src/scripts/firestore/project-document';
-import { EDocumentType, IIdentifiable, INamed } from 'src/scripts/util/types';
+import { EDocumentType, IIdentifiable, INamed, TTreeNode } from 'src/scripts/util/types';
 import { Project } from 'src/scripts/firestore/project';
+import { getDiagramTypeIcon } from 'src/scripts/util/utilities';
 
 /**
  * Enumeration representing different types of diagrams.
@@ -86,6 +87,41 @@ export class Diagram extends ProjectDocument<IDiagramData> implements INamed {
    */
   getName(): string {
     return this.data.common.name;
+  }
+
+  /**
+   * Creates a tree node containing diagram nodes for a given project.
+   *
+   * @param {Project} project - The project for which to create the tree node.
+   *
+   * @return {TTreeNode} The tree node representing the project.
+   */
+  static createTreeNode(project: Project): TTreeNode {
+    // Root node for diagrams
+    const root: TTreeNode = {
+      key: 'diagrams',
+      type: EDocumentType.diagram,
+      label: 'diagram.plural',
+      icon: 'mdi-sitemap',
+      header: 'translate',
+      document: undefined,
+      translate: true,
+      children: []
+    };
+    // Add diagram nodes
+    const diagrams = project.getDiagrams();
+    diagrams.forEach(diagram => root.children?.push({
+      key: diagram.id,
+      type: EDocumentType.diagram,
+      label: diagram.data.common.name,
+      icon: getDiagramTypeIcon(diagram.data.type),
+      header: 'document',
+      document: diagram,
+      draggable: true,
+      children: []
+    }));
+    // Return root node
+    return root;
   }
 
   /**

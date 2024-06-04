@@ -1,12 +1,13 @@
 import * as fd from 'src/scripts/firestore/firestore-document';
 import { ProjectDocument } from 'src/scripts/firestore/project-document';
-import { EDocumentType, INamed, TDocumentAttribute } from 'src/scripts/util/types';
+import { EDocumentType, INamed, TDocumentAttribute, TTreeNode } from 'src/scripts/util/types';
 import { Project } from 'src/scripts/firestore/project';
 import { copyAttributes } from 'src/scripts/util/utilities';
 import { useCloudFunctions } from 'src/scripts/util/composables';
 import { Assert } from 'src/scripts/util/assert';
 import { getAuthorizedUserName } from 'src/scripts/util/firebase';
 import { Timestamp } from 'firebase/firestore';
+import { getApplicationOptions } from 'src/scripts/config/options';
 
 /**
  * An enumeration representing the possible connection applications.
@@ -86,6 +87,41 @@ export class Connection extends ProjectDocument<IConnectionData> implements INam
    */
   getName(): string {
     return this.data.common.name;
+  }
+
+  /**
+   * Creates a tree node of all connections for a given project.
+   *
+   * @param {Project} project - The project to create a tree node for.
+   *
+   * @return {TTreeNode} - The created tree node.
+   */
+  static createTreeNode(project: Project): TTreeNode {
+    // Root node for connections
+    const root: TTreeNode = {
+      key: 'connections',
+      type: EDocumentType.connection,
+      label: 'connection.plural',
+      icon: 'mdi-connection',
+      header: 'translate',
+      document: undefined,
+      translate: true,
+      children: []
+    };
+    // Add connection nodes
+    const connections = project.getConnections();
+    connections.forEach(connection => root.children?.push({
+      key: connection.id,
+      type: EDocumentType.connection,
+      label: connection.data.common.name,
+      icon: getApplicationOptions().find(opt => opt.value === connection.data.application)?.icon,
+      header: 'document',
+      document: connection,
+      draggable: true,
+      children: []
+    }));
+    // Return root node
+    return root;
   }
 
   /**

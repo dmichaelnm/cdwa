@@ -15,7 +15,9 @@ export const useSessionStore = defineStore('session', {
     // Query parameter
     queryParams: {} as any,
     // ID of the current diagram
-    currentDiagramId: null as string | null
+    currentDiagramId: null as string | null,
+    // Splitter position in model page
+    splitter: 25 as number
   }),
   getters: {
     /**

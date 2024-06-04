@@ -81,4 +81,18 @@ export class ProjectDocument<D extends object> extends fd.FirestoreDocument<D> {
     // Update the document in Firestore
     await fd.FirestoreDocument.update<D, R>(document, undefined, processedData);
   }
+
+  /**
+   * Deletes a document from a project.
+   *
+   * @param {ProjectDocument<any>} document - The document to be deleted.
+   *
+   * @return {Promise<void>} - A promise that resolves when the document is successfully deleted.
+   */
+  static async deleteDocument(document: ProjectDocument<any>): Promise<void> {
+    // Delete the diagram document
+    await fd.FirestoreDocument.delete(document);
+    // Remove diagram from project
+    document.project.removeDocument(document);
+  }
 }

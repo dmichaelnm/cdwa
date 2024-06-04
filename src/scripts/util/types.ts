@@ -1,5 +1,6 @@
-import { QTableColumn } from 'quasar';
+import { QTableColumn, QTreeNode } from 'quasar';
 import { TSelectionOption } from 'src/scripts/config/options';
+import { ProjectDocument } from 'src/scripts/firestore/project-document';
 
 /**
  * Defines the type of the global configuration instance for the application.
@@ -61,6 +62,25 @@ export type TEditableTableColumn = QTableColumn &
     translate?: boolean
     // Flag controlling whether the icons in a selection are shown
     showIcons?: boolean
+  }
+
+/**
+ * Represents a tree node.
+ */
+export type TTreeNode = QTreeNode &
+  {
+    // The node key
+    key: string;
+    // The document type
+    type: EDocumentType;
+    // An optional icon
+    icon?: string | (() => string);
+    // The attached document
+    document?: ProjectDocument<any>;
+    // Translate flag
+    translate?: boolean;
+    // Node is draggable
+    draggable?: boolean;
   }
 
 /**

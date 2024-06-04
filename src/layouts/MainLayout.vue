@@ -11,11 +11,6 @@
       <div class="application-header">
         <!-- Header Toolbar Row -->
         <div class="row q-col-gutter-x-md items-center">
-          <!-- Project Tree Button -->
-          <div class="col-auto" v-if="hasProject">
-            <!-- Project Tree Visibility Button -->
-            <button-icon size="md" icon="mdi-file-tree-outline" @click="projectTreeVisible = !projectTreeVisible" />
-          </div>
           <!-- Application Title Column -->
           <div class="col-auto application-header-title">{{ $t('application.title') }}</div>
           <!-- Project Overview Column -->
@@ -111,13 +106,6 @@
         </div>
       </template>
     </application-footer>
-
-    <!-- Project Tree -->
-    <q-drawer v-model="projectTreeVisible"
-              :width="300"
-              :breakpoint="500">
-
-    </q-drawer>
 
     <!-- Page Container -->
     <q-page-container>
@@ -232,8 +220,6 @@ const hasProject = computed(() => {
 
 // Current ID of active project
 const activeProjectId = ref<string | null>(null);
-// Project Tree visibility
-const projectTreeVisible = ref(false);
 
 /**
  * Lifecycle event method called before this component is mounted.

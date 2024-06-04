@@ -6,6 +6,7 @@ import { getAuthorizedUserId } from 'src/scripts/util/firebase';
 import { toArray } from 'src/scripts/util/utilities';
 import { Connection, IConnectionData } from 'src/scripts/firestore/connection';
 import { Diagram, IDiagramData } from 'src/scripts/firestore/diagram';
+import { TTreeNode } from 'src/scripts/util/types';
 
 /**
  * Represents a project member.
@@ -260,6 +261,22 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
     }
     // Member not found
     return false;
+  }
+
+  /**
+   * Retrieves an array of tree nodes from the current instance.
+   *
+   * @returns {TTreeNode[]} An array of tree nodes.
+   */
+  getTreeNodes(): TTreeNode[] {
+    // Array of tree nodes
+    const nodes: TTreeNode[] = [];
+    // Add diagram node
+    nodes.push(Diagram.createTreeNode(this));
+    // Add connection node
+    nodes.push(Connection.createTreeNode(this));
+    // Return the nodes
+    return nodes;
   }
 
   /**

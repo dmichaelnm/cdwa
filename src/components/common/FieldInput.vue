@@ -16,11 +16,19 @@
            :readonly="readonly"
            :hide-hint="hideBottomSpace"
            :hide-bottom-space="hideBottomSpace"
+           :stack-label="!noStackLabel"
+           :clearable="clearable"
            lazy-rules="ondemand"
            spellcheck="false"
-           stack-label
            dense
-           @update:modelValue="value => modelValue = upperCase && typeof value === 'string' ? value.toUpperCase() : value" />
+           @update:modelValue="value => modelValue = upperCase && typeof value === 'string' ? value.toUpperCase() : value"
+           @clear="emit('clear')">
+    <!-- Template: Prepend Icon -->
+    <template #prepend v-if="iconPrepend">
+      <!-- Prepend Icon -->
+      <q-icon :name="iconPrepend" />
+    </template>
+  </q-input>
 </template>
 
 <script setup lang="ts">
@@ -56,12 +64,20 @@ const props = defineProps<{
   hideBottomSpace?: boolean;
   // Flag controlling whether the field is squared
   squared?: boolean;
+  // Prepend Icon
+  iconPrepend?: string;
+  // Flag controlling whether the label is not stacked
+  noStackLabel?: boolean;
+  // Flag controlling whether this input is clearable
+  clearable?: boolean;
 }>();
 
 // Define the events emitted by this component.
 const emit = defineEmits<{
   // Model Value Change Event
   (event: 'update:modelValue', value: string | number | null): void;
+  // Clearable Event
+  (event: 'clear'): void;
 }>();
 
 // Computed model value

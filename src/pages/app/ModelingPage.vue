@@ -1,26 +1,37 @@
 <template>
   <!-- Page -->
   <q-page class="page">
-    <!-- Diagram Tab Definitions -->
-    <q-tabs v-model="cmp.sessionStore.currentDiagramId"
-            align="left"
-            no-caps dense inline-label>
-      <!-- Diagram Tab -->
-      <q-tab v-for="diagram in diagrams"
-             :name="diagram.id"
-             :key="diagram.id"
-             :label="diagram.getName()"
-             :icon="getDiagramTypeIcon(diagram.data.type)" />
-    </q-tabs>
-    <div style="height: calc(100vh - 132px)">
-      <!-- Vue Flow -->
-      <VueFlow snap-to-grid
-               :snap-grid="[20, 20]">
-        <!-- Background -->
-        <Background :gap="20" />
+    <!-- Splitter -->
+    <q-splitter v-model="cmp.sessionStore.splitter">
+      <!-- Left Side -->
+      <template #before>
+        <!-- Project Tree -->
+        <project-tree />
+      </template>
+      <!-- Right Side -->
+      <template #after>
+        <!-- Diagram Tab Definitions -->
+        <q-tabs v-model="cmp.sessionStore.currentDiagramId"
+                align="left"
+                no-caps dense inline-label>
+          <!-- Diagram Tab -->
+          <q-tab v-for="diagram in diagrams"
+                 :name="diagram.id"
+                 :key="diagram.id"
+                 :label="diagram.getName()"
+                 :icon="getDiagramTypeIcon(diagram.data.type)" />
+        </q-tabs>
+        <div style="height: calc(100vh - 132px)">
+          <!-- Vue Flow -->
+          <VueFlow snap-to-grid
+                   :snap-grid="[20, 20]">
+            <!-- Background -->
+            <Background :gap="20" />
 
-      </VueFlow>
-    </div>
+          </VueFlow>
+        </div>
+      </template>
+    </q-splitter>
   </q-page>
 </template>
 
@@ -46,6 +57,7 @@ import { VueFlow } from '@vue-flow/core';
 import { Background } from '@vue-flow/background';
 import { Logging } from 'src/scripts/util/logging';
 import { EDocumentType } from 'src/scripts/util/types';
+import ProjectTree from 'components/app/ProjectTree.vue';
 
 // Composable
 const cmp = useComposables();

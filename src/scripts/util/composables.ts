@@ -10,6 +10,7 @@ import { firebaseAuth } from 'src/scripts/util/firebase';
 import { globalConfig } from 'src/scripts/config/global-config';
 import { httpClient } from 'boot/axios';
 import { EConnectionApplication, TConnectionProperties } from 'src/scripts/firestore/connection';
+import { FirestoreDocument, IDocumentCommonData } from 'src/scripts/firestore/firestore-document';
 
 const messageDialogOptions = ref<TMessageDialogOptions>({
   title: '',
@@ -431,4 +432,50 @@ export function useRouting(): {
       }
     }
   };
+}
+
+/**
+ * A custom hook that returns a function for confirming deletion of an item.
+ *
+ * @returns {Function} The function for confirming deletion.
+ */
+export function useConfirmDeletion(): {
+  (
+    type: EDocumentType,
+    item: FirestoreDocument<IDocumentCommonData>,
+    handler: (item: FirestoreDocument<IDocumentCommonData>) => Promise<void>
+  ): Promise<void>
+} {
+  // Get composables
+  const cmp = useComposables();
+  const runTask = useRunTask();
+  const { showConfirmationDialog } = useMessageDialog();
+
+  // Return the function
+  return (
+    type: EDocumentType,
+    item: FirestoreDocument<IDocumentCommonData>,
+    handler: (item: FirestoreDocument<IDocumentCommonData>) => Promise<void>
+  ) => new Promise((resolve) => {
+    // Show confirmation dialog
+    showConfirmationDialog(
+      cmp.i18n.t('dialog.delete.title', { type: cmp.i18n.t(`${type}.type`) }),
+      cmp.i18n.t('dialog.delete.message', {
+        type: cmp.i18n.t(`${type}.type`),
+        article: cmp.i18n.t(`${type}.article`),
+        name: item.data.common.name
+      }),
+      undefined,
+      async (value) => {
+        if (value === 'okay') {
+          await runTask(async () => {
+            // Call the delete function
+            await handler(item);
+            // Resolve the promise
+            resolve();
+          });
+        }
+      }
+    );
+  });
 }

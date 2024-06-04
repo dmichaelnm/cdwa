@@ -82,12 +82,12 @@ export default {
     description: 'Description (optional)',
     // Details
     details: 'Details',
-    // Filter
-    filter: 'Filter',
     // Key
     key: 'Key',
     // Rows per Page
     rowsPerPage: 'Rows per page',
+    // Search
+    search: 'Search',
     // Type
     type: 'Type',
     // Value
@@ -342,6 +342,8 @@ export default {
     type: 'Diagram',
     // Article of the type
     article: 'the',
+    // Plural
+    plural: 'Diagrams',
     // Labels
     label: {
       // Diagram Name
@@ -401,6 +403,8 @@ export default {
     type: 'Connection',
     // Article of the document type
     article: 'the',
+    // Plural
+    plural: 'Connections',
     // Connection Labels
     label: {
       // Access Key ID

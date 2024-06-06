@@ -56,11 +56,10 @@ const layers = computed(() => {
  * Checks the user's permission for the given mode and item in the active project.
  *
  * @param {EEditorMode} mode - The mode to check permission for (create, view, edit, delete).
- * @param {FirestoreDocument<ILayerData>} [item] - Optional parameter for the Firestore document item.
  *
  * @return {boolean} - Returns true if the user has permission, otherwise false.
  */
-function getPermission(mode: EEditorMode, item?: FirestoreDocument<ILayerData>): boolean {
+function getPermission(mode: EEditorMode): boolean {
   // Get active project
   const project = cmp.sessionStore.project;
   if (project) {

@@ -292,8 +292,18 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
     nodes.push(Diagram.createTreeNode(this));
     // Add connection node
     nodes.push(Connection.createTreeNode(this));
+    // Create model node
+    nodes.push({
+      key: 'model',
+      label: 'label.model',
+      icon: 'view_quilt',
+      type: null,
+      permission: null,
+      translate: true
+    });
     // Add layer nodes
-    nodes.push(Layer.createTreeNodes(this));
+    nodes[2].children = [];
+    nodes[2].children.push(Layer.createTreeNodes(this));
     // Return the nodes
     return nodes;
   }

@@ -4,6 +4,7 @@ import { NodeDocument } from 'src/scripts/firestore/node-document';
 import { Project } from 'src/scripts/firestore/project';
 import { TSelectionOption } from 'src/scripts/config/options';
 import { ProjectDocument } from 'src/scripts/firestore/project-document';
+import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
 
 /**
  * Enum representing the types of layers used in the application.
@@ -56,6 +57,17 @@ export class Layer extends NodeDocument<ILayerData> implements tp.INamed {
    */
   getName(): string {
     return this.data.common.name;
+  }
+
+  /**
+   * Checks if this layer is droppable on the given target.
+   *
+   * @param {FirestoreDocument<any> | null} target - The target element being checked.
+   *
+   * @returns {boolean} - Returns true if this layer is droppable on the target, otherwise false.
+   */
+  isDroppable(target: FirestoreDocument<any> | null): boolean {
+    return target === null;
   }
 
   /**

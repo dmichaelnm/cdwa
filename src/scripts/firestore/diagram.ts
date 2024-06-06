@@ -123,7 +123,7 @@ export class Diagram extends ProjectDocument<IDiagramData> implements tp.INamed 
       label: diagram.data.common.name,
       icon: getDiagramTypeIcon(diagram.data.type),
       document: diagram,
-      draggable: true,
+      draggable: false,
       permission: (mode: tp.EEditorMode) => {
         if (mode === tp.EEditorMode.view) {
           // Visitors can view

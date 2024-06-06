@@ -18,7 +18,7 @@
       <!-- Tool Buttons Column -->
       <div class="col tool-buttons">
         <!-- Expand all Nodes -->
-        <button-icon size="xs" icon="expand_more" @click="projectTree?.expandAll()"/>
+        <button-icon size="xs" icon="expand_more" @click="projectTree?.expandAll()" />
         <!-- Collapse all Nodes -->
         <button-icon size="xs" icon="expand_less" @click="projectTree?.collapseAll()" />
       </div>
@@ -43,7 +43,7 @@
                  :draggable="props.node.draggable"
                  @mouseenter="hoveredNodeKey = props.node.key"
                  @mouseleave="hoveredNodeKey = null"
-                 @dragstart="onDragStart">
+                 @dragstart="onDragStart(props.node.document)">
               <!-- Tree Node Row -->
               <div class="row project-tree-node items-center no-wrap">
                 <!-- Tree Node Icon Column -->
@@ -124,6 +124,7 @@ import ButtonIcon from 'components/common/ButtonIcon.vue';
 import { EEditorMode, TTreeNode } from 'src/scripts/util/types';
 import { ProjectDocument } from 'src/scripts/firestore/project-document';
 import { FirestoreDocument, IDocumentCommonData } from 'src/scripts/firestore/firestore-document';
+import { NodeDocument } from 'src/scripts/firestore/node-document';
 
 // Composable
 const cmp = useComposables();
@@ -161,14 +162,14 @@ function showButton(key: string, mode: EEditorMode | string): boolean {
   if (key === hoveredNodeKey.value) {
     // Get node
     const node = projectTree.value?.getNodeByKey(key) as TTreeNode;
-    if (node) {
-      // Check Create Button
-      if (mode === EEditorMode.create) {
-        return node.document === undefined && node.permission(mode);
-      }
+    if (node && node.permission !== null) {
       // Check Overview Button
       if (mode === 'overview') {
         return node.document === undefined;
+      }
+      // Check Create Button
+      if (mode === EEditorMode.create) {
+        return node.document === undefined && node.permission(mode);
       }
       // Check View Button
       if (mode === EEditorMode.view) {
@@ -199,7 +200,7 @@ function showButton(key: string, mode: EEditorMode | string): boolean {
 function openDocument(key: string, mode: EEditorMode): void {
   // Get node
   const node = projectTree.value?.getNodeByKey(key) as TTreeNode;
-  if (node) {
+  if (node && node.type) {
     openEditor(node.type, mode, node.document?.id);
   }
 }
@@ -229,7 +230,7 @@ function openOverview(key: string): void {
 async function deleteDocument(key: string): Promise<void> {
   // Get node
   const node = projectTree.value?.getNodeByKey(key) as TTreeNode;
-  if (node) {
+  if (node && node.type) {
     await confirmDeletion(
       node.type,
       node.document as FirestoreDocument<any>,
@@ -238,9 +239,22 @@ async function deleteDocument(key: string): Promise<void> {
   }
 }
 
-function onDragStart(event: DragEvent): void {
+/**
+ * Handles the onDragStart event.
+ *
+ * @param {FirestoreDocument<any>} document - The FirestoreDocument object associated with the dragged element.
+ *
+ * @return {void}
+ */
+function onDragStart(document: FirestoreDocument<any>): void {
   // Hide Buttons
   hoveredNodeKey.value = null;
+  // Store information about the dragged element on the session
+  cmp.sessionStore.dragOperation = {
+    sourceDocument: document as NodeDocument<any>,
+    targetDocument: null,
+    droppable: false
+  };
 }
 
 </script>

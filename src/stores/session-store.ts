@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { Account } from 'src/scripts/firestore/account';
 import { Project } from 'src/scripts/firestore/project';
+import { TDragOperation } from 'src/scripts/util/types';
 
 export const useSessionStore = defineStore('session', {
   state: () => ({
@@ -19,7 +20,9 @@ export const useSessionStore = defineStore('session', {
     // Splitter position in model page
     splitter: 20 as number,
     // Keys of expanded tree nodes
-    expandedNodeKeys: [] as string[]
+    expandedNodeKeys: [] as string[],
+    // Infos of the current drag operation
+    dragOperation: null as TDragOperation | null
   }),
   getters: {
     /**

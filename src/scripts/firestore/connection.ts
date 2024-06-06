@@ -123,7 +123,7 @@ export class Connection extends ProjectDocument<IConnectionData> implements tp.I
       label: connection.data.common.name,
       icon: getApplicationOptions().find(opt => opt.value === connection.data.application)?.icon,
       document: connection,
-      draggable: true,
+      draggable: false,
       permission: (mode: tp.EEditorMode) => {
         if (mode === tp.EEditorMode.view) {
           // Visitors can view

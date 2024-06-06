@@ -95,6 +95,8 @@ export default {
     details: 'Details',
     // Key
     key: 'Schlüssel',
+    // Model
+    model: 'Modell',
     // Rows per Page
     rowsPerPage: 'Zeilen pro Seite',
     // Search

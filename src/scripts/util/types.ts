@@ -1,6 +1,7 @@
 import { QTableColumn, QTreeNode } from 'quasar';
 import { TSelectionOption } from 'src/scripts/config/options';
 import { ProjectDocument } from 'src/scripts/firestore/project-document';
+import { NodeDocument } from 'src/scripts/firestore/node-document';
 
 /**
  * Defines the type of the global configuration instance for the application.
@@ -72,7 +73,7 @@ export type TTreeNode = QTreeNode &
     // The node key
     key: string;
     // The document type
-    type: EDocumentType;
+    type: EDocumentType | null;
     // An optional icon
     icon?: string | (() => string);
     // The attached document
@@ -82,8 +83,20 @@ export type TTreeNode = QTreeNode &
     // Node is draggable
     draggable?: boolean;
     // Function for determine the permissions
-    permission: (mode: EEditorMode) => boolean;
+    permission: ((mode: EEditorMode) => boolean) | null;
   }
+
+/**
+ * Represents a drag operation in the application.
+ */
+export type TDragOperation = {
+  // The source document that is dragged
+  sourceDocument: NodeDocument<any>;
+  // The target document as drop target
+  targetDocument: NodeDocument<any> | null;
+  // Flag indicating if dropping the source on the target is possible
+  droppable: boolean;
+}
 
 /**
  * This interface represents an object that has an identifier.

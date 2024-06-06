@@ -17,7 +17,9 @@ export const useSessionStore = defineStore('session', {
     // ID of the current diagram
     currentDiagramId: null as string | null,
     // Splitter position in model page
-    splitter: 25 as number
+    splitter: 20 as number,
+    // Keys of expanded tree nodes
+    expandedNodeKeys: [] as string[]
   }),
   getters: {
     /**
@@ -78,6 +80,13 @@ export const useSessionStore = defineStore('session', {
      */
     reset(): void {
       this.account = null;
+      this.projects = [];
+      this.project = null;
+      this.editorLock = false;
+      this.queryParams = {};
+      this.currentDiagramId = null;
+      this.splitter = 20;
+      this.expandedNodeKeys = [];
     }
   }
 });

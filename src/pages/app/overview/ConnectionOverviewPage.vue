@@ -13,7 +13,7 @@
       <q-td :props="props">
         <div class="flex items-center">
           <!-- Application Icon -->
-          <q-icon :name="getApplicationIcon(props.row.data.application)" size="sm" style="padding-right: 4px" />
+          <q-icon :name="getApplicationIcon(props.row.data.application)" size="sm" style="padding-right: 8px" />
           <!-- Application Label -->
           {{ $t(`enum.application.${props.row.data.application}`) }}
         </div>

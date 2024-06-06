@@ -1,6 +1,6 @@
 import * as fd from 'src/scripts/firestore/firestore-document';
+import * as tp from 'src/scripts/util/types';
 import { ProjectDocument } from 'src/scripts/firestore/project-document';
-import { EDocumentType, INamed, TDocumentAttribute, TTreeNode } from 'src/scripts/util/types';
 import { Project } from 'src/scripts/firestore/project';
 import { copyAttributes } from 'src/scripts/util/utilities';
 import { useCloudFunctions } from 'src/scripts/util/composables';
@@ -78,7 +78,7 @@ export interface IConnectionData extends fd.IDocumentCommonData, fd.IDocumentAtt
  *
  * @template IConnectionData - The type of connection data.
  */
-export class Connection extends ProjectDocument<IConnectionData> implements INamed {
+export class Connection extends ProjectDocument<IConnectionData> implements tp.INamed {
 
   /**
    * Retrieves the name of the connection.
@@ -96,28 +96,46 @@ export class Connection extends ProjectDocument<IConnectionData> implements INam
    *
    * @return {TTreeNode} - The created tree node.
    */
-  static createTreeNode(project: Project): TTreeNode {
+  static createTreeNode(project: Project): tp.TTreeNode {
     // Root node for connections
-    const root: TTreeNode = {
+    const root: tp.TTreeNode = {
       key: 'connections',
-      type: EDocumentType.connection,
+      type: tp.EDocumentType.connection,
       label: 'connection.plural',
       icon: 'mdi-connection',
-      header: 'translate',
       document: undefined,
       translate: true,
+      permission: (mode: tp.EEditorMode) => {
+        if (mode === tp.EEditorMode.create) {
+          // All but visitors and developers can create connections
+          return !project.hasRole(tp.EProjectMemberRole.visitor, tp.EProjectMemberRole.developer);
+        }
+        // No permission
+        return false;
+      },
       children: []
     };
     // Add connection nodes
     const connections = project.getConnections();
     connections.forEach(connection => root.children?.push({
       key: connection.id,
-      type: EDocumentType.connection,
+      type: tp.EDocumentType.connection,
       label: connection.data.common.name,
       icon: getApplicationOptions().find(opt => opt.value === connection.data.application)?.icon,
-      header: 'document',
       document: connection,
       draggable: true,
+      permission: (mode: tp.EEditorMode) => {
+        if (mode === tp.EEditorMode.view) {
+          // Visitors can view
+          return project.hasRole(tp.EProjectMemberRole.visitor);
+        }
+        if (mode === tp.EEditorMode.edit || mode === tp.EEditorMode.delete) {
+          // All but visitors and developers can edit and delete
+          return !project.hasRole(tp.EProjectMemberRole.visitor, tp.EProjectMemberRole.developer);
+        }
+        // No permissions
+        return false;
+      },
       children: []
     }));
     // Return root node
@@ -142,7 +160,7 @@ export class Connection extends ProjectDocument<IConnectionData> implements INam
     description: string | null,
     application: EConnectionApplication,
     properties: TConnectionProperties,
-    attributes: TDocumentAttribute[]
+    attributes: tp.TDocumentAttribute[]
   ): Promise<Connection> {
     // Create the data structure
     const data: IConnectionData = {
@@ -154,7 +172,7 @@ export class Connection extends ProjectDocument<IConnectionData> implements INam
     // Create the connection document
     const connection = await ProjectDocument.createProjectDocument<IConnectionData, Connection>(
       project,
-      EDocumentType.connection,
+      tp.EDocumentType.connection,
       data,
       (config: fd.TFirestoreDocumentConfig<IConnectionData>) => new Connection(
         {
@@ -202,13 +220,13 @@ export class Connection extends ProjectDocument<IConnectionData> implements INam
   static async loadConnections(project: Project): Promise<void> {
     // Load the connections
     const connections = await fd.FirestoreDocument.query<IConnectionData, Connection>(
-      project.getFullPath() + EDocumentType.connection,
+      project.getFullPath() + tp.EDocumentType.connection,
       (config) => new Connection(config, project),
       project,
       Connection.decrypt
     );
     // Set the connection on the project
-    project.setDocuments(EDocumentType.connection, connections);
+    project.setDocuments(tp.EDocumentType.connection, connections);
   }
 
   /**

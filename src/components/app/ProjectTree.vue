@@ -13,6 +13,16 @@
                      @clear="searchText = ''" />
       </div>
     </div>
+    <!-- Tool Buttons Row -->
+    <div class="row">
+      <!-- Tool Buttons Column -->
+      <div class="col tool-buttons">
+        <!-- Expand all Nodes -->
+        <button-icon size="xs" icon="expand_more" @click="projectTree?.expandAll()"/>
+        <!-- Collapse all Nodes -->
+        <button-icon size="xs" icon="expand_less" @click="projectTree?.collapseAll()" />
+      </div>
+    </div>
     <!-- Project Tree Row -->
     <div class="row">
       <!-- Project Tree Column -->
@@ -20,6 +30,7 @@
         <!-- Project Tree -->
         <q-tree ref="projectTree"
                 v-model:selected="selectedNodeKey"
+                v-model:expanded="cmp.sessionStore.expandedNodeKeys"
                 node-key="key"
                 :accordion="false"
                 :nodes="treeNodes"
@@ -55,6 +66,10 @@
                   <button-icon size="xs" icon="mdi-view-list-outline"
                                v-if="showButton(props.node.key, 'overview')"
                                @click="openOverview(props.node.key)" />
+                  <!-- View Button -->
+                  <button-icon size="xs" icon="mdi-eye-outline"
+                               v-if="showButton(props.node.key, EEditorMode.view)"
+                               @click="openDocument(props.node.key, EEditorMode.view)" />
                   <!-- Edit Button -->
                   <button-icon size="xs" icon="mdi-pencil-outline"
                                v-if="showButton(props.node.key, EEditorMode.edit)"
@@ -92,6 +107,11 @@
 
 .project-tree-node-selected {
   font-weight: bold;
+}
+
+.tool-buttons {
+  text-align: right;
+  padding: 4px;
 }
 </style>
 
@@ -144,19 +164,23 @@ function showButton(key: string, mode: EEditorMode | string): boolean {
     if (node) {
       // Check Create Button
       if (mode === EEditorMode.create) {
-        return node.document === undefined;
+        return node.document === undefined && node.permission(mode);
       }
       // Check Overview Button
       if (mode === 'overview') {
         return node.document === undefined;
       }
+      // Check View Button
+      if (mode === EEditorMode.view) {
+        return node.document !== undefined && node.permission(mode);
+      }
       // Check Edit Button
       if (mode === EEditorMode.edit) {
-        return node.document !== undefined;
+        return node.document !== undefined && node.permission(mode);
       }
       // Check Delete Button
       if (mode === EEditorMode.delete) {
-        return node.document !== undefined;
+        return node.document !== undefined && node.permission(mode);
       }
     }
   }

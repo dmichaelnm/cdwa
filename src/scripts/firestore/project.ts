@@ -7,6 +7,7 @@ import { toArray } from 'src/scripts/util/utilities';
 import { Connection, IConnectionData } from 'src/scripts/firestore/connection';
 import { Diagram, IDiagramData } from 'src/scripts/firestore/diagram';
 import { TTreeNode } from 'src/scripts/util/types';
+import { ILayerData, Layer } from 'src/scripts/firestore/layer';
 
 /**
  * Represents a project member.
@@ -179,6 +180,22 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
   }
 
   /**
+   * Retrieves an array of layers from the document.
+   *
+   * @returns {Layer[]} An array of layers.
+   */
+  getLayers(): Layer[] {
+    return toArray(
+      this.getDocuments<ILayerData>(tp.EDocumentType.layer),
+      (l1, l2) => {
+        const n1 = l1.data.common.name.toLowerCase();
+        const n2 = l2.data.common.name.toLowerCase();
+        return n1.localeCompare(n2);
+      }
+    ) as Layer[];
+  }
+
+  /**
    * Returns the name of the project.
    *
    * @returns {string} The name of the project.
@@ -275,6 +292,8 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
     nodes.push(Diagram.createTreeNode(this));
     // Add connection node
     nodes.push(Connection.createTreeNode(this));
+    // Add layer nodes
+    nodes.push(Layer.createTreeNodes(this));
     // Return the nodes
     return nodes;
   }
@@ -367,6 +386,8 @@ export class Project extends fd.FirestoreDocument<IProjectData> implements tp.IN
     await Connection.loadConnections(project);
     // Load all diagrams
     await Diagram.loadDiagrams(project);
+    // Load all layers
+    await Layer.loadLayers(project);
     // Return the project
     return project;
   }

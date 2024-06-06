@@ -55,6 +55,17 @@ export default {
     diagram: {
       // Architecture
       architecture: 'Architektur-Modell'
+    },
+    // Layer types
+    layer: {
+      // File Storage
+      fileStorage: 'Datei-Speicher',
+      // Database 3NF
+      database3NF: 'Datenbank - 3NF',
+      // Database Data Vault
+      databaseVault: 'Datenbank - Data Vault',
+      // Database Mart
+      databaseMart: 'Datenbank - Data Mart'
     }
   },
 
@@ -515,6 +526,56 @@ export default {
         title: 'Verbindung fehlgeschlagen',
         // Message
         message: 'Die Verbindung zur externen Anwendung konnte leider nicht hergestellt werden.'
+      }
+    }
+  },
+
+  // Layer Messages
+  layer: {
+    // Type
+    type: 'Schicht',
+    // Article
+    article: 'die',
+    // Plural
+    plural: 'Schichten',
+    // Labels
+    label: {
+      // Layer Name
+      name: 'Name der Schicht',
+      // Layer Type
+      type: 'Typ der Schicht'
+    },
+    // Buttons
+    button: {
+      // Create Layer
+      create: 'Neue Schicht'
+    },
+    // Overview Messages
+    overview: {
+      // Title
+      title: 'Übersicht - Schichten',
+      // Message
+      message: 'Die folgende Tabelle zeigt eine Übersicht über alle bisher in diesem Projekt erstellte Schichten. ' +
+        'Je nachdem, welche Rolle Sie haben, können Sie sich die Details einer Schicht ansehen oder auch bearbeiten ' +
+        'oder löschen.'
+    },
+    // Editor Messages
+    editor: {
+      // Create Layer
+      create: {
+        // Title
+        title: 'Neue Schicht erstellen',
+        // Message
+        message: 'Hier können Sie eine neue Schicht erstellen. Eine Schicht ist die oberste Ebene in Ihrem Modell ' +
+          'und bestimmt welche Art von externen Applikationen zusammengefasst werden.'
+      },
+      // Edit Layer
+      edit: {
+        // Title
+        title: 'Schicht bearbeiten',
+        // Message
+        message: 'Hier können Sie die Eigenschaften der gewählten Schicht bearbeiten. Eine Änderung des Typs ist hier ' +
+          'jedoch nicht mehr möglich.'
       }
     }
   }

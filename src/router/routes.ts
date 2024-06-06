@@ -40,6 +40,16 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/connection/editor',
         component: () => import('pages/app/editor/ConnectionEditorPage.vue')
+      },
+      // Layer Overview Page
+      {
+        path: '/layer',
+        component: () => import('pages/app/overview/LayerOverviewPage.vue')
+      },
+      // Layer Editor Page
+      {
+        path: '/layer/editor',
+        component: () => import('pages/app/editor/LayerEditorPage.vue')
       }
     ]
   },

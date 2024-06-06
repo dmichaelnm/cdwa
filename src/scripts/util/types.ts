@@ -81,6 +81,8 @@ export type TTreeNode = QTreeNode &
     translate?: boolean;
     // Node is draggable
     draggable?: boolean;
+    // Function for determine the permissions
+    permission: (mode: EEditorMode) => boolean;
   }
 
 /**
@@ -174,7 +176,9 @@ export enum EDocumentType {
   // Diagrams
   diagram = 'diagram',
   // Connection
-  connection = 'connection'
+  connection = 'connection',
+  // Layer
+  layer = 'layer'
 }
 
 /**

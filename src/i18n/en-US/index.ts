@@ -55,6 +55,17 @@ export default {
     diagram: {
       // Architecture
       architecture: 'Architecture Model'
+    },
+    // Layer types
+    layer: {
+      // File Storage
+      fileStorage: 'File Storage',
+      // Database 3NF
+      database3NF: 'Database - 3NF',
+      // Database Data Vault
+      databaseVault: 'Database - Data Vault',
+      // Database Mart
+      databaseMart: 'Database - Data Mart'
     }
   },
 
@@ -509,6 +520,55 @@ export default {
         title: 'Connection Failed',
         // Message
         message: 'Unfortunately, the connection to the external application could not be established.'
+      }
+    }
+  },
+
+  // Layer Messages
+  layer: {
+    // Type
+    type: 'Layer',
+    // Article
+    article: 'the',
+    // Plural
+    plural: 'Layers',
+    // Labels
+    label: {
+      // Layer Name
+      name: 'Layer Name',
+      // Layer Type
+      type: 'Layer Type'
+    },
+    // Buttons
+    button: {
+      // Create Layer
+      create: 'New Layer'
+    },
+    // Overview Messages
+    overview: {
+      // Title
+      title: 'Overview - Layers',
+      // Message
+      message: 'The following table shows an overview of all layers created so far in this project. Depending on ' +
+        'your role, you can view the details of a layer or edit or delete it.'
+    },
+    // Editor Messages
+    editor: {
+      // Create Layer
+      create: {
+        // Title
+        title: 'Create New Layer',
+        // Message
+        message: 'Here you can create a new layer. A layer is the top level in your model and determines what type ' +
+          'of external applications are grouped together.'
+      },
+      // Edit Layer
+      edit: {
+        // Title
+        title: 'Edit Layer',
+        // Message
+        message: 'Here you can edit the properties of the selected layer. However, it is no longer possible to change ' +
+          'the type.'
       }
     }
   }

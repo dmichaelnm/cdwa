@@ -16,7 +16,7 @@
           <q-icon :name="getDiagramTypeIcon(props.row.data.type)"
                   class="diagram-type-icon"
                   size="sm"
-                  style="padding-right: 4px"/>
+                  style="padding-right: 8px"/>
           <!-- Type Label -->
           {{ $t(`enum.diagram.${props.row.data.type}`) }}
         </div>

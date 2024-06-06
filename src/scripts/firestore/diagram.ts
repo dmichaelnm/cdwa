@@ -1,7 +1,7 @@
 import * as fd from 'src/scripts/firestore/firestore-document';
+import * as tp from 'src/scripts/util/types';
 import { FirestoreDocument } from 'src/scripts/firestore/firestore-document';
 import { ProjectDocument } from 'src/scripts/firestore/project-document';
-import { EDocumentType, IIdentifiable, INamed, TTreeNode } from 'src/scripts/util/types';
 import { Project } from 'src/scripts/firestore/project';
 import { getDiagramTypeIcon } from 'src/scripts/util/utilities';
 
@@ -38,11 +38,11 @@ export interface IDiagramEdge {
  *
  * @extends IIdentifiable
  */
-export interface IDiagramNode extends IIdentifiable {
+export interface IDiagramNode extends tp.IIdentifiable {
   // The ID of the document represented by this node
   id: string;
   // Type of document represented by this node
-  type: EDocumentType;
+  type: tp.EDocumentType;
   // Sub nodes contained by this node.
   nodes: IDiagramNode[];
   // Edges of the sub node
@@ -78,7 +78,7 @@ export interface IDiagramData extends fd.IDocumentCommonData, fd.IDocumentMetaDa
  * @extends ProjectDocument
  * @implements INamed
  */
-export class Diagram extends ProjectDocument<IDiagramData> implements INamed {
+export class Diagram extends ProjectDocument<IDiagramData> implements tp.INamed {
 
   /**
    * Returns the name of the diagram.
@@ -96,28 +96,46 @@ export class Diagram extends ProjectDocument<IDiagramData> implements INamed {
    *
    * @return {TTreeNode} The tree node representing the project.
    */
-  static createTreeNode(project: Project): TTreeNode {
+  static createTreeNode(project: Project): tp.TTreeNode {
     // Root node for diagrams
-    const root: TTreeNode = {
+    const root: tp.TTreeNode = {
       key: 'diagrams',
-      type: EDocumentType.diagram,
+      type: tp.EDocumentType.diagram,
       label: 'diagram.plural',
       icon: 'mdi-sitemap',
-      header: 'translate',
       document: undefined,
       translate: true,
+      permission: (mode: tp.EEditorMode) => {
+        if (mode === tp.EEditorMode.create) {
+          // All but visitors can create diagrams
+          return !project.hasRole(tp.EProjectMemberRole.visitor);
+        }
+        // No permission
+        return false;
+      },
       children: []
     };
     // Add diagram nodes
     const diagrams = project.getDiagrams();
     diagrams.forEach(diagram => root.children?.push({
       key: diagram.id,
-      type: EDocumentType.diagram,
+      type: tp.EDocumentType.diagram,
       label: diagram.data.common.name,
       icon: getDiagramTypeIcon(diagram.data.type),
-      header: 'document',
       document: diagram,
       draggable: true,
+      permission: (mode: tp.EEditorMode) => {
+        if (mode === tp.EEditorMode.view) {
+          // Visitors can view
+          return project.hasRole(tp.EProjectMemberRole.visitor);
+        }
+        if (mode === tp.EEditorMode.edit || mode === tp.EEditorMode.delete) {
+          // All but visitors can edit and delete
+          return !project.hasRole(tp.EProjectMemberRole.visitor);
+        }
+        // No permissions
+        return false;
+      },
       children: []
     }));
     // Return root node
@@ -151,7 +169,7 @@ export class Diagram extends ProjectDocument<IDiagramData> implements INamed {
     // Create and return diagram document
     return await ProjectDocument.createProjectDocument<IDiagramData, Diagram>(
       project,
-      EDocumentType.diagram,
+      tp.EDocumentType.diagram,
       data,
       (config) => new Diagram(config, project)
     );
@@ -167,11 +185,11 @@ export class Diagram extends ProjectDocument<IDiagramData> implements INamed {
   static async loadDiagrams(project: Project): Promise<void> {
     // Load the diagrams
     const diagrams = await FirestoreDocument.query<IDiagramData, Diagram>(
-      project.getFullPath() + EDocumentType.diagram,
+      project.getFullPath() + tp.EDocumentType.diagram,
       (config) => new Diagram(config, project),
       project
     );
     // Add diagrams to project
-    project.setDocuments(EDocumentType.diagram, diagrams);
+    project.setDocuments(tp.EDocumentType.diagram, diagrams);
   }
 }

@@ -189,6 +189,7 @@ import MenuItem from 'components/common/MenuItem.vue';
 import { Project } from 'src/scripts/firestore/project';
 import MessageDialog from 'components/common/MessageDialog.vue';
 import FieldSelect from 'components/common/FieldSelect.vue';
+import { Diagram, IDiagramData } from 'src/scripts/firestore/diagram';
 
 // Get main composable instances
 const cmp = useComposables();
@@ -384,15 +385,22 @@ async function switchProject(projectId: string | null): Promise<void> {
 }
 
 /**
- * Logs out the current account.
+ * Logs out the current user and resets the session.
  *
- * @return {void} - This method does not return a value.
+ * @returns {Promise<void>} - A promise that resolves when the logout process is complete.
  */
-function logout(): void {
+async function logout(): Promise<void> {
+  // Save current diagram
+  const diagram = cmp.sessionStore.project && cmp.sessionStore.currentDiagramId
+    ? cmp.sessionStore.project.getDocument<IDiagramData, Diagram>(tp.EDocumentType.diagram, cmp.sessionStore.currentDiagramId)
+    : undefined;
+  if (diagram) {
+    await Diagram.updateDocument(diagram);
+  }
   // Reset the session
   cmp.sessionStore.reset();
   // Logout the current account
-  Account.logout();
+  await Account.logout();
 }
 
 </script>

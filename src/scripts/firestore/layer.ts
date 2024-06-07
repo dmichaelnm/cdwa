@@ -60,6 +60,15 @@ export class Layer extends NodeDocument<ILayerData> implements tp.INamed {
   }
 
   /**
+   * Returns the default dimension for a certain object.
+   *
+   * @return {Object} The default dimension, with properties 'width' and 'height'.
+   */
+  getDefaultDimension(): { width: number; height: number } {
+    return { width: 400, height: 150 };
+  }
+
+  /**
    * Checks if this layer is droppable on the given target.
    *
    * @param {FirestoreDocument<any> | null} target - The target element being checked.

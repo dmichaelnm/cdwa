@@ -89,6 +89,8 @@ export default {
     created: 'Created by / at',
     // Custom Attributes
     customAttributes: 'Custom Attributes',
+    // Deletion
+    delete: 'Delete',
     // Description
     description: 'Description (optional)',
     // Details
@@ -97,6 +99,8 @@ export default {
     key: 'Key',
     // Model
     model: 'Model',
+    // Properties
+    properties: 'Properties',
     // Rows per Page
     rowsPerPage: 'Rows per page',
     // Search
@@ -556,6 +560,14 @@ export default {
     },
     // Editor Messages
     editor: {
+      // View Layer
+      view: {
+        // Title
+        title: 'View Layer',
+        // Message
+        message: 'Here you can view the properties of the layer. However, changing the properties is not possible due ' +
+          'to your role.'
+      },
       // Create Layer
       create: {
         // Title

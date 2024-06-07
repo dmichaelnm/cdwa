@@ -60,15 +60,15 @@
         <q-td :props="props" class="vertical-top">
           <div class="overview-table-actions">
             <!-- View Button -->
-            <button-icon size="sm" icon="visibility"
+            <button-icon size="sm" icon="mdi-eye-outline"
                          v-if="permission(EEditorMode.view, props.row)"
                          @click="openEditor(type, EEditorMode.view, props.row.id)" />
             <!-- Edit Button -->
-            <button-icon size="sm" icon="edit"
+            <button-icon size="sm" icon="mdi-pencil-outline"
                          v-if="permission(EEditorMode.edit, props.row)"
                          @click="openEditor(type, EEditorMode.edit, props.row.id)" />
             <!-- Delete Button -->
-            <button-icon size="sm" icon="delete"
+            <button-icon size="sm" icon="mdi-trash-can-outline"
                          v-if="permission(EEditorMode.delete, props.row)"
                          @click="confirmDeletion(props.row)" />
           </div>

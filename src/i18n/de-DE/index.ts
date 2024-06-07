@@ -89,6 +89,8 @@ export default {
     created: 'Erstellt von / am',
     // Custom Attributes
     customAttributes: 'Benutzerdefinierte Attribute',
+    // Deletion
+    delete: 'Löschen',
     // Description
     description: 'Beschreibung (optional)',
     // Details
@@ -97,6 +99,8 @@ export default {
     key: 'Schlüssel',
     // Model
     model: 'Modell',
+    // Properties
+    properties: 'Eigenschaften',
     // Rows per Page
     rowsPerPage: 'Zeilen pro Seite',
     // Search
@@ -563,6 +567,14 @@ export default {
     },
     // Editor Messages
     editor: {
+      // View Layer
+      view: {
+        // Title
+        title: 'Schicht betrachten',
+        // Message
+        message: 'Hier können Sie die Eigenschaften der Schicht einsehen. Das Ändern der Eigenschaften ist jedoch ' +
+          'aufgrund Ihrer Rolle nicht möglich.'
+      },
       // Create Layer
       create: {
         // Title

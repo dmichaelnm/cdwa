@@ -26,21 +26,36 @@
           <!-- Vue Flow -->
           <VueFlow snap-to-grid
                    :snap-grid="[20, 20]"
+                   :nodes="nodes"
+                   :nodes-draggable="!readOnly"
+                   select-nodes-on-drag
+                   @keyup.delete="deleteSelectedNodes"
                    @dragover="onDragOver"
                    @drop="onDrapStop">
             <!-- Background -->
             <Background :gap="20" />
 
+            <!-- Layer Node -->
+            <template #node-layer="props">
+              <LayerNode :document="props.data" />
+            </template>
+
             <!-- Top Right Panel -->
             <Panel position="top-left">
-              <!-- Zoom In -->
-              <button-icon size="md" icon="mdi-magnify-plus-outline" @click="zoomIn" />
-              <!-- Zoom Out -->
-              <button-icon size="md" icon="mdi-magnify-minus-outline" @click="zoomOut" />
-              <!-- Default Zoom -->
-              <button-icon size="md" icon="mdi-magnify-remove-outline" @click="setViewport({ x: 0, y: 0, zoom: 1 })" />
-              <!-- Fit to Screen -->
-              <button-icon size="md" icon="mdi-magnify-scan" @click="fitView" />
+              <div class="q-gutter-x-sm">
+                <!-- Zoom In -->
+                <button-icon highlighted size="sm" icon="mdi-magnify-plus-outline"
+                             @click="() => { zoomIn(); applyViewport(); }" />
+                <!-- Zoom Out -->
+                <button-icon highlighted size="sm" icon="mdi-magnify-minus-outline"
+                             @click="() => { zoomOut(); applyViewport(); }" />
+                <!-- Default Zoom -->
+                <button-icon highlighted size="sm" icon="mdi-magnify-remove-outline"
+                             @click="() => { setViewport({ x: 0, y: 0, zoom: 1 }); applyViewport(); }" />
+                <!-- Fit to Screen -->
+                <button-icon highlighted size="sm" icon="mdi-magnify-scan"
+                             @click="() => { fitView(); applyViewport(); }" />
+              </div>
             </Panel>
           </VueFlow>
         </div>
@@ -64,24 +79,26 @@
 </style>
 
 <script setup lang="ts">
-import { useComposables } from 'src/scripts/util/composables';
+import { useComposables, useRouting } from 'src/scripts/util/composables';
 import { computed, onBeforeMount, onBeforeUnmount, ref } from 'vue';
 import { getDiagramTypeIcon } from 'src/scripts/util/utilities';
-import { Panel, useVueFlow, VueFlow } from '@vue-flow/core';
+import { Panel, useVueFlow, ViewportTransform, VueFlow } from '@vue-flow/core';
 import { Background } from '@vue-flow/background';
 import { Logging } from 'src/scripts/util/logging';
-import { EDocumentType } from 'src/scripts/util/types';
+import { EDocumentType, EEditorMode, EProjectMemberRole } from 'src/scripts/util/types';
 import ProjectTree from 'components/app/ProjectTree.vue';
 import { NodeDocument } from 'src/scripts/firestore/node-document';
 import { Diagram, IDiagramData } from 'src/scripts/firestore/diagram';
 import ButtonIcon from 'components/common/ButtonIcon.vue';
+import LayerNode from 'components/app/node/LayerNode.vue';
 
 // Composable
 const cmp = useComposables();
 const {
-  onInit,
-  fitView, getViewport, setViewport, zoomIn, zoomOut
+  onInit, onMoveEnd, onNodeDragStop, onNodeDoubleClick, onNodeContextMenu,
+  fitView, getViewport, setViewport, zoomIn, zoomOut, getSelectedNodes, removeNodes, addSelectedNodes
 } = useVueFlow();
+const { openEditor } = useRouting();
 
 // Diagrams of the current project
 const diagrams = computed(() => {
@@ -91,12 +108,27 @@ const diagrams = computed(() => {
 // Current diagram
 const diagram = computed(() => {
   return cmp.sessionStore.project && cmp.sessionStore.currentDiagramId
-    ? cmp.sessionStore.project.getDocument(EDocumentType.diagram, cmp.sessionStore.currentDiagramId)
+    ? cmp.sessionStore.project.getDocument<IDiagramData, Diagram>(EDocumentType.diagram, cmp.sessionStore.currentDiagramId)
     : undefined;
+});
+
+// Current diagram nodes
+const nodes = computed(() => {
+  if (diagram.value) {
+    return (diagram.value as Diagram).createVueFlowNodes();
+  }
+  return [];
+});
+
+// Read-Only flag
+const readOnly = computed(() => {
+  return cmp.sessionStore.project ? cmp.sessionStore.project.hasRole(EProjectMemberRole.visitor) : false;
 });
 
 // Previous diagram ID
 const previousDiagramId = ref(cmp.sessionStore.currentDiagramId);
+// Initialization flag
+const isInitialized = ref(false);
 
 /**
  * Lifecycle event method called before this component is mounted.
@@ -111,28 +143,84 @@ onBeforeMount(() => {
   if (cmp.sessionStore.currentDiagramId === null && diagrams.value.length > 0) {
     cmp.sessionStore.currentDiagramId = diagrams.value[0].id;
   }
+  // Initialize if necessary
+  if (!isInitialized.value && diagram.value) {
+    initDiagram(diagram.value as Diagram);
+  }
 });
 
 /**
  * Lifecycle event method called before this component is unmounted.
  */
 onBeforeUnmount(() => {
-  if (diagram.value) {
-    // Update the diagram
-    updateDiagram(diagram.value as Diagram);
-  }
+  Logging.debug('ModelingPage#onBeforeUnmount');
+  applyViewport(diagram.value as Diagram);
+  saveDiagram(diagram.value as Diagram);
+  isInitialized.value = false;
 });
 
 /**
  * Trigger method when the pane is initialized.
  */
 onInit(() => {
+  Logging.debug('ModelingPage#onInit');
   if (diagram.value) {
     // Initialize diagram
     initDiagram(diagram.value as Diagram);
+    previousDiagramId.value = diagram.value.id;
   }
 });
 
+/**
+ * Trigger method when the pane was moved.
+ */
+onMoveEnd((event) => {
+  Logging.debug('ModelingPage#onMoveEnd');
+  applyViewport(diagram.value as Diagram, event.flowTransform);
+});
+
+/**
+ * Trigger method when a node is double-clicked.
+ */
+onNodeDoubleClick((event) => {
+  // Open Editor
+  openEditor(
+    event.node.type as EDocumentType,
+    readOnly.value ? EEditorMode.view : EEditorMode.edit,
+    event.node.id
+  );
+});
+
+/**
+ * Trigger method when a node is right-clicked.
+ */
+onNodeContextMenu((event) => {
+  // Add node to selection
+  addSelectedNodes([event.node]);
+});
+
+/**
+ * Trigger method when dragging a node has stopped.
+ */
+onNodeDragStop((event) => {
+  if (diagram.value) {
+    // Get active diagram
+    const dg = diagram.value as Diagram;
+    // Iterate over all selected nodes
+    for (const node of event.nodes) {
+      // Get diagram node
+      const diagramNode = dg.getNode(node.id);
+      if (diagramNode) {
+        // Update position
+        diagramNode.position = { x: node.position.x, y: node.position.y };
+      }
+    }
+  }
+});
+
+/**
+ * Triggers when a diagram is switched on the Modeling Page.
+ */
 function onDiagramSwitched(): void {
   Logging.debug('ModelingPage#onDiagramSwitched');
   // Get active project
@@ -145,7 +233,8 @@ function onDiagramSwitched(): void {
         previousDiagramId.value
       );
       // Update previous diagram document
-      updateDiagram(diagram);
+      applyViewport(diagram);
+      saveDiagram(diagram);
     }
   }
   // Initialize current diagram
@@ -155,32 +244,62 @@ function onDiagramSwitched(): void {
   }
 }
 
+/**
+ * Handles the "dragover" event on a target element.
+ * Determines if the source document can be dropped onto the target element.
+ *
+ * @param {DragEvent} event - The event object representing the dragover event.
+ *
+ * @return {void}
+ */
 function onDragOver(event: DragEvent): void {
-  if (cmp.sessionStore.dragOperation) {
+  if (cmp.sessionStore.dragOperation && diagram.value) {
+    // Get active diagram
+    const dg = diagram.value as Diagram;
     // Get source document
     const sourceDocument = cmp.sessionStore.dragOperation.sourceDocument;
-    // Get target element
-    const element = event.target as Element;
-    // Get target document
-    const targetDocument = getTargetDocument(element);
-    // Check, if source is droppable on the target
-    if (targetDocument !== undefined && sourceDocument.isDroppable(targetDocument)) {
-      cmp.sessionStore.dragOperation.targetDocument = targetDocument;
-      cmp.sessionStore.dragOperation.droppable = true;
-      event.preventDefault();
+    // Check, if source document is not already part of the diagram
+    if (!dg.hasNode(sourceDocument.id)) {
+      // Get target element
+      const element = event.target as Element;
+      // Get target document
+      const targetDocument = getTargetDocument(element);
+      // Check, if source is droppable on the target
+      if (targetDocument !== undefined && sourceDocument.isDroppable(targetDocument)) {
+        cmp.sessionStore.dragOperation.targetDocument = targetDocument;
+        cmp.sessionStore.dragOperation.droppable = true;
+        event.preventDefault();
+      }
     }
   }
 }
 
-function onDrapStop(): void {
+/**
+ * Handles the drag stop event.
+ *
+ * @param {DragEvent} event - The drag event.
+ *
+ * @return {void}
+ */
+function onDrapStop(event: DragEvent): void {
+  // Current diagram
+  const dg = diagram.value as Diagram;
   // Check of active drag operation
   if (cmp.sessionStore.dragOperation && cmp.sessionStore.dragOperation.droppable) {
     // Get source document
-    const sourceDocument = cmp.sessionStore.dragOperation.sourceDocument;
+    const sourceDocument = cmp.sessionStore.dragOperation.sourceDocument as NodeDocument<any>;
     // Get target document
-    const targetDocument = cmp.sessionStore.dragOperation.targetDocument;
-
-    console.debug(sourceDocument, targetDocument);
+    const targetDocument = cmp.sessionStore.dragOperation.targetDocument as NodeDocument<any> | null;
+    // Calculate position
+    const dm = sourceDocument.getDefaultDimension();
+    const vp = getViewport();
+    const px = (vp.x * -1 / vp.zoom + event.offsetX / vp.zoom) - (dm.width / 2);
+    const py = (vp.y * -1 / vp.zoom + event.offsetY / vp.zoom) - (dm.height / 2);
+    // Add node to diagram
+    dg.addNode(sourceDocument, targetDocument, { x: px, y: py });
+    console.debug(dg);
+    // Update diagram
+    Diagram.updateDocument(dg);
   }
   // Reset drag operation
   cmp.sessionStore.dragOperation = null;
@@ -195,20 +314,73 @@ function getTargetDocument(element: Element): NodeDocument<any> | null | undefin
   return undefined;
 }
 
+/**
+ * Initializes the diagram with the given data.
+ *
+ * @param {Diagram} diagram - The diagram to initialize.
+ *
+ * @return {void}
+ */
 function initDiagram(diagram: Diagram): void {
-  Logging.debug('ModelingPage#initDiagram', diagram.getName());
   const data = diagram.data as IDiagramData;
-  setViewport({ x: data.viewport.x, y: data.viewport.y, zoom: data.viewport.zoom });
+  Logging.debug('ModelingPage#initDiagram', diagram.getName(), data);
+  setViewport(diagram.data.viewport);
+  isInitialized.value = true;
 }
 
-function updateDiagram(diagram: Diagram): void {
-  Logging.debug('ModelingPage#updateDiagram', diagram.getName());
-  const data = diagram.data as IDiagramData;
-  // Update viewport of the diagram
-  const vp = getViewport();
-  data.viewport = { x: vp.x, y: vp.y, zoom: vp.zoom };
-  // Update diagram
-  Diagram.updateDocument(diagram);
+/**
+ * Deletes the selected nodes from the diagram.
+ *
+ * This method removes all the selected nodes from the current diagram and also removes them from Vue Flow.
+ *
+ * @returns {void}
+ */
+function deleteSelectedNodes(): void {
+  if (diagram.value) {
+    // Get active diagram
+    const dg = diagram.value as Diagram;
+    // Get selected nodes
+    const nodes = getSelectedNodes.value;
+    // Remove all nodes from the current diagram
+    for (const node of nodes) {
+      dg.removeNode(node.id);
+    }
+    // Remove nodes from Vue Flow
+    removeNodes(nodes);
+  }
+}
+
+/**
+ * Applies the provided viewport transform to the diagram.
+ *
+ * @param {Diagram} [_diagram] - The diagram object. If not provided, the global `diagram` object will be used.
+ * @param {ViewportTransform} [_transform] - The viewport transform to apply. If not provided, the current viewport transform will be used.
+ *
+ * @returns {void}
+ */
+function applyViewport(_diagram?: Diagram, _transform?: ViewportTransform): void {
+  _diagram = _diagram ? _diagram : diagram.value;
+  _transform = _transform ? _transform : getViewport();
+  if (_diagram) {
+    Logging.debug('ModelingPage#applyViewport', _diagram.data.viewport, _transform);
+    _diagram.data.viewport.x = _transform.x;
+    _diagram.data.viewport.y = _transform.y;
+    _diagram.data.viewport.zoom = _transform.zoom;
+  }
+}
+
+/**
+ * Saves the given diagram.
+ *
+ * @param {Diagram} _diagram - The diagram to be saved. If not provided, the value of `diagram.value` will be used.
+ *
+ * @return {void}
+ */
+function saveDiagram(_diagram?: Diagram): void {
+  _diagram = _diagram ? _diagram : diagram.value;
+  if (_diagram) {
+    Diagram.updateDocument(_diagram);
+  }
 }
 
 </script>
